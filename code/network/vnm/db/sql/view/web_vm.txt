@@ -1,0 +1,17 @@
+
+
+CREATE OR REPLACE VIEW web_view_vm_netinfo AS 
+ SELECT 
+ v_net_vsi_vnic_resource.vnic_vm_id      AS vm_id, 
+ v_net_vsi_vnic_resource.vnic_nic_index  AS nic_index, 
+ v_net_vsi_vnic_resource.vsi_id_format, 
+ v_net_vsi_vnic_resource.vsi_id_value, 
+ v_net_vsi_vnic_resource.mac, 
+ v_net_vsi_vnic_resource.is_has_ip, 
+ v_net_vsi_vnic_resource.ip
+   FROM 
+ v_net_vsi_vnic_resource;
+  
+
+ 
+ 

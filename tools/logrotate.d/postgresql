@@ -1,0 +1,9 @@
+/usr/local/pgsql/data/pg_log/startup.log
+{
+    missingok
+    size 100M
+    rotate 1
+    create
+    compress
+	copytruncate
+}

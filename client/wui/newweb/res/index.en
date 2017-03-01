@@ -1,0 +1,43 @@
+﻿({
+    type:{
+        opr:{
+            lock_password_required_message:"Passwords can not be empty",
+            unlock_failed:"unlock failed",
+            unlock_failed_detail:"Wrong password, please re-enter."
+        }
+    },
+    xid:{
+        html:{
+            theme:" theme",
+            classic:" classic",
+            cerulean:" cerulean",
+            personal_information:"personal information",
+            lock:"lock",
+            logout:"logout",
+            language:" Global | Language",
+            ch:" Chinese-中文",
+            en:" Global-English",
+            home:"Home",
+            system:"System",
+            host_cluster:"Cluster&Host",
+            network:"Network",
+            storage:"Storage",
+            vr_app:"Virtual App",
+            user:"User",
+            my_vm:"My Virtual App",
+            auth:"Authentication",
+            lock_title:"The current session has been locked, enter the password to unlock.", 
+            lock_username:"user name:",
+            lock_password:"password:",
+            unlock:"Unlock",
+            copy:" ZTE Corporation.",
+            power_by:"powered by",
+            power_by_value:"TECS development team",
+            feedback:"feedback",
+            map:"map",
+            idx_confirmDlg_confirm:"confirm",
+            idx_confirmDlg_cancel:"cancel",
+            idx_confirmDlg_close:"close"
+        }
+    }
+})

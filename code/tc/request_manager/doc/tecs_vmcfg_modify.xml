@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_modify.xml">
+	<interface>tecs.vmcfg.element.set</interface>
+	<shortdesc lang_cn="修改虚拟机" lang_en="modify vm"/>
+	<description lang_cn="修改虚拟机。" lang_en="modify vm."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<struct name="ApiVmCfgBatchModify">
+			<parameter name="vid" type="int64" lang_cn="虚拟机id。" lang_en="vm id."/>
+            <array name="modifications" repeat="yes" lang_cn="修改虚拟机配置条目最多256个" lang_en="modify vm configuration max num is 256.">
+                <struct name="VmCfgModifyIndividualItem">
+                    <parameter name="vid" type="int64" lang_cn="虚拟机id。" lang_en="vm id."/>
+                    <parameter name="operation" type="int" lang_cn="修改虚拟机配置操作类型" lang_en="operation to vm configuration">
+                        <enum name="1" lang_cn="插入" lang_en="Insert"/>
+                        <enum name="2" lang_cn="删除" lang_en="Delete"/>
+                        <enum name="3" lang_cn="更新" lang_en="Update"/>
+                    </parameter>
+                    <parameter name="element" type="int" lang_cn="修改虚拟机配置对象" lang_en="modify-target">
+                        <enum name="1" lang_cn="名字。argvs key字段=name,value为新的名字" lang_en="Name"/>
+                        <enum name="2" lang_cn="描述。argvs key字段=description,value为新的描叙" lang_en="Description"/>
+                        <enum name="3" lang_cn="工程。argvs key字段=project,value为新的工程" lang_en="Project"/>
+                        <enum name="11" lang_cn="CPU。argvs key字段分别是保存vcpu，tcu，args value字段保存对应的vcpu，tcu新值" lang_en="CPU"/>
+                        <enum name="12" lang_cn="内存。argvs key字段=memory,value为新的内存值" lang_en="Memory"/>
+                        <enum name="14" lang_cn="镜像。参考结构体ApiVmDisk。args key分别对应ApiVmDisk每一项的名字，args value对应保存新值" lang_en="Image"/>
+                        <enum name="15" lang_cn="看门狗。argvs key字段=watchdog,value为新的看门狗时长" lang_en="Watch dog"/>
+                        <enum name="16" lang_cn="互斥关系。args key字段分别为src,des，value对应的2个互斥虚拟机id" lang_en="Mutex"/>
+                    </parameter>
+                    <parameter name="args" type="string" lang_cn="修改参数" lang_en="The arg for modification"/>
+                </struct>
+            </array>
+		</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="info" type="string" lang_cn="成功修改虚拟机" lang_en="Modify vm success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="7000" lang_cn="失败, 获取映像失败" lang_en="Failed to acquire image"/>
+				<enum name="7001" lang_cn="失败, 无效的工程" lang_en="Failed, invalid project"/>
+				<enum name="7009" lang_cn="失败, 虚拟机已部署禁止修改操作" lang_en="Failed, modify is forbidden for VM has deployed"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.allocate" href="tecs_vmcfg_allocate.xml"/>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.query" href="tecs_vmcfg_query.xml"/>
+		<xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+	</reference>
+</method>

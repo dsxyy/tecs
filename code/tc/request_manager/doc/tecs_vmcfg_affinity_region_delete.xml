@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_vmcfg_affinity_region_delete.xml">
+	<interface>tecs.vmcfg.affinity_region.delete</interface>
+	<shortdesc lang_cn="删除亲和域" lang_en="delete affinity_region"/>
+	<description lang_cn="删除亲和域。" lang_en="delete affinity_region."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="id" type="int64" lang_cn="亲和域id。" lang_en="affinity region id."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1" lang_cn="失败 " lang_en="Error unknown"/>
+				<enum name="6" lang_cn="授权失败 " lang_en="Error, failed to authorize usr's operation"/>
+				<enum name="11" lang_cn="查询亲和域失败" lang_en="Error, failed to query affinity region"/>
+				<enum name="14" lang_cn="删除失败" lang_en="Error, failed to delete object instance"/>
+				<enum name="17" lang_cn="删除对象不存在" lang_en="Error, object instance not exist"/>
+				<enum name="27" lang_cn="有虚拟机加入,不允许删除" lang_en="Error, affinity region has vm and can not delete"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.affinity_region.set" href="tecs_vmcfg_affinity_region_set.xml"/>
+		<xref name="tecs.vmcfg.affinity_region.allocate" href="tecs_vmcfg_affinity_region_allocate.xml"/>
+		<xref name="tecs.vmcfg.affinity_region.query" href="tecs_vmcfg_affinity_region_query.xml"/>
+	</reference>
+</method>

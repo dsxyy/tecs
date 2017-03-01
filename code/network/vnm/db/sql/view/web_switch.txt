@@ -1,0 +1,47 @@
+ CREATE OR REPLACE VIEW web_view_switch AS 
+ SELECT a.id, a.name, a.uuid, a.switch_type, a.state, a.max_mtu, a.is_active, a.evb_mode, a.uplink_pg_id, a.nic_max_num_cfg, 
+        ( SELECT count(*) FROM virtual_switch_map b WHERE a.id = b.virtual_switch_id ) AS port_count,
+        ( SELECT name From port_group c WHERE c.id=a.uplink_pg_id ) AS uplink_pg_name, 
+        ( SELECT uuid From port_group c WHERE c.id=a.uplink_pg_id ) AS uplink_pg_uuid        
+    FROM v_net_vswitch a;
+
+
+ CREATE OR REPLACE VIEW web_view_switch_vna_port AS 
+ SELECT a.id, 
+  a.name AS switch_name, 
+  a.uuid AS switch_uuid, 
+  a.switch_type, 
+  a.state, 
+  a.max_mtu, 
+  a.is_active, 
+  a.evb_mode, 
+  a.uplink_pg_id,
+  a.nic_max_num_cfg, 
+  ( SELECT count(*) FROM virtual_switch_map b WHERE a.id = b. 
+virtual_switch_id ) AS port_count, 
+
+  ( SELECT name From port_group c WHERE c.id=a.uplink_pg_id ) AS 
+uplink_pg_name, 
+
+  ( SELECT uuid From port_group c WHERE c.id=a.uplink_pg_id ) AS 
+uplink_pg_uuid,
+
+  b.vna_uuid,
+  b.id AS vna_id,
+  d.name AS port_name,
+  d.port_type,
+  CASE WHEN (port_type = 4 ) THEN (1)
+     WHEN (port_type = 1) THEN (0)
+     WHEN (port_type = 0 AND ( SELECT x.is_loop_report is not null FROM 
+sriov_port x WHERE x.physical_port_id = d.id AND x.is_loop_report = 1 ))
+
+        THEN (1) ELSE (0) END AS is_loop 
+ FROM v_net_vswitch a,
+  vna b,
+  virtual_switch_map c,
+  port d WHERE a.id = c.virtual_switch_id AND
+  c.port_id = d.id AND
+  d.vna_id = b.id ; 
+
+
+      

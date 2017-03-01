@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_tcu_query.xml">
+	<interface>tecs.tcu.query</interface>
+	<shortdesc lang_cn="查询tcu配置信息" lang_en="Query tcu configuration."/>
+	<description lang_cn="查询tcu配置信息。" lang_en="Query tcu configuration."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询的起始CPU型号ID，起始值为0，指定CPU型号情况下，此字段无效。" lang_en="The start cpu information ID of this query(start value is 0), which is invalid when the cpu_info or cpu_info_id is specified."/>
+		<parameter name="query_count" type="int64" lang_cn="本次查询的数量，最大支持200，指定CPU型号情况下，此字段无效。" lang_en="The count limit of this query, which is not greater than 200, and is invalid when the cpu_info or cpu_info_id is specified."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="cpu_info" type="string" lang_cn="CPU型号信息，如果不为空字符串，则下面的cpu_info_id必须为-1。如果cpu_info为空字符串并且cpu_info_id为-1则表示查询所有的tcu配置信息，否则为查询指定的tcu配置信息。" lang_en="Cpu information, if the cpu_info is not empty string, then the cpu_info_id must be -1. If cpu_info is empty string and cpu_info_id is -1, the query all tcu configurations of the cluster, otherwise query the specified tcu configuration."/>
+		<parameter name="cpu_info_id" type="int64" lang_cn="CPU型号信息的ID，如果不为-1，则上面的cpu_info必须为空字符串。" lang_en="ID of cpu information, if the cpu_info_id is not -1, then the cpu_info must be empty string."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="推荐的下一次查询起始CPU型号ID。" lang_en="Suggested start cpu informatoin ID of next queyr."/>
+			<parameter name="max_count" type="int64" lang_cn="总的主机数量。" lang_en="Total count of all cpu informations."/>
+			<array repeat="yes">
+				<struct>
+					<parameter name="cpu_info" type="string" lang_cn="CPU型号信息。" lang_en="Cpu information."/>
+					<parameter name="cpu_info_id" type="int64" lang_cn="CPU型号信息的ID。" lang_en="ID of cpu information."/>
+					<parameter name="tcu_num" type="int" lang_cn="指定CPU型号信息的主机上所能支持的tcu数量。" lang_en="The supporting tcu number of the host which cpu information is the specified cpu_info or cpu_info_id"/>
+					<parameter name="description" type="string" lang_cn="CPU型号信息的描述，0至512个字符。" lang_en="Description of the cpu information, string length is not greater than 512."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered."/>
+				<enum name="1003" lang_cn="错误，集群未注册到TC中" lang_en="Error, cluster have not registered into the Tecs Center."/>
+				<enum name="1025" lang_cn="错误，该cpu info id不存在" lang_en="Error, cpu_info_id is not exist."/>
+				<enum name="1026" lang_cn="错误，cpu info和cpu info id字段均有效" lang_en="Error, cpu_info and cpu_info_id are both valid."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.tcu.set" href="tecs_tcu_set.xml"/>
+		<xref name="tecs.tcu.delete" href="tecs_tcu_delete.xml"/>
+	</reference>
+</method>

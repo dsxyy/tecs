@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_vmcfg_action.xml">
+	<interface>tecs.vmcfg.action</interface>
+	<shortdesc lang_cn="虚拟机操作" lang_en="virtual machine operation"/>
+	<description lang_cn="虚拟机操作。" lang_en="virtual machine operation."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="id" type="int64" lang_cn="虚拟机id。" lang_en="vm id."/>
+		<parameter name="operate" type="string" lang_cn="操作命令：" lang_en="operate cmd:">
+			<enum name="deploy" lang_cn="部署" lang_en="deploy"/>
+			<enum name="cancel" lang_cn="撤销" lang_en="cancel"/>
+			<enum name="start" lang_cn="开机" lang_en="start"/>
+			<enum name="stop" lang_cn="关机" lang_en="stop"/>
+			<enum name="reboot" lang_cn="重启" lang_en="reboot"/>
+			<enum name="pause" lang_cn="暂停" lang_en="pause"/>
+			<enum name="resume" lang_cn="恢复" lang_en="resume"/>
+			<enum name="delete" lang_cn="删除" lang_en="delete"/>
+            <enum name="reset" lang_cn="强制重启" lang_en="reset"/>
+            <enum name="destroy" lang_cn="强制关机" lang_en="destroy"/>
+            <enum name="upload_img" lang_cn="保存镜像" lang_en="upload_img"/>
+            <enum name="cancel_upload_img" lang_cn="取消保存镜像" lang_en="cancel_upload_img"/>
+            <enum name="sync" lang_cn="同步" lang_en="sync"/>
+            <enum name="recover_image" lang_cn="系统还原" lang_en="recover image"/>
+            <enum name="freeze" lang_cn="冻结" lang_en="freeze"/>
+            <enum name="unfreeze" lang_cn="解冻" lang_en="unfreeze"/>
+		</parameter>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            	<parameter name="workflow_id" type="string" lang_cn="创建工作流成功返回workflow_id。如果工作流ID为空，表示工作流任务已经成功完成。" lang_en="create workflow success, return workflow_id.If id is null,the task has been completed successfully."/>
+			<parameter name="workflow_engine" type="string" lang_cn="工作流所在节点引擎地址。例如：tecscloud.tc.workflow_engine_0" lang_en="the target of workflow engine.eg:tecscloud.tc.workflow_engine_0"/>		
+		
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="7003" lang_cn="失败, 当前状态操作被禁止" lang_en="Failed, the operation is forbidden in current state"/>
+				<enum name="7004" lang_cn="失败, 没有集群适合部署虚拟机" lang_en="Failed, no cluster is suitable to the vm"/>
+				<enum name="7005" lang_cn="失败, 在集群上操作虚拟机失败" lang_en="Failed to action vm in cluster"/>
+				<enum name="7006" lang_cn="失败, 在主机上操作虚拟机失败" lang_en="Failed to action vm in host"/>
+				<enum name="7008" lang_cn="失败, 无效操作类型" lang_en="Failed, invalid action type"/>
+				<enum name="7010" lang_cn="失败, 分配MAC地址失败" lang_en="Failed to allocate mac address"/>
+				<enum name="7011" lang_cn="失败, 释放MAC地址失败" lang_en="Failed to release mac address"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.allocate" href="tecs_vmcfg_allocate.xml"/>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.set" href="tecs_vmcfg_set.xml"/>
+	</reference>
+</method>

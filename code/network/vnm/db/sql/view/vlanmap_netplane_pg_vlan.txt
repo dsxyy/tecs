@@ -1,0 +1,23 @@
+
+
+CREATE OR REPLACE VIEW v_net_vlanmap_netplane_pg_vlan AS 
+SELECT 
+  port_group."name" AS pg_name, 
+  port_group.uuid AS pg_uuid, 
+  vlan_map.project_id AS project_id, 
+  vlan_pool.vlan_num AS vlan_num,   
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid,
+  vlan_map.isolate_no AS isolate_no
+FROM 
+  public.vlan_map, 
+  public.vlan_pool, 
+  public.vm_pg, 
+  public.netplane, 
+  public.port_group
+WHERE 
+  vlan_map.vm_pg_id = vm_pg.pg_id AND
+  vlan_map.vlan_id = vlan_pool.id AND
+  vlan_pool.netplane_id = netplane.id AND
+  vm_pg.pg_id = port_group.id AND
+  port_group.netplane_id is not null;

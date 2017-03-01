@@ -1,0 +1,14 @@
+﻿({
+    xid:{
+        html:{
+            title:"Welcome to TECS",
+            tip:"Please enter your user name and password.",
+            login:"login",
+            input_login_error:"The user name or password can not be empty",
+            theme:" theme", 
+            language:" Global|Language",
+            ch:" Chinese-中文",
+            en:" Global-English"
+        }
+    }
+})

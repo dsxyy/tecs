@@ -1,0 +1,11 @@
+database "tecscloud" already exists
+database "tecscluster" already exists
+database "vnm" already exists
+role "tecs" already exists
+
+
+
+
+
+
+

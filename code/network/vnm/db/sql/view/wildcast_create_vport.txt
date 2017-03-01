@@ -1,0 +1,65 @@
+
+
+
+CREATE OR REPLACE VIEW v_net_wildcast_create_vport AS   
+SELECT 
+  distinct
+  id,
+  uuid, 
+  port_name,
+  port_type,   
+  CASE 
+     WHEN (SELECT kernel_type  IS NOT NULL FROM wildcast_cfg_create_kernel_port b WHERE a.id = b.wildcast_create_vport_id  )
+         THEN (1)
+     ELSE (0 ) 
+  END AS  is_has_kernel_type,
+
+  CASE 
+     WHEN (SELECT kernel_type  IS NOT NULL FROM wildcast_cfg_create_kernel_port b WHERE a.id = b.wildcast_create_vport_id  )
+         THEN (SELECT kernel_type FROM wildcast_cfg_create_kernel_port b WHERE a.id = b.wildcast_create_vport_id )
+     ELSE (0 ) 
+  END AS  kernel_type,
+  
+  (SELECT c.uuid  FROM wildcast_cfg_create_kernel_port b, port_group c WHERE a.id = b.wildcast_create_vport_id AND c.id = b.kernel_pg_id)
+      AS  kernel_pg_uuid,
+  (SELECT c.switch_type FROM wildcast_cfg_create_kernel_port b, switch c WHERE a.id = b.wildcast_create_vport_id AND b.switch_id = c.id )
+      AS switch_type,
+  (SELECT c.name FROM wildcast_cfg_create_kernel_port b, switch c WHERE a.id = b.wildcast_create_vport_id AND b.switch_id = c.id )
+      AS switch_name,
+  (SELECT c.uuid FROM wildcast_cfg_create_kernel_port b, switch c WHERE a.id = b.wildcast_create_vport_id AND b.switch_id = c.id )
+      AS switch_uuid,
+   CASE 
+     WHEN (SELECT is_dhcp  IS NOT NULL FROM wildcast_cfg_create_kernel_port b WHERE a.id = b.wildcast_create_vport_id  )
+         THEN (SELECT is_dhcp FROM wildcast_cfg_create_kernel_port b WHERE a.id = b.wildcast_create_vport_id )
+     ELSE (0 ) 
+   END AS  is_dhcp
+FROM 
+  wildcast_cfg_create_virtual_port a;
+  
+  
+CREATE OR REPLACE VIEW v_net_wildcast_task_create_vport AS     
+SELECT 
+  wildcast_task_create_vport.id AS task_id, 
+  wildcast_task_create_vport.uuid AS task_uuid, 
+  wildcast_task_create_vport.state AS task_state, 
+  wildcast_task_create_vport.send_num AS task_send_num, 
+  vna.vna_uuid, 
+  vna.is_online AS vna_is_online, 
+  v_net_wildcast_create_vport.uuid AS create_vport_uuid, 
+  v_net_wildcast_create_vport.port_name, 
+  v_net_wildcast_create_vport.port_type, 
+  v_net_wildcast_create_vport.is_has_kernel_type, 
+  v_net_wildcast_create_vport.kernel_type,
+  v_net_wildcast_create_vport.kernel_pg_uuid,
+  v_net_wildcast_create_vport.switch_type,
+  v_net_wildcast_create_vport.switch_name,
+  v_net_wildcast_create_vport.switch_uuid,
+  v_net_wildcast_create_vport.is_dhcp
+FROM 
+  public.v_net_wildcast_create_vport, 
+  public.wildcast_task_create_vport, 
+  public.vna
+WHERE 
+  v_net_wildcast_create_vport.id = wildcast_task_create_vport.wildcast_cfg_create_vport_id AND
+  vna.id = wildcast_task_create_vport.vna_id;
+  

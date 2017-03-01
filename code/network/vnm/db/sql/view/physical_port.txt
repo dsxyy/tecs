@@ -1,0 +1,147 @@
+
+
+CREATE OR REPLACE VIEW v_net_physical_port_vna AS 
+SELECT 
+  port."name" AS phy_name, 
+  port.uuid AS phy_uuid, 
+  port.id AS phy_id, 
+  vna.vna_uuid AS vna_uuid, 
+  vna.id AS vna_id, 
+  physical_port.is_linked,
+  port.is_online AS phy_is_online,
+  port.is_consistency AS phy_is_consistency,
+  port.is_cfg AS phy_is_cfg,
+  port.admin_state AS phy_admin_state
+FROM 
+  port, 
+  vna, 
+  physical_port
+WHERE 
+  port.vna_id = vna.id AND
+  physical_port.port_id = port.id AND
+  physical_port.vna_id = port.vna_id;
+
+  
+  
+-- sriov port view  
+CREATE OR REPLACE VIEW v_net_sriov_port_vna AS   
+SELECT 
+  vna.vna_uuid, 
+  vna.vna_application, 
+  vna.host_name, 
+  vna.vnm_application, 
+  vna.is_online AS vna_is_online, 
+  port.id, 
+  port."name", 
+  port.uuid, 
+  port.is_online AS port_is_online,  
+  port.is_consistency, 
+  physical_port.is_linked, 
+  sriov_port.is_loop_report, 
+  sriov_port.is_loop_cfg,
+  port.is_cfg AS port_is_cfg,
+  port.admin_state AS port_admin_state
+FROM 
+  port, 
+  sriov_port, 
+  physical_port, 
+  vna
+WHERE 
+  port.vna_id = vna.id AND
+  physical_port.port_id = port.id AND
+  physical_port.port_id = sriov_port.physical_port_id;  
+  
+  
+-- sriov vf port view
+CREATE OR REPLACE VIEW v_net_sriov_vf_port_vna AS   
+SELECT 
+  vna.vna_uuid, 
+  vna.vna_application, 
+  vna.host_name, 
+  vna.vnm_application, 
+  vna.is_online AS vna_is_online, 
+  port.id, 
+  port."name", 
+  port.uuid, 
+  port.is_online AS port_is_online,  
+  port.is_consistency, 
+  sriov_vf_port.sriov_port_id, 
+  sriov_vf_port.pci, 
+  sriov_vf_port.vlan_num,
+  port.is_consistency AS port_is_consistency,
+  port.is_cfg AS port_is_cfg,
+  port.admin_state AS port_admin_state,
+  port.state AS port_state
+FROM 
+  port, 
+  vna, 
+  sriov_vf_port
+WHERE 
+  port.vna_id = vna.id AND
+  sriov_vf_port.port_id = port.id;
+  
+  
+-- free sriov vf port view 
+CREATE OR REPLACE VIEW v_net_free_sriov_vf_port_vna AS   
+SELECT 
+  distinct 
+  v_net_sriov_port_vna.vna_uuid, 
+  v_net_sriov_port_vna.vna_is_online AS vna_is_online, 
+  v_net_sriov_port_vna."name" AS sriov_name, 
+  v_net_sriov_port_vna.uuid AS sriov_uuid, 
+  v_net_sriov_port_vna.id AS sriov_id, 
+  v_net_sriov_port_vna.port_is_online AS sriov_is_online,
+  v_net_sriov_port_vna.is_consistency AS sriov_is_consistency,
+  v_net_sriov_port_vna.port_admin_state AS sriov_admin_state,
+  v_net_sriov_vf_port_vna."name" AS vf_name, 
+  v_net_sriov_vf_port_vna.uuid AS vf_uuid, 
+  v_net_sriov_vf_port_vna.id AS vf_id, 
+  v_net_sriov_vf_port_vna.pci, 
+  v_net_sriov_vf_port_vna.vlan_num,
+  v_net_sriov_vf_port_vna.port_is_online AS vf_is_online,
+  v_net_sriov_vf_port_vna.port_is_consistency AS vf_is_consistency,
+  v_net_sriov_vf_port_vna.port_is_cfg AS vf_is_cfg,
+  v_net_sriov_vf_port_vna.port_admin_state AS vf_admin_state 
+FROM 
+  public.v_net_sriov_port_vna, 
+  public.v_net_sriov_vf_port_vna
+WHERE 
+  v_net_sriov_vf_port_vna.sriov_port_id = v_net_sriov_port_vna.id 
+  AND   v_net_sriov_vf_port_vna.id not in (SELECT sriov_vf_port_id FROM vsi_sriov );
+  
+  
+
+  
+-- 调度使用 查看空闲的SRIOV 网口
+-- 1 sriov_vf_port 中没有使用的 
+--   sriov vf port is online, is_consistency 
+-- 2 vna is online 
+
+--SELECT 
+
+
+
+-- 调度使用 查看port口 
+-- sriov is online is_consistency, 
+-- 获取到物理端口，其他应该和sdvs 一致了。 
+
+
+-- 调度使用 
+-- 通过phy 口查看是否是bond的成员口，如果是，获取bond口
+-- 查看vswitch map，获取switch 
+
+
+-- 调度使用
+-- 加cc 过滤
+-- vna 过滤，必须是存在hc，regist_module hc_info 必须存在记录，才能参与调度 
+
+
+
+ 
+
+
+
+  
+ 
+  
+  

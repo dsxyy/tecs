@@ -1,0 +1,72 @@
+include  $(_TECS_CODE_PATH)/common/makeconfig
+_UTILS_SRC_PATH     = $(_TECS_CODE_PATH)/utils
+
+_UTILS_TMP_OBJ_PATH = $(_TEMP_OBJ_PATH)/utils
+_UTILS_TMP_DEP_PATH = $(_TEMP_DEP_PATH)/utils
+
+_UTILS_CCSVR_PATH          = $(_UTILS_SRC_PATH)/main
+ifeq (_SVR_VERSION,$(_SVR_TYPE))
+_PACKAGE_MANAGER_PATH   = $(_UTILS_SRC_PATH)/package_manager
+endif
+
+ifeq (_SVR_TC_SSH_TRUST,$(_SVR_TYPE))
+_SSH_TRUST_PATH   = $(_UTILS_SRC_PATH)/ssh_trust
+endif
+
+ifeq (_SVR_CC_SSH_TRUST,$(_SVR_TYPE))
+_SSH_TRUST_PATH   = $(_UTILS_SRC_PATH)/ssh_trust
+endif
+
+export _UTILS_ALL_OBJECTS =
+
+_UTILSSVR_MAKEFILE = $(_UTILS_CCSVR_PATH)/makefile
+_PACKAGE_MANAGER_MAKEFILE  = $(_PACKAGE_MANAGER_PATH)/makefile
+_SSH_TRUST_MAKEFILE  = $(_SSH_TRUST_PATH)/makefile
+
+_UTILS_INCLUDE_PATH += $(addprefix -I,$(_PACKAGE_MANAGER_PATH)/include) \
+                    $(addprefix -I,$(_TECS_CODE_PATH)/sky/include) \
+                    $(addprefix -I,$(_SSH_TRUST_PATH))
+
+_UTILS_MACRO_DEF +=
+export CPPFLAGS += $(_UTILS_INCLUDE_PATH) $(_UTILS_MACRO_DEF)
+export DEPCPPFLAGS += $(_UTILS_INCLUDE_PATH) $(_UTILS_MACRO_DEF)
+
+
+ifeq (_SVR_VERSION,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = VERSION
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -ltecsdb -lpq
+##默认库搜索路径以外的其它搜索路径
+export _OTHER_LINK_PATH = 
+export PROCESS=common
+##$(_TECS_CODE_PATH)/sky/dist
+endif
+
+ifeq (_SVR_GUARD,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = GUARD
+export PROCESS=common
+endif
+
+ifeq (_SVR_TC_SSH_TRUST,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = TC_SSH_TRUST
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky
+##默认库搜索路径以外的其它搜索路径
+export _OTHER_LINK_PATH = 
+export PROCESS=tc
+##$(_TECS_CODE_PATH)/sky/dist
+endif
+
+ifeq (_SVR_CC_SSH_TRUST,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = CC_SSH_TRUST
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky
+##默认库搜索路径以外的其它搜索路径
+export _OTHER_LINK_PATH = 
+export PROCESS=cc
+##$(_TECS_CODE_PATH)/sky/dist
+endif

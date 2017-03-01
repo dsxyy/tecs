@@ -1,0 +1,31 @@
+ 
+_STORAGE_PATH         = $(_TECS_CODE_PATH)/common/storage
+
+_STORAGE_TMP_OBJ_PATH = $(_TEMP_OBJ_PATH)/common/storage
+_STORAGE_TMP_DEP_PATH = $(_TEMP_DEP_PATH)/common/storage
+
+_STORAGE_SRC_PATH  = $(_STORAGE_PATH)
+_STORAGE_LIB_PATH  = $(_STORAGE_SRC_PATH)
+
+export _STORAGE_ALL_OBJECTS =
+
+_STORAGELIB_MAKEFILE = $(_STORAGE_LIB_PATH)/makefile
+
+_STORAGE_INCLUDE_PATH += $(addprefix -I,$(_TECS_CODE_PATH)/common/include) 
+                       
+
+					
+_STORAGE_MACRO_DEF +=
+export CPPFLAGS += $(_STORAGE_INCLUDE_PATH) $(_STORAGE_MACRO_DEF)
+export DEPCPPFLAGS += $(_STORAGE_INCLUDE_PATH) $(_STORAGE_MACRO_DEF)
+
+
+ifeq (_LIB_STORAGE,$(_LIB_VER))
+    ##版本文件名
+    export _VERSION_NAME = libstorage
+    ##依赖的其它库文件
+    ##export _OTHER_LINK_LIB = -lsky
+    ##默认库搜索路径以外的其它搜索路径
+    ##export _OTHER_LINK_PATH = -L/XXX
+endif
+

@@ -1,0 +1,25 @@
+
+CREATE OR REPLACE VIEW v_net_kernelreport_bondmap AS  
+SELECT 
+  kernel_cfg_report.id, 
+  kernel_cfg_report.uuid, 
+  kernel_cfg_report.vna_id, 
+  vna.vna_uuid, 
+  kernel_cfg_report.switch_name, 
+  kernel_cfg_report.uplink_port_name, 
+  kernel_cfg_report.ip, 
+  kernel_cfg_report.mask, 
+  kernel_cfg_report.is_online, 
+  kernel_cfg_report.kernel_port_name, 
+  kernel_cfg_report.uplink_port_type, 
+  kernel_cfg_report_bond.bond_mode AS uplink_port_bond_mode, 
+  kernel_cfg_report_bond_map.phy_port_name
+FROM 
+  kernel_cfg_report, 
+  kernel_cfg_report_bond, 
+  kernel_cfg_report_bond_map, 
+  vna
+WHERE 
+  kernel_cfg_report.vna_id = vna.id AND
+  kernel_cfg_report_bond.kernel_cfg_report_id = kernel_cfg_report.id AND
+  kernel_cfg_report_bond_map.kernel_cfg_report_bond_id = kernel_cfg_report_bond.kernel_cfg_report_id;

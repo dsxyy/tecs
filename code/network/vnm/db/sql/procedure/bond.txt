@@ -1,0 +1,621 @@
+
+
+-- 判断bond port 能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_add_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying    )
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面
+  
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- port name 名称是否冲突
+  SELECT count(*) INTO is_conflict FROM  port WHERE vna_id = vnaid  AND name = in_name ;
+  IF is_conflict > 0 THEN
+     result := RTN_ITEM_CONFLICT; -- conflict 
+     return result;
+  END IF;
+  
+  -- port type 判断
+  IF in_type = 1 THEN 
+     result :=0;
+  ELSE
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  -- bond mode 判断
+  IF in_bond_mode = 4 THEN 
+      result :=0;
+  ELSE 
+      IF in_bond_mode = 1 THEN 
+          result :=0;
+      ELSE 
+          result := RTN_PARAM_INVALID; 
+          return result;
+      END IF;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying ) OWNER TO tecs;
+
+
+-- physical port 添加 
+-- Function: pf_net_check_add_bond(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_check_add_bond(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying,
+        in_is_has_lacpinfo integer, in_lacp_state integer,
+        in_lacp_aggregator_id character varying,in_lacp_partner_mac character varying     )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_same_port integer;
+  is_same_port_ex integer;
+  is_same_port_sriov integer;
+  is_conflict integer;
+  vnaid numeric(19,0);
+  portid numeric(19,0);
+  is_exist integer;  
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_bond(in_vna_uuid,in_type,in_name,in_uuid,in_state,in_is_broadcast,in_is_running,in_is_multicast,
+            in_promiscuous,in_mtu,in_is_master,in_admin_state,in_is_online,in_is_port_cfg,in_is_consistency,
+            in_bond_mode,in_policy);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+   -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- insert item
+  result.id := nextval('serial_port');
+  result.uuid := in_uuid;
+  
+  BEGIN 
+    INSERT INTO port values(result.id,in_type,vnaid,in_name,in_uuid,in_state,in_is_broadcast,in_is_running,in_is_multicast,in_promiscuous,in_mtu,in_is_master,in_admin_state,in_is_online, in_is_port_cfg, in_is_consistency);
+    INSERT INTO bond values(result.id,in_type,vnaid,in_bond_mode,in_policy);   
+    IF in_bond_mode = 1 THEN 
+       INSERT INTO bond_backup(bond_id,bond_mode) values(result.id,in_bond_mode);
+    END IF;    
+    
+    IF in_bond_mode = 4 THEN 
+       IF in_is_has_lacpinfo > 0 THEN 
+           INSERT INTO bond_lacp(bond_id,bond_mode,state,aggregator_id,partner_mac) 
+               values(result.id,in_bond_mode,in_lacp_state,in_lacp_aggregator_id,in_lacp_partner_mac);
+       ELSE 
+           INSERT INTO bond_lacp(bond_id,bond_mode) values(result.id,in_bond_mode);
+       END IF;
+    END IF;    
+    
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying ,
+        in_is_has_lacpinfo integer, in_lacp_state integer,
+        in_lacp_aggregator_id character varying,in_lacp_partner_mac character varying) OWNER TO tecs;
+
+
+-- check modify bond port
+CREATE OR REPLACE FUNCTION pf_net_check_modify_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying )
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  vnaid numeric(19,0);
+  portid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面
+  
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  --port uuid 
+  SELECT count(*) INTO is_exist FROM port a,bond b WHERE a.id = b.port_id AND a.vna_id = vnaid AND a.uuid = in_uuid; 
+  SELECT a.id INTO portid FROM port a,bond b WHERE a.id = b.port_id AND a.vna_id = vnaid AND a.uuid = in_uuid;   
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- port name 名称是否冲突
+  SELECT count(*) INTO is_exist FROM  port WHERE id = portid  AND name = in_name ;
+  IF is_exist <= 0 THEN 
+     SELECT count(*) INTO is_exist FROM  port WHERE name = in_name ;
+     IF is_exist > 0 THEN 
+         result := RTN_ITEM_CONFLICT; -- conflict 
+         return result;
+     END IF;
+  END IF;
+    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_modify_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying ) OWNER TO tecs;        
+        
+        
+-- port修改
+-- Function: pf_net_modify_bond(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_modify_bond(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_modify_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying ,
+        in_is_has_lacpinfo integer, in_lacp_state integer,
+        in_lacp_aggregator_id character varying,in_lacp_partner_mac character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  vnaid numeric(19,0);
+  portid numeric(19,0);
+  phyportid numeric(19,0);
+  is_sriov_exist integer;
+  oldmodechange integer;
+  oldIsConsistency integer := 0;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG  integer := 5;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_modify_bond(in_vna_uuid,in_type,in_name,in_uuid,in_state,in_is_broadcast,in_is_running,in_is_multicast,
+            in_promiscuous,in_mtu,in_is_master,in_admin_state,in_is_online,in_is_port_cfg,in_is_consistency,
+            in_bond_mode,in_policy);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+   -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;
+  
+  --port uuid 
+  SELECT count(*) INTO is_exist FROM port a,bond b WHERE a.id = b.port_id AND a.vna_id = vnaid AND a.uuid = in_uuid; 
+  SELECT a.id INTO portid FROM port a,bond b WHERE a.id = b.port_id AND a.vna_id = vnaid AND a.uuid = in_uuid;   
+  SELECT b.bond_mode INTO oldmodechange FROM port a,bond b WHERE a.id = b.port_id AND a.vna_id = vnaid AND a.uuid = in_uuid;   
+  SELECT a.is_consistency INTO oldIsConsistency FROM port a,bond b WHERE a.id = b.port_id AND a.vna_id = vnaid AND a.uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF; 
+  
+               
+  -- modify item
+  result.id  := portid;
+  result.uuid := in_uuid;
+  BEGIN 
+    -- 需要新删除 bond_backup, lacp
+    IF in_bond_mode = oldmodechange THEN 
+        result.ret :=  0;
+    ELSE
+        IF in_bond_mode = 1 THEN 
+            DELETE FROM bond_lacp WHERE bond_id = portid;
+            UPDATE bond_map SET lacp_is_success = 0 WHERE bond_id = portid;
+        END IF;
+        
+        IF in_bond_mode = 4 THEN             
+            DELETE FROM bond_backup WHERE bond_id = portid;
+            UPDATE bond_map SET backup_is_active = 0 WHERE bond_id = portid;
+        END IF;
+    END IF;
+        
+    
+    UPDATE port SET name = in_name, state = in_state, is_broadcast =in_is_broadcast, is_multicast = in_is_multicast,
+        promiscuous = in_promiscuous, mtu = in_mtu, is_master = in_is_master, admin_state = in_admin_state, is_online = in_is_online ,
+        is_cfg = in_is_port_cfg , is_consistency = in_is_consistency 
+        WHERE uuid = in_uuid AND port_type = in_type;
+    UPDATE bond SET bond_mode = in_bond_mode, policy = in_policy 
+        WHERE port_id = portid;        
+
+    IF in_bond_mode = oldmodechange THEN 
+        IF in_bond_mode = 4 THEN 
+            IF in_is_has_lacpinfo > 0 THEN 
+               UPDATE bond_lacp SET state =in_lacp_state, aggregator_id = in_lacp_aggregator_id,partner_mac = in_lacp_partner_mac 
+                   WHERE bond_id = portid;
+            ELSE
+               UPDATE bond_lacp SET state =0, aggregator_id = NULL,partner_mac = NULL  
+                   WHERE bond_id = portid;
+            END IF;
+        END IF;
+    ELSE
+        IF in_bond_mode = 1 THEN 
+            INSERT INTO bond_backup(bond_id,bond_mode) values( portid, in_bond_mode);
+        END IF;
+        
+        IF in_bond_mode = 4 THEN 
+            IF in_is_has_lacpinfo > 0 THEN 
+               INSERT INTO bond_lacp(bond_id,bond_mode,state,aggregator_id,partner_mac) 
+                    values( portid, in_bond_mode,in_lacp_state,in_lacp_aggregator_id,in_lacp_partner_mac);            
+            ELSE
+                INSERT INTO bond_lacp(bond_id,bond_mode) values( portid, in_bond_mode);
+            END IF;
+        END IF;
+        
+    END IF;    
+    
+    -- trigger
+    IF oldIsConsistency > in_is_consistency THEN 
+        result.ret := pf_net_tr_modify_bondport(portid, 0);
+    END IF;
+    IF oldIsConsistency > in_is_consistency THEN 
+        result.ret := pf_net_tr_modify_bondport(portid, 1);
+    END IF;
+    
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_bond(in_vna_uuid character varying, in_type integer,in_name character varying,
+        in_uuid character varying, in_state integer, in_is_broadcast integer,in_is_running integer,in_is_multicast integer,
+        in_promiscuous integer, in_mtu integer, in_is_master integer, in_admin_state integer, in_is_online integer,
+        in_is_port_cfg integer, in_is_consistency integer, 
+        in_bond_mode integer,
+        in_policy character varying,
+        in_is_has_lacpinfo integer, in_lacp_state integer,
+        in_lacp_aggregator_id character varying,in_lacp_partner_mac character varying )  OWNER TO tecs;
+
+        
+
+-- check del bond port
+CREATE OR REPLACE FUNCTION pf_net_check_del_bond(in_port_uuid character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  vnaid numeric(19,0);
+  portid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面
+    
+  --port uuid 
+  SELECT count(*) INTO is_exist FROM port a,bond b WHERE a.id = b.port_id AND a.uuid = in_port_uuid; 
+  SELECT a.id INTO portid FROM port a,bond b WHERE a.id = b.port_id  AND a.uuid = in_port_uuid;   
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- 是否已经作为switch uplink
+  SELECT count(*) INTO is_exist FROM v_net_switch_port_vna WHERE port_uuid = in_port_uuid;
+  IF is_exist > 0 THEN 
+    result := RTN_RESOURCE_USING;   
+    return result;
+  END IF;  
+    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_bond(in_port_uuid character varying) OWNER TO tecs;        
+        
+
+-- 删除port
+CREATE OR REPLACE FUNCTION pf_net_del_bond(in_port_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否存在记录
+  result.ret := pf_net_check_del_bond(in_port_uuid);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM port WHERE uuid = in_port_uuid ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_bond(character varying) OWNER TO tecs;
+
+
+
+-- 查询 bond
+-- Function: pf_net_query_bond(character varying)
+
+-- DROP FUNCTION pf_net_query_bond(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_query_bond(in_port_uuid character varying)
+  RETURNS t_bond_query AS
+$BODY$
+DECLARE
+  result  t_bond_query;
+  is_exist integer;
+  portid numeric(19,0);
+  sriovportid numeric(19,0);
+  RTN_ITEM_NO_EXIST integer :=4;
+BEGIN
+--  SELECT uuid into result.uuid, name into result.name,description into result.description,mtu into result.mtu FROM netplane WHERE uuid = $1;
+  result.ret := 0;
+  
+  SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.port_type = b.port_type AND a.vna_id = b.vna_id 
+           AND a.uuid = in_port_uuid ;
+  SELECT a.id INTO portid FROM port a, bond b WHERE a.id = b.port_id AND a.port_type = b.port_type AND a.vna_id = b.vna_id 
+           AND a.uuid = in_port_uuid ;
+  IF is_exist <= 0 THEN   
+     result.ret := RTN_ITEM_NO_EXIST; -- no exist item
+     return result; 
+  END IF;
+
+   SELECT  b.vna_uuid INTO result.vna_uuid FROM port a, vna b WHERE a.vna_id = b.id  AND a.uuid = in_port_uuid;
+  
+   result.uuid := in_port_uuid;
+   -- port 
+   SELECT port_type into result.port_type  FROM port WHERE uuid = in_port_uuid;
+   SELECT name into result.name  FROM port WHERE uuid = in_port_uuid;
+   SELECT state into result.state FROM port WHERE uuid = in_port_uuid;
+   SELECT is_broadcast into result.is_broadcast  FROM port WHERE uuid = in_port_uuid;
+   SELECT is_running into result.is_running  FROM port WHERE uuid = in_port_uuid;
+   SELECT is_multicast into result.is_multicast  FROM port WHERE uuid = in_port_uuid;
+   SELECT promiscuous into result.promiscuous  FROM port WHERE uuid = in_port_uuid;
+   SELECT mtu into result.mtu  FROM port WHERE uuid = in_port_uuid;
+   SELECT is_master into result.is_master  FROM port WHERE uuid = in_port_uuid;
+   SELECT admin_state into result.admin_state  FROM port WHERE uuid = in_port_uuid;
+   SELECT is_online into result.is_online  FROM port WHERE uuid = in_port_uuid;
+   SELECT is_cfg into result.is_port_cfg  FROM port WHERE uuid = in_port_uuid;
+   SELECT is_consistency into result.is_consistency  FROM port WHERE uuid = in_port_uuid;
+   
+   -- bond port
+   SELECT bond_mode INTO result.bond_mode FROM bond WHERE port_id = portid;
+   SELECT policy INTO result.policy FROM bond WHERE port_id = portid;
+  
+   -- bond lacp
+   SELECT count(*) INTO is_exist FROM bond_lacp WHERE bond_id = portid;
+   IF is_exist <= 0 THEN 
+      result.is_has_lacpinfo := 0;
+      return result;
+   END IF;
+   
+   result.is_has_lacpinfo := 1;
+   SELECT state INTO result.lacp_state FROM bond_lacp WHERE bond_id = portid;
+   SELECT aggregator_id INTO result.lacp_aggregator_id FROM bond_lacp WHERE bond_id = portid;
+   SELECT partner_mac INTO result.lacp_partner_mac FROM bond_lacp WHERE bond_id = portid;
+   
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_bond(character varying) OWNER TO tecs;
+
+
+
+--- 查询 bond summary
+--- 输出 name,uuid
+
+CREATE OR REPLACE FUNCTION pf_net_query_bond_summary(in_vna_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN  
+    -- vna 
+      SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+      SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+      IF is_exist <= 0 THEN 
+        return ref;
+      END IF;
+      
+      -- port 
+      SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.port_type = b.port_type AND a.vna_id = b.vna_id 
+          AND a.vna_id = vnaid;
+            
+      IF  is_exist <= 0 THEN 
+          return ref;
+      END IF;
+      
+    OPEN ref FOR SELECT vna_uuid,bond_uuid,bond_name,bond_mode  
+       FROM v_net_bond_vna    
+       WHERE vna_uuid = in_vna_uuid;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_bond_summary(in_vna_uuid character varying) OWNER TO tecs;
+
+--- bond map 信息表 
+
+
+
+-- 判断SRIOV网口下是否已经有虚拟机部署使用sriov vf了
+CREATE OR REPLACE FUNCTION pf_net_query_bondsriovport_vsi_num(in_uuid character varying )
+  RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_same integer;
+  is_same_port integer;
+  is_same_port_ex integer;
+  is_same_port_sriov integer;
+  is_conflict integer;
+  bondid numeric(19,0);
+  is_exist integer; 
+  db_uuid character varying;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+  result.ret := 0;
+  result.total_num := 0;
+  -- 入参检查 后面做
+  
+  -- 检查port uuid 是否有效
+  SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_uuid;
+  SELECT a.id INTO bondid FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- 是否已存在相同记录
+  SELECT count(*) INTO result.total_num FROM bond_map a, sriov_vf_port b, vsi_sriov c
+  WHERE 
+  a.bond_id = bondid AND 
+  a.physical_port_id = b.sriov_port_id AND 
+  c.sriov_vf_port_id = b.port_id;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION  pf_net_query_bondsriovport_vsi_num(in_uuid character varying ) OWNER TO tecs;
+
+
+
+
+
+
+
+
+

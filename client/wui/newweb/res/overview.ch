@@ -1,0 +1,27 @@
+﻿({
+    type:{
+        opr:{
+            enter:">>>进入"
+        }
+    },
+    xid:{
+        html:{
+            introduction:"介绍",
+            introduction_info:"TULIP/Telecom Elastic Computing System郁金香(电信)弹性计算系统。",
+            overview_system:"系统管理",
+            system_info:"管理系统内与物理/虚拟资源无关的内容，包括告警、软件运行状态、工作流、会话和许可等。",
+            overview_host_cluster:"集群&物理机",
+            host_cluster_info:"管理系统内与物理机相关的资源和对象，包括集群、机框、主机和虚拟机等。",
+            overview_newwork:"网络管理",
+            newwork_info:"管理系统内与网络相关的资源和对象，包括网络平面、端口组、逻辑网络、虚拟交换机、网络端口和IP/VLAN等。",
+            overview_storage:"存储管理",
+            storage_info:"管理系统内共享块存储资源和对象，包括磁阵设备、卷组、卷以及存储空间的使用情况等。",
+            overview_vr_app:"虚拟应用",
+            vr_app_info:"管理系统内与虚拟机应用相关的非物理资源对象，包括用户资产、工程、虚拟机、移动盘、模板和镜像等。",
+            overview_user:"用户管理",
+            user_info:"管理系统内用户对象，区分管理员和租户进行用户账号和信息管理。",
+            overview_my_vm:"我的虚拟应用",
+            my_vm_info:"管理员作为租户身份访问系统的页面，进行虚拟资源的申请和管理。"
+        }
+    }
+})

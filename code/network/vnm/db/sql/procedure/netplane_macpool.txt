@@ -1,0 +1,305 @@
+
+
+-- 判断NETPLANE MAC POOL 能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_add_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  netplaneid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;   
+    
+  -- ip range 必须已经配置
+  SELECT count(*) INTO is_exist FROM mac_range WHERE netplane_id = netplaneid  
+       AND ( in_num_mac >= mac_begin_num AND in_num_mac <= mac_end_num ) ;  
+  IF is_exist <= 0 THEN 
+     result := RTN_MUST_CFG_VALID_RANGE; 
+     return result;
+  END IF;  
+  
+  -- mac pool 不能冲突
+  SELECT count(*) INTO is_exist FROM mac_pool WHERE mac_num = in_num_mac;
+  IF is_exist > 0 THEN 
+     result := RTN_ITEM_CONFLICT; 
+     return result;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying) OWNER TO tecs;
+
+
+-- NETPLANE MAC POOL 添加 
+-- Function: pf_net_add_netplane_macpool(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_netplane_macpool(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  netplaneid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_netplane_macpool(in_uuid,in_num_mac,in_str_mac);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+   -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;   
+    
+  -- 不支持重复添加 
+
+  -- insert item 
+  result.id := nextval('serial_mac_pool');
+  --result.uuid := in_uuid;
+  BEGIN 
+    INSERT INTO mac_pool(id,netplane_id,mac,mac_num) 
+            values(result.id,netplaneid,in_str_mac, in_num_mac);
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying) OWNER TO tecs;
+
+                 
+
+
+-- 判断NETPLANE MAC POOL 能否del
+CREATE OR REPLACE FUNCTION pf_net_check_del_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  netplaneid numeric(19,0);
+  macid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;   
+    
+  SELECT count(*) INTO is_exist FROM mac_pool WHERE netplane_id = netplaneid 
+                AND mac_num = in_num_mac AND mac = in_str_mac;
+  SELECT id INTO macid FROM mac_pool WHERE netplane_id = netplaneid 
+                AND mac_num = in_num_mac AND mac = in_str_mac;            
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;                
+  
+  -- 查看该资源是否在使用
+  SELECT count(*) INTO is_exist FROM vsi_profile WHERE mac_id = macid;
+  IF is_exist > 0 THEN 
+     result := RTN_RESOURCE_USING; 
+     return result;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying) OWNER TO tecs;
+                           
+
+-- 删除 logicnetwork ip pool
+CREATE OR REPLACE FUNCTION pf_net_del_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  netplaneid numeric(19,0);
+  macid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- del 不作检查，由应用保准
+  result.ret := pf_net_check_del_netplane_macpool(in_uuid,in_num_mac,in_str_mac);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+   -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+        
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM mac_pool WHERE netplane_id = netplaneid 
+                AND mac_num = in_num_mac AND mac = in_str_mac;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_netplane_macpool(in_uuid character varying, 
+                           in_num_mac numeric(19), in_str_mac character varying) OWNER TO tecs;
+
+
+
+-- 查询mac_pool(通过netplane_uuid)
+
+CREATE OR REPLACE FUNCTION pf_net_query_netplane_macpool(in_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    netplaneid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+     -- netplane uuid 
+    SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+    SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+       --result := RTN_ITEM_NO_EXIST; 
+       return ref;
+    END IF;  
+    
+    SELECT count(*) INTO is_exist FROM mac_pool  
+      WHERE netplane_id = netplaneid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF; 
+  
+    OPEN ref FOR SELECT in_uuid, mac_num, mac  
+      FROM mac_pool  
+      WHERE netplane_id = netplaneid;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_netplane_macpool(in_uuid character varying) OWNER TO tecs;
+
+
+
+
+-- 查询mac_pool(通过netplane_uuid, mac begin ,mac_end)
+
+CREATE OR REPLACE FUNCTION pf_net_query_netplane_macpool_by_nprange(in_uuid character varying, in_begin numeric(19,0), in_end numeric(19,0))
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    netplaneid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+	RTN_PARAM_INVALID integer := 7;
+BEGIN
+     -- netplane uuid 
+    SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+    SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+       --result := RTN_ITEM_NO_EXIST; 
+       return ref;
+    END IF;  
+	    
+    SELECT count(*) INTO is_exist FROM mac_pool  
+      WHERE netplane_id = netplaneid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF; 
+  
+    OPEN ref FOR SELECT in_uuid, mac_num, mac  
+      FROM mac_pool  
+      WHERE netplane_id = netplaneid 
+	      AND (mac_num >= in_begin AND mac_num <= in_end);
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_netplane_macpool_by_nprange(in_uuid character varying, in_begin numeric(19,0), in_end numeric(19,0)) OWNER TO tecs;
+
+
+
+                                 

@@ -1,0 +1,28 @@
+CREATE OR REPLACE VIEW v_net_netplane_uplinkpg AS 
+ SELECT netplane.name AS "NP_name", 
+        netplane.mtu AS "NP_mtu", 
+        port_group.mtu AS "PG_mtu", 
+        port_group.name AS "PG_name"
+   FROM netplane, uplink_pg, port_group
+  WHERE netplane.id = port_group.netplane_id AND port_group.id = uplink_pg.pg_id AND port_group.pg_type = uplink_pg.pg_type;
+
+  
+CREATE OR REPLACE VIEW v_net_netplane_vmpg AS   
+  SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  port_group.uuid AS pg_uuid, 
+  port_group."name" AS pg_name, 
+  netplane.id AS netplane_id, 
+  port_group.id AS pg_id
+FROM 
+  public.netplane, 
+  public.port_group, 
+  public.vm_pg
+WHERE 
+  netplane.id = port_group.netplane_id AND
+  port_group.id = vm_pg.pg_id AND
+  port_group.netplane_id is not null;
+
+  
+  

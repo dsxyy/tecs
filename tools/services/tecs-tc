@@ -1,0 +1,226 @@
+#!/bin/bash
+#
+# tecs-tc		Script to start and stop the tecs-tc daemons.
+#
+# Author:       zhang wenjian <zhang.wenjian2@zte.com.cn>
+#
+# chkconfig: 2345 99 01
+# description: Starts and stops the tecs-tc daemons.
+### BEGIN INIT INFO
+# Provides: ZTE
+# Should-Start: 
+# Default-Start: 3 4 5
+# Short-Description: Start/stop tecs-tc daemons
+# Description: Starts and stops the tecs-tc daemons.
+### END INIT INFO
+
+# processname: 
+# pidfile: 
+#
+
+# 1表示采用人工交互，0表示自动采用默认值
+[ -z $INTERACTIVE ] && INTERACTIVE=1
+
+# Sanity checks.
+TC_CONFIG_FILE=/etc/tecs/tc.config
+INSTALL_DIR=/opt/tecs/tc
+
+if [ ! -e $TC_CONFIG_FILE ] ; then
+  echo "$TC_CONFIG_FILE not exist!"
+  exit 1
+fi
+
+# Source function library.
+if [ -f /etc/init.d/functions ] ; then
+  . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+  . /etc/rc.d/init.d/functions
+else
+  exit 1
+fi
+
+if [ -f /etc/sysconfig/tecs-tc ]; then
+   . /etc/sysconfig/tecs-tc
+fi
+
+RETVAL=0
+SERVICE=tecs-tc
+
+# 根据key来获取配置文件的值
+get_config() {
+    local file=$1
+    local key=$2
+
+    [ ! -e $file ] && return
+    #忽略井号开头的注释行以及空行之后再grep过滤"key="所在的行
+    local line=`sed '/^[[:space:]]*#/d' $file | sed /^[[:space:]]*$/d | grep "^[[:space:]]*$key[[:space:]]*="`
+    if [ -z "$line" ]; then
+        config_value=""
+    else
+        #将第一个=号替换为空格，再删除第一个单词得到value
+        config_value=`echo $line | sed 's/=/ /' | sed -e 's/^\w*\ *//'`
+    fi
+}
+
+generate_ssh_key() {
+    local private_key_file=~/.ssh/id_dsa
+    local public_key_file=~/.ssh/id_dsa.pub
+    #ssh私钥或公钥有一个不存在就要重新产生一对
+    if [ ! -e $private_key_file ] || [ ! -e $public_key_file ]; then
+        rm -rf $public_key_file
+        rm -rf $private_key_file
+        ssh-keygen -t dsa -f $private_key_file -q -P '' -b 1024
+        [ $? == 0 ] && echo "ssh-keygen -t dsa succssfully!"
+    fi
+}
+
+############################################################################
+# 增加service脚本必读！！！
+# tecs service prepare函数中调用的脚本或函数必须遵守下面的规范：
+# 1. 可以频繁快速重复运行，因为guard要周期性地通过service xxx start来保证服务可用性！
+# 2. 每做一个准备动作之前，都要首先判断已经成功准备过了，不要重复劳动，要快进快出！
+# 3. 脚本中不能有交互性动作！！！ 如果准备失败了，需要返回约定好的错误码给guard:
+#     exit 150 : 本次服务启动失败，需要把整个物理机重启才行
+# 4. 宝贵的失败信息需要用logger命令记录到系统日志以备后用，例如: logger "prepare disk failed!!!"
+# 5. 如果准备动作比较多，请写成独立的脚本放在/opt/tecs/xx/scripts/目录下，在这里调用即可
+# 6. 独立脚本中的代码也要遵守上述1~4条规范。
+############################################################################
+prepare() {
+    echo "$SERVICE is starting ..."
+    generate_ssh_key
+#请在这里调用服务启动前的准备动作脚本
+}
+
+start() {
+    local base line process 
+    prepare
+    RETVAL=$?
+    [ 0 != $RETVAL ] && exit $RETVAL
+    
+    while read line
+    do
+        [ "${line:0:1}" == "#" ] && continue
+        process=`echo $line |  awk -F' ' '{print $1}'`
+        [ -z "$process" ] && continue
+        [ `echo "$line" | grep -c -w '\-d'` == "0" ] && line="$line -d"        
+        base=${process##*/}
+        echo -n "Starting $base: "
+        daemon $line
+        RETVAL=$?
+        echo
+    done < $TC_CONFIG_FILE
+    
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SERVICE
+}
+
+stop() {
+    local base line process
+    while read line
+    do
+        [ "${line:0:1}" == "#" ] && continue
+        process=`echo $line |  awk -F' ' '{print $1}'`
+        [ -z "$process" ] && continue
+        base=${process##*/}
+        echo -n "Stopping $base: "
+        killproc $base
+        echo
+    done < $TC_CONFIG_FILE
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$SERVICE
+}
+
+_status() {
+    local base line process
+    while read line
+    do
+        [ "${line:0:1}" == "#" ] && continue
+        process=`echo $line |  awk -F' ' '{print $1}'`
+        [ -z "$process" ] && continue
+        base=${process##*/}
+        status $base
+    done < $TC_CONFIG_FILE
+}
+
+restart() {
+    stop
+    start
+}
+
+upgrade_db() {
+    local command=$INSTALL_DIR/scripts/install_pgdb.sh
+    local file=$INSTALL_DIR/etc/tecs.conf
+    local baseline=$INSTALL_DIR/etc/tc_baseline.sql
+    local view=$INSTALL_DIR/etc/tc_view.sql
+    local updates=$INSTALL_DIR/etc/updates/
+    
+    get_config $file "db_server_url"
+    local db_server=$config_value
+    
+    get_config $file "db_name"
+    [ -z "$config_value" ] && get_config $file "application"
+    local db_name=$config_value
+    
+    get_config $file "db_user"
+    local db_user=$config_value
+    
+    get_config $file "db_passwd"
+    local db_passwd=$config_value
+    
+    if [ -z "$db_server" ] ||  [ -z "$db_name" ] || [ -z "$db_user" ]; then
+        echo "no database config! Please config in $file first!"
+        return -1
+    fi
+    
+    auto="-i"
+    if [[ $INTERACTIVE == 0 ]]; then
+        auto=""
+    fi
+    $command $auto -s "$db_server" -d "$db_name" -u "$db_user" -p "$db_passwd" -t $baseline -v $view  -f $updates 
+    return $?
+}
+
+upgrade_db_auto()
+{
+    INTERACTIVE=0
+    upgrade_db || return $?
+    INTERACTIVE=1
+} 
+
+vacuum_db()
+{
+    local file=$INSTALL_DIR/etc/tecs.conf
+ 
+    get_config $file "db_server_url"
+    local db_server=$config_value
+
+    get_config $file "db_name"
+    [ -z "$config_value" ] && get_config $file "application"
+    local db_name=$config_value
+
+    get_config $file "db_user"
+    local db_user=$config_value
+
+    get_config $file "db_passwd"
+    local db_passwd=$config_value
+    
+    . /usr/local/pgsql/postgresql.env 
+    export PGPASSWORD=$db_passwd
+    vacuumdb -h $db_server -d $db_name -U $db_user -f -v
+}
+
+
+# See how we were called.
+case "$1" in
+    start|stop|restart|upgrade_db|upgrade_db_auto|vacuum_db)
+        $1
+        RETVAL=$?
+        ;;
+    status)
+        _status
+        RETVAL=$?
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|upgrade_db|vacuum_db}"
+	exit 1
+        ;;
+esac
+exit $RETVAL

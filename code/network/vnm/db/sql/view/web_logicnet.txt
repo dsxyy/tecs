@@ -1,0 +1,31 @@
+ 
+ 
+ CREATE OR REPLACE VIEW web_view_logicnet AS 
+ SELECT a.name, a.uuid, a.vm_pg_id, a.ip_bootprotocolmode , a.description,  
+    ( SELECT count(*) FROM logic_network_ip_range b WHERE a.id = b.logic_network_id ) AS iprange_count,
+    ( SELECT name From port_group c WHERE c.id=a.vm_pg_id ) AS vm_pg_name, 
+    ( SELECT uuid From port_group c WHERE c.id=a.vm_pg_id ) AS vm_pg_uuid
+    FROM logic_network a;
+
+ CREATE OR REPLACE VIEW web_view_logicnet_iprange AS     
+SELECT 
+d.name AS netplane_name,
+d.uuid AS netplane_uuid,
+a.name AS logic_network_name, 
+a.uuid AS logic_network_uuid, 
+b.ip_begin, 
+b.ip_end, 
+b.mask
+FROM 
+logic_network a, 
+logic_network_ip_range b,
+port_group c, 
+netplane d
+WHERE 
+a.id = b.logic_network_id AND 
+a.vm_pg_id = c.id AND 
+c.netplane_id = d.id 
+ORDER BY 
+  netplane_uuid, ip_begin; 
+	
+	

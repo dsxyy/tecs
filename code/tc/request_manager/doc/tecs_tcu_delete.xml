@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_tcu_delete.xml">
+	<interface>tecs.tcu.delete</interface>
+	<shortdesc lang_cn="删除tcu配置" lang_en="Delete tcu configuration."/>
+	<description lang_cn="删除tcu配置。" lang_en="Delete tcu configuration."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="cpu_info_id" type="int64" lang_cn="CPU型号信息的ID，如果不为-1，则上面的cpu_info必须为空字符串。" lang_en="ID of cpu information, if the cpu_info_id is not -1, then the cpu_info must be empty string."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered."/>
+				<enum name="1003" lang_cn="错误，集群未注册到TC中" lang_en="Error, cluster have not registered into the Tecs Center."/>
+				<enum name="1025" lang_cn="错误，该cpu info id不存在" lang_en="Error, cpu_info_id is not exist."/>
+				<enum name="1026" lang_cn="错误，cpu info和cpu info id字段均有效" lang_en="Error, cpu_info and cpu_info_id are both valid."/>
+				<enum name="1028" lang_cn="失败，删除tcu配置失败" lang_en="Failed, delete tcu config failed."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.tcu.set" href="tecs_tcu_set.xml"/>
+		<xref name="tecs.tcu.query" href="tecs_tcu_query.xml"/>
+	</reference>
+</method>

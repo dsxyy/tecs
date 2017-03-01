@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_historyalarm_query.xml">
+	<interface>tecs.historyalarm.query</interface>
+	<shortdesc lang_cn="查询历史告警信息" lang_en="Query history alarm information."/>
+	<description lang_cn="查询历史告警信息。如果查询结果返回失败，则返回失败原因。如果查询成功，则返回所有历史告警信息。" lang_en="Query history alarm information. If the query fail, it will return the fault reason. If the query succeed, it will return all of the history alarm."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<parameter name="alarm_number" type="int" lang_cn="当前告警个数。" lang_en="The number of the current alarm."/>
+			<array repeat="yes">
+				<struct>
+					<parameter name="alarm_code" type="unsigned int" lang_cn="告警码" lang_en="Alarm code."/>
+                    <parameter name="alarm_time" type="string" lang_cn="告警时间" lang_en="Alarm time."/>
+                    <parameter name="restore_time" type="string" lang_cn="告警恢复时间" lang_en="Restore time."/>
+                    <parameter name="restore_type" type="int" lang_cn="恢复类型" lang_en="Restore type."/>
+                    <parameter name="alarm_address" type="string" lang_cn="告警上报位置" lang_en="Alarm report location."/>
+                    <parameter name="alarm_tc_name" type="string" lang_cn="告警发生位置TC名称" lang_en="TC name of the alarm occur location ."/>
+                    <parameter name="alarm_cc_name" type="string" lang_cn="告警发生位置CC名称" lang_en="CC name of the alarm occur location ."/>
+                    <parameter name="alarm_hc_name" type="string" lang_cn="告警发生位置HC名称" lang_en="HC name of the alarm occur location ."/>
+                    <parameter name="alarm_location" type="string" lang_cn="告警发生位置描述信息" lang_en="Description of the alarm occur location ."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码:" lang_en="Error code:">
+				<enum name="1" lang_cn="当前告警数据表创建失败" lang_en="Current alarm database failed to create"/>
+				<enum name="2" lang_cn="查询数据库失败" lang_en="Failed to query database"/>
+			</parameter>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.currentalarm.query" href="tecs_currentalarm_query.xml"/>
+	</reference>
+</method>

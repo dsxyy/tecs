@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_version_query.xml">
+	<interface>tecs.version.query</interface>
+	<shortdesc lang_cn="版本查询" lang_en="Version query"/>
+	<description lang_cn="查询安装的版本与yum仓库中可更新的版本" lang_en="Query installed pakcage version and upgraded package version avaiable in yum repository"/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<struct name="ApiVersionQueryReq">
+		    <parameter name="node_type" type="string" lang_cn="节点类型：tc、cc或hc" lang_en="Type of the node:  tc, cc, hc"/>
+		    <parameter name="cloud_name" type="string" lang_cn="云管理名" lang_en="The tecs cloud name"/>
+		    <parameter name="cloud_ip" type="string" lang_cn="云管理ip" lang_en="The tecs cloud ip"/>
+		    <parameter name="cluster_name" type="string" lang_cn="集群名" lang_en="The cluster name requested"/>
+		    <parameter name="cluster_ip" type="string" lang_cn="集群ip" lang_en="The cluster ip requested"/>
+		    <parameter name="storage_adapter_name" type="string" lang_cn="存储适配器名" lang_en="The storage adapter name requested"/>
+		    <parameter name="storage_adapter_ip" type="string" lang_cn="存储适配器ip" lang_en="The storage adapter ip requested"/>
+		    <parameter name="host_name" type="string" lang_cn="主机名" lang_en="The host name requested"/>
+		    <parameter name="host_ip" type="string" lang_cn="主机名ip" lang_en="The host ip requested"/>
+		</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Wether the operation successfully sent to to requested hosts, 0 represents all right, -1 represents error"/>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息,成功为空" lang_en="Appending error information，is null"/>				
+			<struct name="node_version">			
+				<parameter name="node_type" type="string" lang_cn="节点类型：tc、cc或hc" lang_en="Type of the host:  tc, cc, hc"/>
+				<parameter name="cloud_name" type="string" lang_cn="云管理名" lang_en="The tecs cloud name"/>
+				<parameter name="cloud_ip" type="string" lang_cn="云管理ip" lang_en="The tecs cloud ip"/>
+				<parameter name="cluster_name" type="string" lang_cn="集群名" lang_en="The cluster name requested"/>
+				<parameter name="cluster_ip" type="string" lang_cn="集群ip" lang_en="The cluster ip requested"/>
+				<parameter name="storage_adapter_name" type="string" lang_cn="存储适配器名" lang_en="The storage adapter name requested"/>
+				<parameter name="storage_adapter_ip" type="string" lang_cn="存储适配器ip" lang_en="The storage adapter ip requested"/>
+				<parameter name="host_name" type="string" lang_cn="主机名" lang_en="The host name requested"/>
+				<parameter name="host_ip" type="string" lang_cn="主机名ip" lang_en="The host ip requested"/>
+				<array repeat="yes">
+					<struct name="version_info">
+						<parameter name="package_name" type="string" lang_cn="包的名字" lang_en=""/>
+						<parameter name="repo_version" type="string" lang_cn="在yum仓库中的版本号" lang_en=""/>
+						<parameter name="local_version" type="string" lang_cn="本地版本号" lang_en=""/>
+					</struct>
+				</array>
+			</struct>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1" lang_cn="失败"  lang_en="Failed, unknown error "/>
+				<enum name="3" lang_cn="失败，应答超时"  lang_en="Failed, acked timeout"/>
+				<enum name="6" lang_cn="授权失败" lang_en="Failed to authorize usr's operation"/>
+				<enum name="18" lang_cn="失败，无效的参数" lang_en="Failed, invalid argument"/>
+				<enum name="9001" lang_cn="失败，取消本次操作" lang_en="Failed, cancel this operation"/>
+				<enum name="9002" lang_cn="失败，仓库中没有可升级的包" lang_en="Failed, no upgraded package"/>
+				<enum name="9003" lang_cn="失败，包没有安装，不能升级" lang_en="Failed, no intalled package"/>	
+				<enum name="9004" lang_cn="失败，本次操作不能启动" lang_en="Failed, can't start this operation"/>
+				<enum name="9005" lang_cn="失败，操作有异常" lang_en="Failed, operation is abnormal"/>						
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息"  lang_en="Appending error information"/>
+			<array lang_cn="空array" lang_en="Empty array"/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS"/>
+	</privilege>
+	<reference>
+		<xref name="tecs.version.get_repo_addr" href="tecs_version_get_repository_address.xml"/>
+		<xref name="tecs.version.set_repo_addr" href="tecs_version_set_repository_address.xml"/>
+		<xref name="tecs.version.update" href="tecs_version_update.xml"/>
+		<xref name="tecs.version.cancel" href="tecs_version_cancel.xml"/>
+	</reference>
+</method>

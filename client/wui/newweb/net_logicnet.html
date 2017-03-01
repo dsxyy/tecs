@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TECS</title>
+</head>
+
+<body>
+    <div style="display:none;"><ul class="breadcrumb"></ul></div> 
+    <ul class="nav nav-tabs" id="tabsLogicnet">
+        <li class="active"><a href="#logicnetInfo" id="logicnetInfoNav"></a></li>
+        <li><a href="#logicnetList" id="logicnetListNav"></a></li>
+    </ul> 
+    <div class="tab-content">
+        <div class="tab-pane active" id="logicnetInfo"> 
+            <div class="row-fluid"> 
+                <div class="span6"> 
+                    <div>
+                        <h3 id="logicnet_intro1" style="color:#555555;"></h3>
+                        <br />
+                        <h3 id="logicnet_intro2" style="color:#555555;"></h3>
+                    </div>
+                    <hr />
+                    <div>
+                        <h3 id="logicnet_wizard" style="color:#555555;"></h3>
+                        <h4><a href="#" id="create_logicnet_link"></a></h4>
+                    </div>
+                </div>
+                <div class="span6" align="center"> 
+                    <img src="img/logicnet.png"></img>
+                </div>  
+            </div>              
+        </div>
+        <div class="tab-pane" id="logicnetList"> 
+            <div class="row-fluid">
+                <div class="span4" style="table-layout:fixed;word-break:break-all">
+                    <select data-placeholder="" id="selectPortgroup" multiple data-rel="chosen"></select>
+                </div>
+                <div class="span8" align="right"> 
+                    <button class="btn"><i class="icon-plus"></i><span id="logicnetAdd"></span></button> 
+                    <button class="btn"><i class="icon-trash"></i><span id="logicnetDel"></span></button> 
+                    <button class="btn"><i class="icon-refresh"></i><span id="logicnetRefresh"></span></button> 
+                </div> 
+            </div>
+            <table id="logicnet_list" class="table table-striped table-bordered table-condensed"> 
+                <thead> 
+                	<tr> 
+                        <th align="left" width="25px;"><INPUT id="logicnetSelecltAll" type="checkbox" /></th> 
+                        <th align="left" width="75px;"><span id="logicnet_t1"></span></th> 
+                        <th align="left" width="75px;"><span id="logicnet_t2"></span></th> 
+                        <th align="left" width="50px;"><span id="logicnet_t3"></span></th> 
+                        <th align="left" width="75px;"><span id="logicnet_t4"></span></th> 
+                        <th align="left" width="250px;"><span id="logicnet_t5"></span></th> 
+                        <th align="left" width="50px;"></th> 
+                    </tr> 
+                </thead> 
+                <tbody style="word-wrap:break-word;word-break:break-all;"> 
+                </tbody> 
+            </table> 
+            <div id="logicnetlist_last_refresh_time"></div> 
+        </div>
+    </div>
+
+	<!-- external javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/tecs/net_logicnet.js"></script>    
+</body>
+</html>

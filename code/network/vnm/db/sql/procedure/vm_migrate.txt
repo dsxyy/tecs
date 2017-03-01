@@ -1,0 +1,284 @@
+
+
+
+CREATE OR REPLACE FUNCTION pf_net_check_add_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  uplinkpgid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+			  
+  -- vm_id
+  SELECT count(*) INTO is_exist FROM vm_migrate WHERE vm_id = in_vm_id;
+  IF is_exist > 0 THEN 
+      result := RTN_ITEM_CONFLICT;
+      return result;
+  END IF;
+  
+  -- vm_id in_src_hostname 是否真的部署在hc上
+  SELECT count(*) INTO is_exist FROM vm WHERE vm_id = in_vm_id AND cluster_name = in_src_clustername AND host_name = in_src_hostname;
+  IF is_exist <= 0 THEN  
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+                  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer) OWNER TO tecs;
+		   
+
+-- vm migrate add 添加 
+CREATE OR REPLACE FUNCTION pf_net_add_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  vnaid numeric(19,0);
+  loopbackid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  result.ret := pf_net_check_add_vm_migrate(in_vm_id,in_src_clustername,in_src_hostname,in_dst_clustername,in_dst_hostname,in_state);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- 不支持重复添加 
+  -- insert item 
+  --result.id := nextval('serial_wildcast_task_loopback');
+  --uplinkportid ：= nextval('serial_kernel_cfg_report_bond');
+  result.id = in_vm_id;
+  --result.uuid := in_uuid;
+  BEGIN 
+      INSERT INTO vm_migrate(vm_id,src_clustername,src_hostname,dst_clustername,dst_hostname, state) 
+          values(in_vm_id,in_src_clustername,in_src_hostname,in_dst_clustername,in_dst_hostname,in_state );
+            
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer)   OWNER TO tecs;
+
+		   
+CREATE OR REPLACE FUNCTION pf_net_check_modify_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  uplinkpgid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+			  
+  -- vm_id
+  SELECT count(*) INTO is_exist FROM vm_migrate WHERE vm_id = in_vm_id;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+                    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_modify_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer) OWNER TO tecs;
+		   
+
+-- vm migrate modify 添加 
+CREATE OR REPLACE FUNCTION pf_net_modify_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  vnaid numeric(19,0);
+  loopbackid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  result.ret := pf_net_check_modify_vm_migrate(in_vm_id,in_src_clustername,in_src_hostname,in_dst_clustername,in_dst_hostname,in_state);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- 不支持重复添加 
+  -- insert item 
+  --result.id := nextval('serial_wildcast_task_loopback');
+  --uplinkportid ：= nextval('serial_kernel_cfg_report_bond');
+  result.id = in_vm_id;
+  --result.uuid := in_uuid;
+  BEGIN 
+      UPDATE vm_migrate SET src_clustername = in_src_clustername, src_hostname = in_src_hostname,
+	      dst_clustername = in_dst_clustername, dst_hostname = in_dst_hostname, state = in_state
+	  WHERE vm_id = in_vm_id;
+            
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_vm_migrate( in_vm_id numeric(19,0), in_src_clustername character varying, in_src_hostname character varying, 
+           in_dst_clustername character varying, in_dst_hostname character varying, in_state integer)   OWNER TO tecs;
+		   
+
+CREATE OR REPLACE FUNCTION pf_net_del_vm_migrate( in_vm_id numeric(19,0))
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  -- vm_id
+  SELECT count(*) INTO is_exist FROM vm_migrate WHERE vm_id = in_vm_id;
+  IF is_exist <= 0 THEN 
+      result.ret  := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM vm_migrate WHERE vm_id = in_vm_id;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+  
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_vm_migrate( in_vm_id numeric(19,0))   OWNER TO tecs;
+
+
+-- 查询接口 
+CREATE OR REPLACE FUNCTION pf_net_query_vm_migrate(in_vm_id numeric(19,0))
+  RETURNS t_vm_migrate_query AS
+$BODY$
+DECLARE
+    result t_vm_migrate_query;
+    is_exist integer; 
+    taskid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    result.ret := 0;
+    
+    -- vna uuid 
+    SELECT count(*) INTO is_exist FROM vm_migrate WHERE vm_id = in_vm_id;
+    IF is_exist <= 0 THEN 
+       result.ret := RTN_ITEM_NO_EXIST; 
+       return result;
+    END IF;  
+      	
+    SELECT vm_id INTO result.vm_id FROM vm_migrate WHERE vm_id = in_vm_id;
+	SELECT src_clustername INTO result.src_clustername FROM vm_migrate WHERE vm_id = in_vm_id;
+	SELECT src_hostname INTO result.src_hostname FROM vm_migrate WHERE vm_id = in_vm_id;
+	SELECT dst_clustername INTO result.dst_clustername FROM vm_migrate WHERE vm_id = in_vm_id;
+	SELECT dst_hostname INTO result.dst_hostname FROM vm_migrate WHERE vm_id = in_vm_id;
+	SELECT state INTO result.state FROM vm_migrate WHERE vm_id = in_vm_id;
+		
+    return result;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vm_migrate(in_vm_id numeric(19,0)) OWNER TO tecs;		   
+				   
+
+CREATE OR REPLACE FUNCTION pf_net_query_vm_migrate_summary()
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    
+	OPEN ref FOR 
+	SELECT 
+	    vm_id,src_clustername,src_hostname,dst_clustername,dst_hostname,state
+	FROM vm_migrate ;
+        
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vm_migrate_summary() OWNER TO tecs;
+
+		

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_sa_clustermap.xml">
+	<interface>tecs.sa.clustermap</interface>
+	<shortdesc lang_cn="插入集群和磁阵的关系" lang_en="Insert the relationship between cluster and sa"/>
+	<description lang_cn="插入集群和磁阵的关系，集群只能使用其相对应的磁阵。" lang_en="Insert the relationship between cluster and sa,cluster can only use its corresponding
+sa"/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="sid" type="int64" lang_cn="需要维护的磁阵编号,这个编号必须是已经存在的磁阵的编号。" lang_en="the id of the sa, the id that stand for sa   must exist."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>	
+		<parameter name="is_add" type="boolean" lang_cn="是否增加磁阵对应的集群.反之则删除" lang_en="Is add the cluster for this sa .Inversely it will be deleted. "/>	
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="13001" lang_cn="失败，SC未应答" lang_en="Failed, sc is not answered"/>
+				<enum name="13004" lang_cn="错误，删除SC数据库失败" lang_en="Error, delete sc db fail"/>
+				<enum name="13005" lang_cn="错误，插入SC数据库失败" lang_en="Error, insert sc db fail"/>
+				<enum name="13006" lang_cn="失败，对应关系已经存在" lang_en="Failed, the relationship between cluster and sa  already exist."/>
+				<enum name="13007" lang_cn="失败，对应关系不存在"   lang_en="Failed, the relationship between cluster and sa  not exist."/>				
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.sa.enable" href="tecs_sa_enable.xml"/>		
+	</reference>
+</method>

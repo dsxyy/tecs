@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_system_runtime_query.xml">
+	<interface>tecs.system.runtime.query</interface>
+	<shortdesc lang_cn="查询系统运行时状态信息" lang_en="Query system runtime info"/>
+	<description lang_cn="仅管理员有权限调用本接口，用于查询系统运行时信息，如果成功，则第一个参数返回0，第二个为系统系统数据结构；如果失败，则第一个参数返回非0，第二个为错误信息。" lang_en="Query system runtime info. If operation success, the first renturn parameter is 0, second is system runtime info. If failed, the first is not 0, second is appending error information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <parameter name="type" type="string" lang_cn="待查询目标节点类型,不能为空。计算节点caculate；存储节点storage；网络节点network。" lang_en="target to query."/>
+        <parameter name="target" type="string" lang_cn="待查询目标节点信息。本参数为空字符串时表示查询计算节点的tc或存储节点的sc或网络节点的vnm；为单个字符串，且不带有任何逗号时，表示查询指定名称的计算节点的cc或存储节点的sa或网络节点vnm下的某个vna，例如&apos;mycluster1&apos;表示查询名为mycluster1的cc节点信息；如果是带有一个逗号的字符串，表示查询指定计算节点cc下属的某个hc，例如&apos;mycluster1,myhc2&apos;表示查询集群mycluster1下属的名为myhc2的主机节点信息。除此以外其它格式皆为非法参数。" lang_en="target to query."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+				<struct name="ApiAppRuntimeInfo">
+					<parameter name="name" type="string" lang_cn="查询的节点application名称" lang_en="application name of node to query"/>
+					<parameter name="collect_time" type="time_t" lang_cn="本次查询发生的时间" lang_en="query time"/>
+					<parameter name="runtime_state" type="int" lang_cn="本节点的运行时状态" lang_en="runtime state of application">
+						<enum name="0" lang_cn="系统运行正常" lang_en="system is running normally"/>
+						<enum name="1" lang_cn="系统有需要用户注意查看的信息" lang_en="system need to be noticed"/>
+						<enum name="2" lang_cn="系统可能有问题了，警告用户注意" lang_en="system has warnning"/>
+                        <enum name="3" lang_cn="系统已经发生异常现象，运行不正常了" lang_en="system has error"/>
+					</parameter>
+                    <array name="procinfo" repeat="yes">
+					<struct name="ApiProcRuntimeInfo">
+                        <parameter name="name" type="string" lang_cn="查询的进程名称" lang_en="process name"/>
+                        <parameter name="exist" type="bool" lang_cn="是否查询到了该进程的信息，如果为否，后面的字段都不用看了" lang_en="whether successfully to query this process"/>
+                        <parameter name="pid" type="int" lang_cn="该进程的运行时pid" lang_en="pid of this process"/>
+                        <parameter name="running_seconds" type="int" lang_cn="该进程从启动以来已经运行了多少秒" lang_en="running seconds after start"/>
+                        <parameter name="runtime_state" type="int" lang_cn="本进程的运行时状态" lang_en="runtime state of this process">
+                            <enum name="0" lang_cn="系统运行正常" lang_en="system is running normally"/>
+                            <enum name="1" lang_cn="系统有需要用户注意查看的信息" lang_en="system need to be noticed"/>
+                            <enum name="2" lang_cn="系统可能有问题了，警告用户注意" lang_en="system has warnning"/>
+                            <enum name="3" lang_cn="系统已经发生异常现象，运行不正常了" lang_en="system has error"/>
+                        </parameter>
+                        <parameter name="exceptions" type="int" lang_cn="该进程从启动以来已经发生过多少次异常" lang_en="exceptions after start"/>
+                        <array name="asserts" repeat="yes">
+                        <parameter name="assert" type="string" lang_cn="本进程发生过的断言记录" lang_en="assert records of this process"/>
+                        </array>
+                        <array name="muinfo" repeat="yes">
+                        <struct name="ApiMuRuntimeInfo">
+                        <parameter name="name" type="string" lang_cn="查询到的关键消息单元名称" lang_en="key mu name"/>
+                        <parameter name="exist" type="bool" lang_cn="该消息单元是否存在，如果为否，用户需要关注一下age字段，时间还短的话可以认为是正常现象" lang_en="is this mu exist"/>
+                        <parameter name="age" type="long long" lang_cn="该消息单元自从登记为关键消息单元之后，已经经过了多少毫秒" lang_en="mili seconds from key mu is registered"/>
+                        <parameter name="runtime_state" type="int" lang_cn="该消息单元的运行时状态" lang_en="runtime state of this mu">
+                            <enum name="0" lang_cn="系统运行正常" lang_en="system is running normally"/>
+                            <enum name="1" lang_cn="系统有需要用户注意查看的信息" lang_en="system need to be noticed"/>
+                            <enum name="2" lang_cn="系统可能有问题了，警告用户注意" lang_en="system has warnning"/>
+                            <enum name="3" lang_cn="系统已经发生异常现象，运行不正常了" lang_en="system has error"/>
+                        </parameter>
+                        <parameter name="state" type="int" lang_cn="该消息单元的上电、工作状态" lang_en="power on or work state of this mu">
+                            <enum name="1" lang_cn="消息单元正在初始化" lang_en="S_Startup"/>
+                            <enum name="2" lang_cn="消息单元处于正常工作态" lang_en="S_Work"/>
+                            <enum name="3" lang_cn="消息单元处于退出中状态" lang_en="S_Exit"/>
+                        </parameter>
+                        <parameter name="pid" type="int" lang_cn="该消息单元的运行时线程pid" lang_en="pid of this mu thread"/>
+                        <parameter name="push_count" type="long long" lang_cn="该消息单元的队列里面已经收到了多少条消息" lang_en="the count of messages pushed into the queue of this mu"/>
+                        <parameter name="pop_count" type="long long" lang_cn="该消息单元已经处理了多少条消息" lang_en="the count of messages poped out from the queue of this mu"/>
+                        <parameter name="queued_count" type="int" lang_cn="该消息单元的队列中积压了多少条消息" lang_en="the count of messages in the queue"/>
+                        <parameter name="timer_count" type="int" lang_cn="该消息单元申请的定时器控制块数量" lang_en="the count of timer blocks applied by this mu"/>
+                        <parameter name="last_message" type="int" lang_cn="该消息单元最后一次处理的消息id" lang_en="the last message id processed by this mu"/>
+                        </struct>
+                        </array>
+                    </struct>
+                    </array>
+				</struct>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed.">
+    			<enum name="6" lang_cn="授权失败" lang_en="authorize failed, no privilege."/>
+                <enum name="3" lang_cn="查询超时" lang_en="operation time out."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+	</privilege>
+	<reference>
+	</reference>
+</method>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_version_install.xml">
+	<interface>tecs.version.install</interface>
+	<shortdesc lang_cn="版本安装" lang_en="Version install"/>
+	<description lang_cn="安装新软件包" lang_en="Install new software packages"/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="_opt_type" type="string" lang_cn="请求的操作类型：安装" lang_en="Type of the operation requested: install"/>
+        <parameter name="_targe_type" type="string" lang_cn="请求的主机类型：tc, cc, hc 或repo" lang_en="Type of the host:  tc, cc, hc or repo"/>
+		<parameter name="_targe_position" type="string" lang_cn="当请求主机是hc时，表示hc归属的cc主机名" lang_en="In case that the hc hosts are requested, this item represents the cc host name that those hc(s) belongs to"/>
+		<parameter name="_targe_name" type="string" lang_cn="请求的主机名" lang_en="The host name requested"/>
+		<parameter name="_package_name" type="string" lang_cn="请求操作的包名称" lang_en="The package name requested"/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="_ack_result" type="int" lang_cn="命令下发是否有错" lang_en="Wether the operation successfully sent to to requested hosts, 0 represents all right, -1 represents error"/>
+			<parameter name="_ack_msg" type="string" lang_cn="命令下发状态信息" lang_en="The information of the sending the operation to requested hosts"/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2" lang_cn="失败，未知错误" lang_en="Failed, unknown error "/>
+				<enum name="3" lang_cn="失败，应答超时" lang_en="Failed, acked timeout"/>
+				<enum name="18" lang_cn="失败，无效的参数" lang_en="Failed, invalid argument"/>
+				<enum name="6" lang_cn="授权失败" lang_en="Failed to authorize usr's operation"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息" lang_en="Appending error information"/>
+			<array lang_cn="空array" lang_en="Empty array"/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS"/>
+	</privilege>
+	<reference>
+		<xref name="tecs.version.uninstall" href="tecs_version_uninstall.xml"/>
+		<xref name="tecs.version.update" href="tecs_version_update.xml"/>
+		<xref name="tecs.version.query" href="tecs_version_query.xml"/>
+		<xref name="tecs.version.getresult" href="tecs_version_getresult.xml"/>
+	</reference>
+</method>

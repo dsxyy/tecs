@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="dita_build_base"  basedir=".">
+       
+    <property environment="env"/>
+    <!-- dita.ot.dir 需要指向 DITA open toolkit 的根目录.正常启动OT的命令行环境后，可以从环境变量获取到  -->
+    <property name="dita.ot.dir" value="${env.DITA_DIR}"/>
+        
+    <!-- 确定主DITA MAP 文件，注意扩展名 -->
+    <property name="doc.target.name" value="${MAIN.MAP.NAME}"/>
+  
+		<!-- args.input 指定所需要转换的ditamap文件 -->
+     <property name="args.input" value="${doc.output.dir}/${MAIN.MAP.NAME}.ditamap"/>
+     
+    
+    <!-- if file is a relative file name, the file name will be resolved 
+       relative to the importing file -->
+    <import file="${dita.ot.dir}/integrator.xml"/>
+
+
+
+    <target name="all"  description="build all output">
+        <echo message="创建 '${doc.target.name}' 的所有类型的输出，位置在 '${doc.output.dir}' "/>
+        <antcall target="pdf"/>	
+    </target>
+
+    
+   <target name="clean" description="删除所有的编译输出结果">
+		  <delete dir="${doc.output.dir}"/>
+	</target>
+
+
+   <target name="html_style">
+        <!-- args.css 指定定制的CSS文件名 -->
+        <property name="args.css"  value="${dita.ot.dir}/ppdn/html/ppdn_style.css"/>
+        <property name="args.copycss"  value="yes"/>
+        <property name="args.csspath"  value="html_resources"/>
+
+        <!-- args.hdf 会被拷贝进入HTML头部的<head>小结区域 -->
+        <property name="args.hdf" value="${dita.ot.dir}/ppdn/html/ppdn_head.html"/>
+        <!-- args.hdr 会被拷贝进入HTML页面的头部显示区域 -->
+        <property name="args.hdr" value="${dita.ot.dir}/ppdn/html/ppdn_header.html"/>
+        <!-- args.ftr 会被拷贝进入HTML页面底部的显示区域 -->
+        <property name="args.ftr" value="${dita.ot.dir}/ppdn/html/ppdn_footer.html"/>
+   </target>  
+
+
+   <target name="html" depends="integrate,html_style">
+         
+        <!-- output.dir 指定转换后结果存放的文件夹 -->
+        <property name="output.dir" value="${doc.output.dir}/${doc.target.name}_html"/>
+        <!-- transtype 指定转换类型 -->
+        <property name="transtype"  value="xhtml"/>
+        
+        <!-- TOC的文件名 -->
+        <property name="args.xhtml.toc"  value="toc"/>
+        
+        <echo message="创建 '${doc.target.name}' 的HTML输出，位置在 '${output.dir}'"/>
+
+        <ant antfile="${dita.ot.dir}/build.xml" target="init" />
+        
+        <!-- 拷贝左边的树状列表所需要的资源 -->
+        <copy todir="${output.dir}" overwrite="true">
+            <fileset dir="${dita.ot.dir}/ppdn/html/frame"/>
+        </copy>
+        
+        <!-- 把主文件的标题替换为正式标题，缺省页面换为指定页面  -->
+        <replace dir="${output.dir}" encoding="UTF-8">
+              <include name="index.html"/>
+              <replacefilter 
+                    token="#HTML.FRAME.NAME#" 
+                    value="${HTML.FRAME.NAME}"/>
+               <replacefilter 
+                    token="#HTML.STARTPAGE.FILENAME#" 
+                    value="${HTML.STARTPAGE.FILENAME}"/>
+        </replace>
+         <replace dir="${output.dir}" encoding="UTF-8">
+              <include name="banner.shtml"/>
+              <replacefilter 
+                    token="#HTML.FRAME.NAME#" 
+                    value="${HTML.FRAME.NAME}"/>
+        </replace>
+		
+		   <antcall target="clean_control_files"/>
+        
+       <!-- 仅在windows下对html进行全文索引 -->
+       <antcall target="fulltext_html_index"/>          
+       
+        
+    </target>
+  
+  
+    <target name="chm" depends="integrate,html_style">
+    
+        <!-- output.dir 指定转换后结果存放的文件夹 -->
+        <property name="output.dir" value="${doc.output.dir}/temp_${doc.target.name}_chm"/>
+        
+        <!-- transtype 指定转换类型 -->
+        <property name="transtype"  value="htmlhelp"/>
+        
+        <echo message="创建 '${doc.target.name}' 的CHM输出，位置在 '${output.dir}' "/>
+        
+        <ant antfile="${dita.ot.dir}/build.xml" target="init" />
+        
+        <copy file="${output.dir}/${MAIN.MAP.NAME}.chm" todir="${doc.output.dir}"/>
+         
+        <antcall target="clean_control_files"/>
+
+  </target>
+  
+  
+  <target name="pdf" depends="integrate">
+  
+        <!-- output.dir 指定转换后结果存放的文件夹 -->
+        <property name="output.dir" value="${doc.output.dir}/temp_${doc.target.name}_pdf"/>
+        <!-- transtype 指定转换类型 -->
+        <property name="transtype"  value="pdf"/>		
+                
+        <echo message="创建 '${doc.target.name}' 的PDF输出，位置在 '${output.dir}' "/>
+
+        <ant antfile="${dita.ot.dir}/build.xml" target="init" />
+        
+        <copy file="${output.dir}/${MAIN.MAP.NAME}.pdf" todir="${doc.output.dir}"/>
+        
+        <antcall target="clean_control_files"/>
+
+  </target>
+  
+  
+ 
+  
+  
+  <!-- 调用indexer.net进行全文索引(仅在windows下有效) -->
+  <!-- FULLTEXT_INDEXER_DIR 是在DITA-OT的dita-ant脚本中设置的标记环境变量 -->
+  <target name="fulltext_html_index" if="env.FULLTEXT_INDEXER_DIR">
+      <echo message="使用indexer.net进行HTML文档的全文索引(windows有效)..."/>
+      <exec executable="${env.FULLTEXT_INDEXER_DIR}/indexer.exe">
+          <arg value="${output.dir}"/>
+      </exec>
+  </target>
+  
+  
+  <target name="clean_control_files">
+      <delete  includeemptydirs="true">
+         <fileset dir="${doc.output.dir}">
+              <include name="**/.svn/**"/>
+              <include name="**/_svn/**"/>
+              <include name="**/temp/**"/>
+              <include name="**/*.temp"/>
+          </fileset>
+      </delete>
+      <delete dir="./temp/"/>
+   </target>
+     
+     
+</project>

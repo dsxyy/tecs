@@ -1,0 +1,244 @@
+
+
+
+-- 判断 bond map 
+CREATE OR REPLACE FUNCTION pf_net_check_add_kernelreport_bondmap(in_uuid character varying, in_phy_port_name character varying )
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  kernelreportid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- kernelreport uuid 
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  SELECT id INTO kernelreportid FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- 查看map表中是否已存在
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report_bond_map WHERE kernel_cfg_report_bond_id = kernelreportid AND phy_port_name = in_phy_port_name;
+  IF is_exist > 0 THEN 
+     result := RTN_ITEM_CONFLICT; 
+     return result;
+  END IF;  
+    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_kernelreport_bondmap(in_uuid character varying, in_phy_port_name character varying ) OWNER TO tecs;
+
+
+-- 逻辑kernel_report添加 
+-- Function: pf_net_add_kernelreport_bondmap(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_kernelreport_bondmap(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_kernelreport_bondmap(in_uuid character varying, in_phy_port_name character varying )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  kernelreportid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_kernelreport_bondmap(in_uuid,in_phy_port_name);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- kernelreport uuid 
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  SELECT a.id INTO kernelreportid FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  -- 不支持重复添加 
+
+  -- insert item 
+  result.id := nextval('serial_kernel_cfg_report_bond_map');
+  --uplinkportid ：= nextval('serial_kernel_cfg_report_bond');
+  --result.uuid := in_uuid;
+  BEGIN 
+      INSERT INTO kernel_cfg_report_bond_map(id,kernel_cfg_report_bond_id,phy_port_name) 
+          values(result.id,kernelreportid,in_phy_port_name );
+            
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_kernelreport_bondmap(in_uuid character varying, in_phy_port_name character varying ) OWNER TO tecs;
+
+                 
+
+                                 
+-- check switch_cfg_report bond map del
+CREATE OR REPLACE FUNCTION pf_net_check_del_kernelreport_bond_map(in_uuid character varying, in_phy_port_name character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  kernelreportid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+
+ -- kernelreport uuid 
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  SELECT id INTO kernelreportid FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  --查询是否存在
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report_bond_map WHERE kernel_cfg_report_bond_id = kernelreportid  AND phy_port_name = in_phy_port_name;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST; 
+      return result;
+  END IF;
+
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_kernelreport_bond_map(in_uuid character varying, in_phy_port_name character varying) OWNER TO tecs;
+
+
+
+CREATE OR REPLACE FUNCTION pf_net_del_kernelreport_bond_map(in_uuid character varying, in_phy_port_name character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  kernelreportid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  result.ret := pf_net_check_del_kernelreport_bond_map(in_uuid,in_phy_port_name);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+
+  -- kernelreport uuid 
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  SELECT id INTO kernelreportid FROM kernel_cfg_report a, kernel_cfg_report_bond b WHERE a.id = b.kernel_cfg_report_id AND a.uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM kernel_cfg_report_bond_map WHERE kernel_cfg_report_bond_id = kernelreportid  AND phy_port_name = in_phy_port_name;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_kernelreport_bond_map(in_uuid character varying, in_phy_port_name character varying) OWNER TO tecs;
+
+
+-- 查询kernel cfg switch report (通过 vna uuid)
+
+CREATE OR REPLACE FUNCTION pf_net_query_kernelreport_bondmap_by_vna(in_vna_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN      
+    
+    OPEN ref FOR 
+     SELECT  vna_uuid, uuid, switch_name,uplink_port_name,uplink_port_bond_mode,phy_port_name 
+     FROM v_net_kernelreport_bondmap 
+     WHERE vna_uuid = in_vna_uuid;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_kernelreport_bondmap_by_vna(in_vna_uuid character varying) OWNER TO tecs;
+
+
+-- 查询kernel cfg switch report (通过 uuid)
+CREATE OR REPLACE FUNCTION pf_net_query_kernelreport_bondmap(in_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN      
+    
+    OPEN ref FOR 
+     SELECT  vna_uuid, uuid, switch_name,uplink_port_name,uplink_port_bond_mode,phy_port_name 
+     FROM v_net_kernelreport_bondmap 
+     WHERE uuid = in_uuid;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_kernelreport_bondmap(in_vna_uuid character varying) OWNER TO tecs;

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="GB2312"?>
+<Script func_type="1" verno="92">
+	<Modes>
+		<Mode ID="1" Class="31" HasNo="0" Prompt="&gt;" Name="用户模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="用户模式" mode-Comment-en="User mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="enable" treenode-comment-chs="进入特权模式" treenode-comment-en="Go to super user mode">
+				<Command IdInGroup="1" OprMode="PROCESS" CmdGroup="解释" ExecMode="解释端执行" NextMode="特权模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040001" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="quit" treenode-comment-chs="断开CLI连接" treenode-comment-en="Quit from CLI shell">
+				<Command IdInGroup="3" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="无模式" NextInputMode="INMODE_INVALID" ExecutePos="INTERPRETER" _ID="0x80040003" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="script-language" treenode-comment-chs="Set the language type of CLI scripts" treenode-comment-en="Set the language type of CLI scripts">
+				<Command CmdGroup="解释" IdInGroup="11" OprMode="SET" ExecMode="其他" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="MP" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0x8001000B">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="type" paracomment-chs="Select the language type" paracomment-en="Select the language type" DataType="DATA_TYPE_MAP" Min="0" Max="255" Length="8" _Type="Param" _Index="0"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="do-not-change-now" paracomment-chs="Change to the selected language when scripts reloaded next time, not now" paracomment-en="Change to the selected language when scripts reloaded next time, not now" DataType="DATA_TYPE_CONST" Min="" Max="" Length="" _Type="Param" _Index="1"/>
+						</Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="查看命令" treenode-comment-en="Show command"><TreeNode Name="script-language" treenode-comment-chs="Show the language type of CLI scripts" treenode-comment-en="Show the language type of CLI scripts">
+					<Command CmdGroup="解释" IdInGroup="11" OprMode="GET" ExecMode="其他" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="MP" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%rs:%v%s%re" formatstring-en="%rs:%v%s%re" _ID="0x8000000B">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					</Command>
+				</TreeNode></TreeNode>
+		</Mode>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="maintain" treenode-comment-chs="进入维护模式" treenode-comment-en="Enter maintain mode">
+				<Command IdInGroup="1" OprMode="PROCESS" CmdGroup="维护" ExecMode="其他" NextMode="维护模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x82040001" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="quit" treenode-comment-chs="断开CLI连接" treenode-comment-en="Quit from CLI shell">
+				<Command IdInGroup="3" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="无模式" NextInputMode="INMODE_INVALID" ExecutePos="INTERPRETER" _ID="0x80040003" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="script-language" treenode-comment-chs="Set the language type of CLI scripts" treenode-comment-en="Set the language type of CLI scripts">
+				<Command CmdGroup="解释" IdInGroup="11" OprMode="SET" ExecMode="其他" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="MP" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0x8001000B">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="type" paracomment-chs="Select the language type" paracomment-en="Select the language type" DataType="DATA_TYPE_MAP" Min="0" Max="255" Length="8" _Type="Param" _Index="0"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="do-not-change-now" paracomment-chs="Change to the selected language when scripts reloaded next time, not now" paracomment-en="Change to the selected language when scripts reloaded next time, not now" DataType="DATA_TYPE_CONST" Min="" Max="" Length="" _Type="Param" _Index="1"/>
+						</Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="显示配置信息" treenode-comment-en="Show configured information">
+				<TreeNode Name="script-language" treenode-comment-chs="Show the language type of CLI scripts" treenode-comment-en="Show the language type of CLI scripts">
+					<Command CmdGroup="解释" IdInGroup="11" OprMode="GET" ExecMode="其他" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="MP" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%rs:%v%s%re" formatstring-en="%rs:%v%s%re" _ID="0x8000000B">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					</Command>
+				</TreeNode></TreeNode>
+		</Mode>
+		<Mode ID="3" Class="24" HasNo="0" Prompt="(maintain)#" Name="维护模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="System maintain command:&#xA;" mode-Comment-chs="维护模式" mode-Comment-en="Maintain mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="idle-timeout" treenode-comment-chs="设置空闲定时时间" treenode-comment-en="Set idle-timeout">
+				<Command CmdGroup="数据库" IdInGroup="7" OprMode="SET" ExecMode="其他" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="MP" CanStop="NO" HasNoCommand="NO" NeedPublish="NO" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0x81010007">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="&lt;1-1000&gt;" paracomment-chs="空闲超时时间(分钟)" paracomment-en="Idle-timeout(minute)" DataType="DATA_TYPE_WORD" _Type="Param" _Index="0" Max="1000" Min="1" Length=""/>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="显示配置信息" treenode-comment-en="Show configured information">
+				<TreeNode Name="userlog" treenode-comment-chs="查看用户登录登出日志" treenode-comment-en="Show user log">
+					<Command CmdGroup="维护" IdInGroup="9" OprMode="GET" ExecMode="解释端执行" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="NO" HasNoCommand="NO" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0x82000009" NeedPublish="NO">
+						<cmd-postscript>无</cmd-postscript>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="idle-timeout" treenode-comment-chs="查看空闲超时时间" treenode-comment-en="Show idle timeout">
+					<Command CmdGroup="数据库" IdInGroup="11" OprMode="GET" ExecMode="其他" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="MP" CanStop="NO" HasNoCommand="NO" NeedPublish="NO" formatstring-chs="%v%-s" formatstring-en="%v%-s" _ID="0x8100000B">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					</Command>
+				</TreeNode></TreeNode>
+		</Mode>
+	</Modes>
+	<Maps>
+		<Map Type="1">
+			<MapItem Value="1" Name-chs="命令无法识别                                                      " Name-en="Unrecognized command                                                                   "/>
+			<MapItem Value="2" Name-chs="命令有歧义" Name-en="Ambiguous command                                                                      "/>
+			<MapItem Value="3" Name-chs="在'^'位置出现错误，请使用'?'查看命令帮助信息，并输入正确                                 " Name-en="Error in the position of '^', please use '?' to help                                   "/>
+			<MapItem Value="4" Name-chs="请输入&amp;quot;%s&amp;quot;查看命令列表                                                   " Name-en="Enter &quot;%s&quot; to look the command list                                                    "/>
+			<MapItem Value="5" Name-chs="命令不完整                                                                   " Name-en="Command not finished                                                                   "/>
+			<MapItem Value="6" Name-chs="-&gt;请从以下的列表中选择一个:" Name-en="-&gt;Select one from the following list:                                                   "/>
+			<MapItem Value="7" Name-chs="-&gt;%s(选择一个)：" Name-en="-&gt;%s(Select one):                                                                       "/>
+			<MapItem Value="8" Name-chs="(范围:%llu~%llu)                                                                           " Name-en="(Range:%llu~%llu)                                                                           "/>
+			<MapItem Value="9" Name-chs="(%llu~%llu chars)                                                                           " Name-en="(%llu~%llu chars)                                                                           "/>
+			<MapItem Value="10" Name-chs="(A.B.C.D)                                                                               " Name-en="(A.B.C.D)                                                                               "/>
+			<MapItem Value="11" Name-chs="(MM-DD-YYYY)                                                                            " Name-en="(MM-DD-YYYY)                                                                            "/>
+			<MapItem Value="12" Name-chs="(HH:MM:SS)                                                                              " Name-en="(HH:MM:SS)                                                                              "/>
+			<MapItem Value="13" Name-chs="(XX.XXXX.XXXX... or XXXX.XXXX.XXXX or XX)                                               " Name-en="(XX.XXXX.XXXX... or XXXX.XXXX.XXXX or XX)                                               "/>
+			<MapItem Value="14" Name-chs="(XX-XX-XX-XX-XX-XX [XX is hex 0~ff])                                                    " Name-en="(XX-XX-XX-XX-XX-XX [XX is hex 0~ff])                                                    "/>
+			<MapItem Value="15" Name-chs="(范围:%lld~%lld)                                                                           " Name-en="(Range:%lld~%lld)                                                                           "/>
+			<MapItem Value="16" Name-chs="(范围:%.3f~%.3f)                                                                       " Name-en="(Range:%.3f~%.3f)                                                                       "/>
+			<MapItem Value="17" Name-chs="(1122:AABB: ... :EEFF/(0~128))                                                          " Name-en="(1122:AABB: ... :EEFF/(0~128))                                                          "/>
+			<MapItem Value="18" Name-chs="(1122:AABB: ... :EEFF [8 part,hex 0~ffff])                                              " Name-en="(1122:AABB: ... :EEFF [8 part,hex 0~ffff])                                              "/>
+			<MapItem Value="19" Name-chs="((1~65535):(0~4294967295))                                                              " Name-en="((1~65535):(0~4294967295))                                                              "/>
+			<MapItem Value="20" Name-chs="(A.B.C.D:(0~65535))                                                                     " Name-en="(A.B.C.D:(0~65535))                                                                     "/>
+			<MapItem Value="21" Name-chs="(机架-机框-槽位-CPU)                                                                  " Name-en="(rack-shelf-slot-cpu)                                                                   "/>
+			<MapItem Value="22" Name-chs="(系统-子系统-模块-单元-子单元)                                              " Name-en="(system-subsystem-module-unit-sunit)                                              "/>
+			<MapItem Value="23" Name-chs="(子系统-单元-子单元)" Name-en="(subSystem-unit-sunit)"/>
+			<MapItem Value="24" Name-chs="(范围:0~65535)" Name-en="(Range:0~65535)"/>
+			<MapItem Value="25" Name-chs="(IpType-VpnId-IPAddr)" Name-en="(IpType-VpnId-IPAddr)"/>
+			<MapItem Value="26" Name-chs="(YYYY-MM-DD-HH-MI-SS-MS)" Name-en="(YYYY-MM-DD-HH-MI-SS-MS)"/>
+			<MapItem Value="200" Name-chs="&lt;CR&gt;                                                                                    " Name-en="&lt;CR&gt;                                                                                    "/>
+			<MapItem Value="201" Name-chs="用户名:" Name-en="Username:                                                                               "/>
+			<MapItem Value="202" Name-chs="密码:" Name-en="Password:                                                                               "/>
+			<MapItem Value="203" Name-chs="删除一个命令或者设置它的默认值" Name-en="Delete one command or set its default value                                          "/>
+			<MapItem Value="204" Name-chs="输入字符串信息，以'%c'结束" Name-en="Record the text information, please enter '%c' to end.                                   "/>
+			<MapItem Value="205" Name-chs="用户名错误" Name-en="User's name error.                                                                      "/>
+			<MapItem Value="206" Name-chs="用户名或密码错误" Name-en="Username or password error.                                                                  "/>
+			<MapItem Value="207" Name-chs="已经被另一个用户锁定，无法同时进行配置" Name-en="Simultaneous configuration is not allowed, Locked by other user                                          "/>
+			<MapItem Value="208" Name-chs="请键入配置命令，每行一个命令，使用'exit'退出" Name-en="Enter configuration command, one command per line, and use 'exit' to exit.                            "/>
+			<MapItem Value="209" Name-chs="已进入了配置模式，请避免冲突" Name-en="Has entered the configuration mode, must avoid conflict.                                    "/>
+			<MapItem Value="210" Name-chs="此用户为当前用户，请指定另外一个！" Name-en="This is current user, please specify another one!                                         "/>
+			<MapItem Value="211" Name-chs="错误：返回值不存在" Name-en="Error:Not exists the return value.                                                     "/>
+			<MapItem Value="212" Name-chs="错误：命令无回显脚本" Name-en="Error:The command has no display script.                                               "/>
+			<MapItem Value="213" Name-chs="错误：命令执行超时" Name-en="Error:Timeout for waiting the ack of EXECUTE.                                          "/>
+			<MapItem Value="214" Name-chs="错误：返回数据的输出模式错误" Name-en="Error:Output mode error while requesting data.                                         "/>
+			<MapItem Value="215" Name-chs="错误：权限不够，无法切换配置模式" Name-en="Error:Can not change to the mode.                                                      "/>
+			<MapItem Value="216" Name-chs="提示：现在您已经终止了当前命令" Name-en="Note:You have ceased the current command.                                              "/>
+			<MapItem Value="217" Name-chs="错误：返回数据和回显脚本不匹配，请确保回显脚本正确！" Name-en="Error:Parse return data with display script fail! Make sure display script is right.   "/>
+			<MapItem Value="218" Name-chs="命令脚本（*.dat文件）需要更新，连接关闭，请等待一段时间后再连接." Name-en="Command configuration file(*.dat) need update, connection closed! Please connect after a while.  "/>
+			<MapItem Value="219" Name-chs="该网元不支持在线配置! " Name-en="Current net element dosen`t support online configuration!                                     "/>
+			<MapItem Value="220" Name-chs="协议配置存盘成功！" Name-en="Save protocol configuration successfully!                                                        "/>
+			<MapItem Value="221" Name-chs="协议配置存盘失败！" Name-en="Save protocol configuration commands unsuccessfully!                                                 "/>
+			<MapItem Value="222" Name-chs="备份文件打开失败！" Name-en="Backup file open error!                                                              "/>
+			<MapItem Value="223" Name-chs="存盘文件插入CRC循环校验码时出现错误！" Name-en="Inserting crc into save's file  is error!                                                      "/>
+			<MapItem Value="224" Name-chs="发生主备倒换，连接已关闭！" Name-en="Master slave change over, connection closed!                                           "/>
+			<MapItem Value="225" Name-chs="其他用户正在执行相同类型的命令，请等待一段时间后再尝试。" Name-en="Another user executing same type command, please try later.                                "/>
+			<MapItem Value="226" Name-chs="正在进行存盘操作，无法执行命令，请等待一段时间后再尝试！" Name-en="Save process running, can not execute command now!                                              "/>
+			<MapItem Value="227" Name-chs="正在更新命令脚本文件（*.DAT文件），请等待一段时间后再尝试。" Name-en="Updating command configuration file(DAT file), try later.                                   "/>
+			<MapItem Value="228" Name-chs="备板协议配置存盘成功！" Name-en="Slave save protocol configuration successfully!                                                        "/>
+			<MapItem Value="229" Name-chs="备板协议配置存盘失败！" Name-en="Slave save protocol configuration unsuccessfully!                                                     "/>
+			<MapItem Value="230" Name-chs="RPU版本和命令脚本文件版本不一致，无法进行存盘！" Name-en="Version of RPU and command configuration file(DAT file) is incompatible, can not save!      "/>
+			<MapItem Value="231" Name-chs="错误：备板存盘超时。" Name-en="Error:Timeout for waiting the ack of slave board.                                      "/>
+			<MapItem Value="232" Name-chs="ZDB存盘成功！" Name-en="Save ZDB successfully!"/>
+			<MapItem Value="233" Name-chs="ZDB存盘失败！详情：" Name-en="Save ZDB unsuccessfully! Detail:"/>
+			<MapItem Value="234" Name-chs="主备目录存盘均失败！" Name-en="Org and Bak Dir both save unsuccessfully!"/>
+			<MapItem Value="235" Name-chs="主目录存盘失败！" Name-en="Org Dir save unsuccessfully!"/>
+			<MapItem Value="236" Name-chs="备目录存盘失败！" Name-en="Bak Dir save unsuccessfully!"/>
+			<MapItem Value="237" Name-chs="数据库正在进行本机存盘！" Name-en="DB is saving local!"/>
+			<MapItem Value="238" Name-chs="数据库正在存盘......请耐心等待并重试！" Name-en="DB is saving......Please wait and try again!"/>
+			<MapItem Value="239" Name-chs="未知结果！" Name-en="Other result!"/>
+			<MapItem Value="240" Name-chs="当前用户不是管理员用户，没有权限执行这个命令！" Name-en="The current user is not admin user, no permission to execute this command!"/>
+			<MapItem Value="241" Name-chs="这是默认用户名，不能被删除！" Name-en="This is the default user name, can not be deleted!"/>
+			<MapItem Value="242" Name-chs="该用户不存在！" Name-en="The user does not exist!"/>
+			<MapItem Value="243" Name-chs="该用户已经被删除！" Name-en="This user has been deleted!"/>
+			<MapItem Value="244" Name-chs="该命令执行成功！" Name-en="The command executed successfully!"/>
+			<MapItem Value="245" Name-chs="该命令执行失败" Name-en="The command execution unsuccessfully!"/>
+			<MapItem Value="246" Name-chs="用户名不能和默认用户名一样！" Name-en="The default user name can not be created!"/>
+			<MapItem Value="247" Name-chs="该用户已经存在！" Name-en="The user already exists!"/>
+			<MapItem Value="248" Name-chs="密码不符合规则！密码必须是大写字母（A-Z），小写字母（a-z）,数字（0-9）和非数字字符的任意组合，包括 &quot;~&quot; , &quot;!&quot; , &quot;@&quot; , &quot;#&quot; , &quot;$&quot; ,&quot;%&quot; , &quot;^&quot; , &quot;&amp;&quot; , &quot;*&quot; , &quot;(&quot; , &quot;)&quot; , &quot;_&quot; , &quot;+&quot; , &quot;|&quot; , &quot;`&quot; , &quot;-&quot; , &quot;=&quot; , &quot;\&quot; , &quot;{&quot; , &quot;}&quot; , &quot;[&quot; , &quot;]&quot; , &quot;:&quot; , &quot;&quot;&quot; , &quot;;&quot; , &quot;'&quot; , &quot;&lt;&quot; , &quot;&gt;&quot; , &quot;,&quot; , &quot;.&quot; and &quot;/&quot; 。" Name-en="The password does not meet the rules! The password must be a random combination of uppercase letters (A-Z), lowercase letters (a-z),numeric (0-9) and nonalphanumeric characters including &quot;~&quot; , &quot;!&quot; , &quot;@&quot; , &quot;#&quot; , &quot;$&quot; ,&quot;%&quot; , &quot;^&quot; , &quot;&amp;&quot; , &quot;*&quot; , &quot;(&quot; , &quot;)&quot; , &quot;_&quot; , &quot;+&quot; , &quot;|&quot; , &quot;`&quot; , &quot;-&quot; , &quot;=&quot; , &quot;\&quot; , &quot;{&quot; , &quot;}&quot; , &quot;[&quot; , &quot;]&quot; , &quot;:&quot; , &quot;&quot;&quot; , &quot;;&quot; , &quot;'&quot; , &quot;&lt;&quot; , &quot;&gt;&quot; , &quot;,&quot; , &quot;.&quot; and &quot;/&quot; ."/>
+			<MapItem Value="249" Name-chs="密码不符合规则！" Name-en="The password does not meet the rules!"/>
+			<MapItem Value="250" Name-chs="两次输入的密码不一样！" Name-en="The two passwords are not the same!"/>
+			<MapItem Value="251" Name-chs="“配置用户”的数量已经达到最大值！" Name-en="&quot;Configuring Users&quot; has reached the maximum number!"/>
+			<MapItem Value="252" Name-chs="“查看用户”的数量已经达到最大值！" Name-en="&quot;View users&quot; has reached the maximum number!"/>
+			<MapItem Value="253" Name-chs="该用户目前被锁定，请从指定的机器进行解锁后再使用！" Name-en="This user has been locked，please unlock it on specified computer before use it!"/>
+			<MapItem Value="254" Name-chs="不能修改管理员的权限！" Name-en="Can not modify the administrator's role!"/>
+			<MapItem Value="255" Name-chs="该用户目前是在线状态，不能修改其权限！" Name-en="The user is online, you can not change its role!"/>
+			<MapItem Value="256" Name-chs="该用户已经拥有这个权限，不需要被修改！" Name-en="The user already has this role, need not be modified!"/>
+			<MapItem Value="257" Name-chs="当前用户不是管理员，不能修改其他用户的密码！" Name-en="The current user is not an administrator, you can not modify other user's password!"/>
+			<MapItem Value="258" Name-chs="该用户没有被锁定！" Name-en="The user is not locked!"/>
+			<MapItem Value="259" Name-chs="当前用户没有权限执行此命令！" Name-en="The current user does not have permission to perform this command!"/>
+			<MapItem Value="260" Name-chs="没有表需要存盘" Name-en="No tables need to be saved!"/>
+			<MapItem Value="261" Name-chs="读取文件长度错误" Name-en="Read the file length error!"/>
+			<MapItem Value="262" Name-chs="表不需要存盘" Name-en="The table does not need to be saved!"/>
+			<MapItem Value="263" Name-chs="库正在进行上电加载" Name-en="The database is loading!"/>
+			<MapItem Value="264" Name-chs="库正在进行RX FTP加载" Name-en="RX FTP is loading!"/>
+			<MapItem Value="265" Name-chs="库正在进行APP FTP加载" Name-en="APP FTP is loading!"/>
+			<MapItem Value="266" Name-chs="IO正在忙" Name-en="IO is busy!"/>
+			<MapItem Value="267" Name-chs="非法句柄" Name-en="Invalid handle!"/>
+			<MapItem Value="268" Name-chs="强密码时，密码长度必须大于8" Name-en="If the intensity of password is strong, the lenght of password must be bigger than 8!"/>
+			<MapItem Value="269" Name-chs="弱密码时，密码长度必须大于设置的弱密码长度" Name-en="If the intensity of password is simple,the length of password must be bigger than that of configured!"/>
+			<MapItem Value="270" Name-chs="MSG_COMM_OAM结构体中数据长度错误" Name-en="Data length error in struct MSG_COMM_OAM"/>
+			<MapItem Value="271" Name-chs="用户目前是被锁定状态！" Name-en="The user has been locked!"/>
+			<MapItem Value="272" Name-chs="用户名或密码错误，请重新输入！" Name-en="Error username or password, Please retry input!"/>
+			<MapItem Value="273" Name-chs="另外一个用户目前在特权模式下，无法切换到特权模式。&#xA;" Name-en="Another user in supper user mode now, can`t change to supper user mode.&#xA;"/>
+			<MapItem Value="274" Name-chs="........[%d%%]" Name-en="........[%d%%]"/>
+			<MapItem Value="275" Name-chs="当前模式切换到初始模式，原因：命令行脚本重新加载了。" Name-en="Change to the start mode, because CLI script files was reloaded"/>
+			<MapItem Value="276" Name-chs="命令取消失败！" Name-en="Cease command unsuccessfully!"/>
+			<MapItem Value="277" Name-chs="重新发送命令请求失败！" Name-en="Execute send command again unsuccessfully!"/>
+			<MapItem Value="278" Name-chs="发送命令请求给应用失败！" Name-en="Dispose command to application unsuccessfully!"/>
+			<MapItem Value="279" Name-chs="存盘命令执行失败！" Name-en="Execute save command unsuccessfully!"/>
+			<MapItem Value="280" Name-chs="正在进行协议栈配置数据恢复，请稍后再连接！" Name-en="Begin to restore protocol configuration data, please connect after a while!"/>
+			<MapItem Value="281" Name-chs="IO禁止存盘 ！" Name-en="Saving is disabled by IO!"/>
+			<MapItem Value="282" Name-chs="打开文件失败！" Name-en="Failed to open file!"/>
+			<MapItem Value="283" Name-chs="读取文件失败！" Name-en="Failed to read file!"/>
+			<MapItem Value="284" Name-chs="获取文件长度失败！" Name-en="Failed to get the length of file!"/>
+			<MapItem Value="285" Name-chs="文件长度不合法！" Name-en="The length of file is not right!"/>
+			<MapItem Value="400" Name-chs="消息头出现错误（来自执行）：" Name-en="Message header error(from execute):                                                     "/>
+			<MapItem Value="401" Name-chs="'ReturnCode'字段出现了错误！" Name-en="'ReturnCode' error!                                                                     "/>
+			<MapItem Value="402" Name-chs="'LinkChannel'字段出现了错误！" Name-en="'LinkChannel' error!                                                                    "/>
+			<MapItem Value="403" Name-chs="'SeqNo'字段出现了错误！" Name-en="'SeqNo' error!                                                                          "/>
+			<MapItem Value="404" Name-chs="'LastPacket'字段出现了错误！" Name-en="'LastPacket' error!                                                                     "/>
+			<MapItem Value="405" Name-chs="'OutputMode'字段出现了错误！" Name-en="'OutputMode' error!                                                                     "/>
+			<MapItem Value="406" Name-chs="'CmdID'字段出现了错误！" Name-en="'CmdID' error!                                                                          "/>
+			<MapItem Value="407" Name-chs="'Number'字段出现了错误！" Name-en="'Number' error!                                                                         "/>
+			<MapItem Value="408" Name-chs="'ExecModeID'字段出现了错误！" Name-en="'ExecModeID' error!                                                                     "/>
+			<MapItem Value="409" Name-chs="'bIfNo'字段出现了错误！" Name-en="'bIfNo' error!                                                                          "/>
+			<MapItem Value="410" Name-chs="应答消息结构体中返回码错误！" Name-en="The return code of Ack message structure!                                               "/>
+			<MapItem Value="411" Name-chs="此命令不再需要（ReturnCode为 0）！" Name-en="Now not need the command!                                                               "/>
+			<MapItem Value="412" Name-chs="消息头出现错误（来自TelServer）：" Name-en="Message header error(from telserver):                                                   "/>
+			<MapItem Value="413" Name-chs="'bMsgID'字段出现了错误！" Name-en="'bMsgID' error!                                                                         "/>
+			<MapItem Value="414" Name-chs="'bVtyNum'字段错误！" Name-en="'bVtyNum' error!                                                                        "/>
+			<MapItem Value="415" Name-chs="'bDeterminer'字段错误！" Name-en="'bDeterminer' error!                                                                    "/>
+			<MapItem Value="416" Name-chs="未知错误！" Name-en="Undefined error!                                                                        "/>
+			<MapItem Value="417" Name-chs="没有定义的模块！" Name-en="Undefined module!                                                                      "/>
+			<MapItem Value="418" Name-chs="备板不能执行'MASTER_SAVE'命令！" Name-en="Can not perform MASTER_SAVE on slave board!                                            "/>
+			<MapItem Value="419" Name-chs="目前备板无法存盘！" Name-en="Now can not save on slave board!                                                       "/>
+			<MapItem Value="420" Name-chs="存盘类型错误（只能为主板或者备板）！" Name-en="Unknown save type(neither master nor slave)!"/>
+			<MapItem Value="421" Name-chs="This is an invalid module or need not to be saved on this module! " Name-en="This is an invalid module or need not to be saved on this module! "/>
+		</Map>
+		<Map Type="2">
+			<MapItem Value="1" Name-chs="配置成功！" Name-en="Config success!"/>
+			<MapItem Value="2" Name-chs="配置失败！" Name-en="Config fail!"/>
+			<MapItem Value="3" Name-chs="返回信息数太多，请指定查询条件！" Name-en="Too many records,PLS specify query condition!"/>
+		</Map>
+		<Map Type="3">
+			<MapItem Value="0" Name-chs="MASTER" Comment-chs="主板存盘" Name-en="MASTER" Comment="save master"/>
+			<MapItem Value="1" Name-chs="SLAVE" Comment-chs="备板存盘" Name-en="SLAVE" Comment="save slave"/>
+		</Map>
+		<Map Type="4">
+			<MapItem Value="0" Name-chs="存盘成功" Name-en="Save ZDB Success"/>
+			<MapItem Value="1" Name-chs="存盘失败" Name-en="Save ZDB Fail"/>
+		</Map>
+		<Map Type="5">
+			<MapItem Value="2" Name-chs="CONFIG" Comment-chs="配置用户" Name-en="CONFIG" Comment="Configuration role."/>
+			<MapItem Value="3" Name-chs="GUEST" Comment-chs="查询用户" Name-en="GUEST" Comment="View role."/>
+		</Map>
+		<Map Type="7">
+			<MapItem Value="0" Name-chs="simple" Comment-chs="长度必须不小于配置的最小长度" Name-en="simple" Comment="Must be not less than the configed lowest simple-password length"/>
+			<MapItem Value="1" Name-chs="strong" Comment-chs="长度范围为8~31，组合包括大写字母（A-Z）、小写字母（a-z）、数字（0-9）、非字符数字的符号：~!@#$%^&amp;*_-+=`|\(){}[]:;&quot;'&lt;&gt;,./" Name-en="strong" Comment="Must be 8~31 characters composed of uppercase letters (A-Z),lowercase letters (a-z),numeric (0-9) and Nonalphanumeric characters: ~!@#$%^&amp;*_-+=`|\(){}[]:;&quot;'&lt;&gt;,./"/>
+		</Map>
+		<Map Type="8">
+			<MapItem Value="1" Name-chs="Chinese" Name-en="Chinese"/>
+			<MapItem Value="2" Name-chs="English" Name-en="English"/>
+		</Map>
+		<Map Type="9">
+			<MapItem Value="1" Name-chs="Slot-1" Name-en=""/>
+			<MapItem Value="2" Name-chs="Slot-2" Name-en=""/>
+			<MapItem Value="3" Name-chs="Slot-3" Name-en=""/>
+			<MapItem Value="4" Name-chs="Slot-4" Name-en=""/>
+			<MapItem Value="5" Name-chs="Slot-5" Name-en=""/>
+			<MapItem Value="6" Name-chs="Slot-6" Name-en=""/>
+			<MapItem Value="7" Name-chs="Slot-7" Name-en=""/>
+			<MapItem Value="8" Name-chs="Slot-8" Name-en=""/>
+			<MapItem Value="9" Name-chs="Slot-9" Name-en=""/>
+			<MapItem Value="10" Name-chs="Slot-10" Name-en=""/>
+			<MapItem Value="11" Name-chs="Slot-11" Name-en=""/>
+			<MapItem Value="12" Name-chs="Slot-12" Name-en=""/>
+			<MapItem Value="13" Name-chs="Slot-13" Name-en=""/>
+			<MapItem Value="14" Name-chs="Slot-14" Name-en=""/>
+			<MapItem Value="15" Name-chs="Slot-15" Name-en=""/>
+			<MapItem Value="16" Name-chs="Slot-16" Name-en=""/>
+			<MapItem Value="17" Name-chs="Slot-17" Name-en=""/>
+			<MapItem Value="18" Name-chs="Slot-18" Name-en=""/>
+			<MapItem Value="19" Name-chs="Slot-19" Name-en=""/>
+			<MapItem Value="20" Name-chs="Slot-20" Name-en=""/>
+			<MapItem Value="21" Name-chs="Slot-21" Name-en=""/>
+			<MapItem Value="22" Name-chs="Slot-22" Name-en=""/>
+			<MapItem Value="23" Name-chs="Slot-23" Name-en=""/>
+			<MapItem Value="24" Name-chs="Slot-24" Name-en=""/>
+			<MapItem Value="25" Name-chs="Slot-25" Name-en=""/>
+			<MapItem Value="26" Name-chs="Slot-26" Name-en=""/>
+			<MapItem Value="27" Name-chs="Slot-27" Name-en=""/>
+			<MapItem Value="28" Name-chs="Slot-28" Name-en=""/>
+			<MapItem Value="29" Name-chs="CMM-Left" Name-en=""/>
+			<MapItem Value="30" Name-chs="CMM-Right" Name-en=""/>
+		</Map>
+		<Map Type="10">
+			<MapItem Value="1" Name-chs="+" Name-en="+"/>
+			<MapItem Value="2" Name-chs="-" Name-en="-"/>
+			<MapItem Value="3" Name-chs="*" Name-en="*"/>
+			<MapItem Value="4" Name-chs="/" Name-en="/"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+	</CmdGroups>
+	<Logs>
+		<Log Staff="傅龙锁" Date="2011-01-07" Link="" Modify="由于BRS的数据都是存在ZDB文件里，不再需要保存在TXT文件里了，所以执行存盘命令mssave，只生成ZDB存盘文件。以前的“生成协议栈数据TXT文件”这一存盘功能已经被去除，这也意味着原先TXT文件所在目录也不再自动生成了。" EcNo="611001441198" Name="2011-01-07 by 傅龙锁"/>
+		<Log Staff="殷浩" Date="2012-01-12" Modify="删除TECS无关的oam命令" EcNo="611002533869" Name="2012-01-12 by 殷浩">
+			<Links></Links>
+		</Log>
+	</Logs>
+</Script>

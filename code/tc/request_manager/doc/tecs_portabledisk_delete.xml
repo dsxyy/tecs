@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_portabledisk_delete.xml">
+	<interface>tecs.portabledisk.delete</interface>
+	<shortdesc lang_cn="删除移动盘" lang_en="Delete portabledisk"/>
+	<description lang_cn="删除移动盘。" lang_en="Delete portabledisk."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="request_id" type="string" lang_cn="请求id,查询user_volume_pool表里对应记录的 request_id。" lang_en="request_id,can query user_volume_pool table to get the request_id."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+                        <parameter name="workflow_id" type="string" lang_cn="创建工作流成功返回workflow_id。" lang_en="create workflow success, return workflow_id."/>
+                        <parameter name="request_id" type="string" lang_cn="删除成功返回request_id。" lang_en="delete success, return request_id."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1" lang_cn="失败" lang_en="Error"/>
+				<enum name="18" lang_cn="参数错误" lang_en="Error, invalide parameter"/>
+                                <enum name="25" lang_cn="操作进行中" lang_en="Error, operation is running"/>
+				<enum name="13001" lang_cn="超时，SC没有应答" lang_en="Failed, sa Controller is not answered."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.portabledisk.create" href="tecs_portabledisk_create.xml"/>
+	</reference>
+</method>

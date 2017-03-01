@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vnet_vlan_range_query.xml">
+	<interface>tecs.vlan_range.query</interface>
+	<shortdesc lang_cn="查询系统网络平面映射关系" lang_en="Show system vlan_range name"/>
+	<description lang_cn="查询系统网络平面映射关系。" lang_en="Show system vlan_range name."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="记录集起始值，起始值为0。" lang_en="First index value, start value is 0."/>
+		<parameter name="query_count" type="int64" lang_cn="查询的记录集个数。" lang_en="Query index count."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称。" lang_en="Cluster name."/>
+		<parameter name="netplane_name" type="string" lang_cn="网络平面名。" lang_en="netplane name."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="下次查询记录集起始值。" lang_en="Next index value."/>
+			<parameter name="max_count" type="int64" lang_cn="记录集总数。" lang_en="Max index count."/>
+			<array repeat="yes">
+				<struct name="VnetVlanRangeList">
+		            <parameter name="netplane_name" type="string" lang_cn="网络平面名。" lang_en="netplane name."/>
+					<array repeat="yes" name="vlan_range_list">
+						<struct name="VnetVlanRange">
+							<parameter name="netplane_name" type="string" lang_cn="网络平面名。" lang_en="netplane name."/>
+		                    <parameter name="vlan_begin" type="int" lang_cn="VLAN范围开始值。" lang_en="vlan range beginning id."/>
+		                    <parameter name="vlan_end" type="int" lang_cn="VLAN范围结束值。" lang_en="vlan range ending id."/>
+						</struct>
+					</array>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2002" lang_cn="错误，网络平面不存在" lang_en="Error, the netplane is not exist"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vlan_range.set" href="tecs_vnet_vlan_range_set.xml"/>
+		<xref name="tecs.vlan_range.delete" href="tecs_vnet_vlan_range_delete.xml"/>
+	</reference>
+</method>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TECS</title>
+</head>
+<body>
+    <div class="row-fluid">
+    	<!-- left menu starts -->
+    	<div class="span2 main-menu-span">
+    		<div class="well nav-collapse sidebar-nav">
+    			<ul class="nav nav-tabs nav-stacked main-menu">
+    				<li class="active"><a href="#"><span><img src="img/user16.png"></img></span><span id="userNav"></span></a></li>
+    			</ul>
+    		</div><!--/.well -->
+    	</div><!--/span-->
+    	<!-- left menu ends -->
+    	
+    	<div id="right_content" class="span10" style="display:block;">
+    	<!-- content starts -->
+            <div style="display:none;"><ul class="breadcrumb"></ul></div>   
+            <ul class="nav nav-tabs"><li class="active"><a href="#userList" id="userListNav"></a></li></ul> 
+            <div class="tab-content"><div class="tab-pane active" id="userList">
+            <div align="right">
+                <button class="btn"><i class="icon-plus"></i><span id="userCreate"></span></button>
+                <button class="btn"><i class="icon-trash"></i><span id="userRemove"></span></button> 
+                <button class="btn"><i class="icon-refresh"></i><span id="userRefresh"></span></button>
+            </div>
+            <div>
+                <table id="user_list" class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th align="left" width="25px;"><INPUT id="userSelecltAll" type="checkbox" /></th>
+                            <th align="left" width="75px;"><span id="t1"></span></th>
+                            <!--th align="left" id="t2"></th-->
+                            <th align="left" width="50px;"><span id="t3"></span></th>
+                            <!--th align="left" id="t4"></th-->
+                            <th align="left" width="100px;"><span id="t5"></span></th>
+                            <th align="left" width="100px;"><span id="t6"></span></th>
+                            <th align="left" width="100px;"><span id="t7"></span></th>
+                            <th align="left" width="75px;"><span id="t8"></span></th>
+                            <th align="left" width="50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody style="table-layout:fixed;word-break:break-all">
+                    </tbody>
+                </table>
+                <div id="user_last_refresh_time"></div>
+            </div>
+            </div>
+
+            <div id="create_user_dlg" class="modal hide">
+                <div class="modal-header">
+                    <h5><i class="icon-plus"></i><span id="create_user_title"></span></h5>
+                </div>    
+                <div class="modal-body" id="create_user_table">            
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="td_l"><span id="st1_l"></span><span><font color="red">*</font></span></td>
+                                <td class="td_r"><input id="userName" maxlength="64" type="text"/></td>
+                                <!--td id="st2_l" class="td_r"></td-->
+                            </tr>
+                            <tr>
+                                <td class="td_l"><span id="st1_2"></span><span><font color="red">*</font></span></td>
+                                <td class="td_r"><input id="password" maxlength="32" type="password"/></td>
+                                <!--td id="st2_2" class="td_r"></td-->
+                            </tr>
+                            <tr>
+                                <td class="td_l"><span id="st1_3"></span><span><font color="red">*</font></span></td>
+                                <td class="td_r"><input id="confirm_pass" maxlength="32" type="password"/></td>
+                                <!--td id="st2_3" class="td_r"></td-->
+                            </tr>
+                            <tr>
+                                <td class="td_l"><span id="st1_4"></span><span><font color="red">*</font></span></td>
+                                <td class="td_r">
+                                    <input id="role_c_ca" type="radio" name="role_c"><span id="role_c_ca_l"></span>
+                                    <!--div><input id="role_c_aa" type="radio" name="role_c">account_admin-->
+                                    <input id="role_c_a" type="radio" name="role_c" checked><span id="role_c_a_l"></span>
+                                </td>
+                                <!--td id="st2_4" class="td_r"></td-->
+                            </tr>
+                            <!--tr>
+                                <td id="st1_5" class="td_l"></td>
+                                <td class="td_r"><input id="group" maxlength="32" type="text"/></td>
+                                <td id="st2_5" class="td_r"></td>
+                            </tr-->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="confirm_create"></button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true" id="cancel_create"></button>
+                </div>
+            </div> 
+        <!-- content ends -->          
+    	</div><!--/#content.span10-->
+    </div><!--/fluid-row-->    
+    
+	<!-- external javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="js/tecs/user.js"></script>
+</body>
+</html>

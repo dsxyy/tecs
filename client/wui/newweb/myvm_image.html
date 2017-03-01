@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TECS</title>
+    <?php 
+        $user_name =  $_GET['user_name'];
+    ?>
+</head>
+
+<body>
+    <input type="hidden" id="txUsername" value="<?php echo $user_name?>"> 
+    <div style="display:none;">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#"  data-value="myvm_overview.html"><OamStaticUI bindattr="text" maptype="display" bindvalue="my_vm"/></a> <span class="divider">/</span>
+            </li>
+            <li class="active">
+                <a href="#" data-value="myvm_image.html"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="image"/></a>
+            </li>
+        </ul>
+    </div> 
+    <div class="box-content">
+        <ul class="nav nav-tabs" id="imageTab">
+            <li class="active"><a href="#myImage"><OamStaticUI bindattr="text" maptype="display" bindvalue="my_image"/></a></li>
+            <li><a href="#systemImage"><OamStaticUI bindattr="text" maptype="display" bindvalue="system_image"/></a></li>
+        </ul> 
+        <div id="imageTabContent" class="tab-content">
+            <div class="tab-pane active" id="myImage">
+                <div align="right">
+                    <button class="btn" id="myimage_upload"><i class="icon-circle-arrow-up"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="upload"/></span></button>                    
+                    <button class="btn" id="myimage_remove"><i class="icon-trash"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="remove"/></span></button>
+                    <button class="btn" id="myimage_refresh"><i class="icon-refresh"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="refresh"/></span></button>
+                </div>
+                <div>
+                    <table class="table table-striped table-bordered table-condensed" id="tbMyImage">
+                        <thead>
+                            <tr>
+                                <th align="left" width="25px;"><INPUT id="SelecltMyImageAll" type="checkbox" value="" /></th>
+                                <th align="left" width="50px;">ID</th>
+                                <th align="left" width="140px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="filename"/></th>
+                                <th align="left" width="100px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="register_time"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="status"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="ispublish"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="running_vms"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="container_format"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="image_size"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="os_type"/></th> 
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="desc"/></th> 
+                                <th align="left" width="35px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="blank"/></th>
+                            </tr>
+                        </thead>
+                        <tbody style="word-wrap:break-word;word-break:break-all;"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane" id="systemImage">
+                <div align="right">
+                    <button class="btn" id="systemimage_refresh"><i class="icon-refresh"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="refresh"/></span></button>
+                </div>
+                <div>
+                    <table class="table table-striped table-bordered table-condensed" id="tbSystemImage">
+                        <thead> 
+                            <tr>
+                                <th align="left" width="25px;">ID</th> 
+                                <th align="left" width="150px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="filename"/></th>
+                                <th align="left" width="100px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="register_time"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="status"/></th>
+                                <th align="left" width="75px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="running_vms"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="container_format"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="image_size"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="os_type"/></th>
+                                <th align="left" width="50px;"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="desc"/></th> 
+                                <th align="left" width="25px;"></th> 
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- external javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/tecs/vm_image.js"></script>
+    <script src="js/tecs/myvm_image.js"></script>
+</body>
+</html>

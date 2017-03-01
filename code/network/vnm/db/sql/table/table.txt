@@ -1,0 +1,1199 @@
+
+
+CREATE TABLE  "_schema_log" ( 
+	version_number       varchar( 64 ) DEFAULT 0 NOT NULL,
+	update_by            varchar( 128 ),
+	update_at            varchar( 32 ),
+	description          varchar( 512 ),
+	CONSTRAINT pk__schema_log PRIMARY KEY ( version_number )
+ );
+
+CREATE TABLE  netplane ( 
+	id                   numeric( 19 ) NOT NULL,
+	name                 varchar( 32 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	description          varchar( 512 ) NOT NULL,
+	mtu                  int4 DEFAULT 1500 NOT NULL,
+	CONSTRAINT pk_netplane PRIMARY KEY ( id ),
+	CONSTRAINT idx_netplane UNIQUE ( name ),
+	CONSTRAINT idx_netplane_0 UNIQUE ( uuid )
+ );
+
+CREATE TABLE  port_group ( 
+	id                   numeric( 19 ) NOT NULL,
+	name                 varchar( 64 ) NOT NULL,
+	pg_type              int4 DEFAULT 0 NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	"acl"                varchar( 64 ) NOT NULL,
+	qos                  varchar( 64 ) NOT NULL,
+	allowed_priorities   varchar( 32 ) NOT NULL,
+	receive_bandwidth_limit varchar( 32 ) NOT NULL,
+	receive_bandwidth_reserve varchar( 32 ) NOT NULL,
+	default_vlan_id      int4 DEFAULT 0 NOT NULL,
+	promiscuous          int4 DEFAULT 0 NOT NULL,
+	macvlan_filter_enable int4 DEFAULT 0 NOT NULL,
+	allowed_transmit_macs varchar( 64 ) NOT NULL,
+	allowed_transmit_macvlans varchar( 64 ) NOT NULL,
+	policy_block_override varchar( 64 ) NOT NULL,
+	policy_vlan_override varchar( 64 ) NOT NULL,
+	"version"            int4 NOT NULL,
+	mgr_id               varchar( 64 ) NOT NULL,
+	type_id              varchar( 64 ) NOT NULL,
+	allow_mac_change     int4 DEFAULT 0 NOT NULL,
+	switchport_mode      int4 DEFAULT 0 NOT NULL,
+	netplane_id          numeric( 19 ),
+	mtu                  int4 DEFAULT 1500 NOT NULL,
+	description          varchar( 512 ),
+	CONSTRAINT pk_port_profile_group_4 PRIMARY KEY ( id ),
+	CONSTRAINT pk_port_profile_group_5 UNIQUE ( name ),
+	CONSTRAINT pk_port_group UNIQUE ( id, switchport_mode ),
+	CONSTRAINT pk_port_group_0 UNIQUE ( id, pg_type ),
+	CONSTRAINT pk_port_group_1 UNIQUE ( id, switchport_mode, pg_type ),
+	CONSTRAINT pk_port_group_2 UNIQUE ( id, pg_type, switchport_mode ),
+	CONSTRAINT idx_port_group_0 UNIQUE ( uuid )
+ );
+
+ALTER TABLE  port_group ADD CONSTRAINT ck_27 CHECK ( switchport_mode = 0 OR switchport_mode = 1 );
+
+ALTER TABLE  port_group ADD CONSTRAINT ck_28 CHECK ( promiscuous = 0 OR promiscuous = 1 OR promiscuous = 2 OR promiscuous = 3 );
+
+ALTER TABLE  port_group ADD CONSTRAINT ck_29 CHECK ( allow_mac_change = 0 OR allow_mac_change = 1 );
+
+ALTER TABLE  port_group ADD CONSTRAINT ck_47 CHECK ( macvlan_filter_enable = 0 OR macvlan_filter_enable = 1 );
+
+ALTER TABLE  port_group ADD CONSTRAINT ck_65 CHECK ( pg_type = 0 OR pg_type = 10 OR pg_type = 11 OR pg_type = 20 OR pg_type = 21 );
+
+CREATE INDEX idx_port_group ON  port_group ( netplane_id );
+
+COMMENT ON COLUMN  port_group.name IS '端口组名称';
+
+COMMENT ON COLUMN  port_group.pg_type IS '=0 uplink pg; n=10 kernel_mgr pg; n=11 kernel_storage pg; n=20 vm_share pg; n=21 vm_private pg;n';
+
+COMMENT ON COLUMN  port_group.allowed_priorities IS 'allowed values of 802.1Q PCP bitsllowedPriorities[] llowed values of 802.1Q PCP bits nthat this port is allowed to transmit';
+
+COMMENT ON COLUMN  port_group.receive_bandwidth_limit IS 'Maximum receive bandwidth this port is allowed to use';
+
+COMMENT ON COLUMN  port_group.receive_bandwidth_reserve IS 'Minimum receive bandwidth allocated to this portallocated  is ort';
+
+COMMENT ON COLUMN  port_group.default_vlan_id IS '默认VLAN id';
+
+COMMENT ON COLUMN  port_group.promiscuous IS '混杂模式 n=0 no;n=1 unicast promiscuous;n=2 multicast promiscuous;n=3 unicast multicast promiscuous;';
+
+COMMENT ON COLUMN  port_group.macvlan_filter_enable IS '= 0 no; = 1 yes;nmac vlan 过滤';
+
+COMMENT ON COLUMN  port_group.allowed_transmit_macs IS 'indexed array of MAC addresses this port is allowed to transmit';
+
+COMMENT ON COLUMN  port_group.allowed_transmit_macvlans IS 'indexed arrays of MAC addresses and VIDs to support filtering on MAC VIDMAC addresses and VIDs  to support filtering on MAC,VID npairs.';
+
+COMMENT ON COLUMN  port_group."version" IS '对应vdp vsi type version ';
+
+COMMENT ON COLUMN  port_group.type_id IS 'vsi type id';
+
+COMMENT ON COLUMN  port_group.allow_mac_change IS '=0 no; = 1 yes';
+
+COMMENT ON COLUMN  port_group.switchport_mode IS '=0 trunk;n= 1 access;';
+
+CREATE TABLE  switch ( 
+	switch_type          int4 DEFAULT 1 NOT NULL,
+	id                   numeric( 19 ) NOT NULL,
+	name                 varchar( 64 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	state                int4 NOT NULL,
+	max_mtu              int4 DEFAULT 4000 NOT NULL,
+	CONSTRAINT pk_vswitch_1 PRIMARY KEY ( id ),
+	CONSTRAINT idx_switch UNIQUE ( name ),
+	CONSTRAINT pk_switch UNIQUE ( id, switch_type ),
+	CONSTRAINT idx_switch_0 UNIQUE ( uuid )
+ );
+
+ALTER TABLE  switch ADD CONSTRAINT ck_19 CHECK ( state = 0 OR state = 1 );
+
+ALTER TABLE  switch ADD CONSTRAINT ck_67 CHECK ( switch_type = 0 OR switch_type = 1 OR switch_type = 2 );
+
+COMMENT ON COLUMN  switch.switch_type IS '=0 physical switch;n=1 virtual switch sdvs ;n=2 virtual switch edvs;';
+
+COMMENT ON COLUMN  switch.state IS '= 0 stopn= 1 run; n';
+
+CREATE TABLE  uplink_pg ( 
+	pg_id                numeric( 19 ) NOT NULL,
+	pg_type              int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT idx_mgr_pg_0 UNIQUE ( pg_id ),
+	CONSTRAINT pk_uplink_pg UNIQUE ( pg_id ),
+	CONSTRAINT pk_uplink_pg_0 PRIMARY KEY ( pg_id )
+ );
+
+ALTER TABLE  uplink_pg ADD CONSTRAINT ck_62 CHECK ( pg_type = 0 );
+
+CREATE TABLE  virtual_switch ( 
+	switch_id            numeric( 19 ) NOT NULL,
+	switch_type          int4 DEFAULT 1 NOT NULL,
+	evb_mode             int4 DEFAULT 0 NOT NULL,
+	uplink_pg_id         numeric( 19 ) NOT NULL,
+	nic_max_num_cfg      int4 NOT NULL,
+	is_active            int4 DEFAULT 1 NOT NULL,
+	deploy_vsi_num       int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_normal_switch PRIMARY KEY ( switch_id ),
+	CONSTRAINT pk_virtual_switch UNIQUE ( switch_id, switch_type )
+ );
+
+ALTER TABLE  virtual_switch ADD CONSTRAINT ck_20 CHECK ( is_active = 0 OR is_active = 1 );
+
+ALTER TABLE  virtual_switch ADD CONSTRAINT ck_21 CHECK ( evb_mode = 0 OR evb_mode = 1 OR evb_mode = 2 );
+
+ALTER TABLE  virtual_switch ADD CONSTRAINT ck_66 CHECK ( switch_type = 1 OR switch_type = 2 );
+
+CREATE INDEX idx_virtual_switch ON  virtual_switch ( uplink_pg_id );
+
+COMMENT ON COLUMN  virtual_switch.evb_mode IS '模式 =0 normal; =1 veb; = 2 vepa';
+
+COMMENT ON COLUMN  virtual_switch.is_active IS '=1 active; = 0 no；  monitor模块更新，影响调度';
+
+CREATE TABLE  vlan_pool ( 
+	id                   numeric( 19 ) NOT NULL,
+	netplane_id          numeric( 19 ) NOT NULL,
+	vlan_num             int4 NOT NULL,
+	CONSTRAINT pk_vlan_pool_0 PRIMARY KEY ( id ),
+	CONSTRAINT idx_vlan_pool_2 UNIQUE ( netplane_id, vlan_num )
+ );
+
+ALTER TABLE  vlan_pool ADD CONSTRAINT ck_41 CHECK ( vlan_num >=2 AND vlan_num <= 4094 );
+
+CREATE INDEX idx_vlan_pool ON  vlan_pool ( netplane_id );
+
+CREATE TABLE  vlan_range ( 
+	id                   numeric( 19 ) NOT NULL,
+	netplane_id          numeric( 19 ) NOT NULL,
+	vlan_begin           int4 NOT NULL,
+	vlan_end             int4 NOT NULL,
+	CONSTRAINT pk_vlan_range PRIMARY KEY ( id )
+ );
+
+ALTER TABLE  vlan_range ADD CONSTRAINT ck_59 CHECK ( vlan_end >= vlan_begin );
+
+ALTER TABLE  vlan_range ADD CONSTRAINT ck_60 CHECK ( vlan_begin >= 2 AND vlan_begin <= 4094 );
+
+ALTER TABLE  vlan_range ADD CONSTRAINT ck_61 CHECK ( vlan_end >= 2 AND vlan_end <= 4094 );
+
+CREATE INDEX idx_vlan_range ON  vlan_range ( netplane_id );
+
+CREATE TABLE  vm ( 
+	vm_id                numeric( 19 ) NOT NULL,
+	project_id           numeric( 19 ) NOT NULL,
+	is_enable_watchdog   int4 DEFAULT 0 NOT NULL,
+	watchdog_timeout     int4 DEFAULT 0 NOT NULL,
+	cluster_name         varchar( 64 ),
+	host_name            varchar( 64 ),
+	CONSTRAINT pk_vm PRIMARY KEY ( vm_id )
+ );
+
+CREATE TABLE  vm_migrate ( 
+	vm_id                numeric( 19 ) NOT NULL,
+	src_clustername      varchar( 64 ) NOT NULL,
+	src_hostname         varchar( 64 ) NOT NULL,
+	dst_clustername      varchar( 64 ) NOT NULL,
+	dst_hostname         varchar( 64 ) NOT NULL,
+	state                int4 NOT NULL,
+	CONSTRAINT pk_vm_migrate PRIMARY KEY ( vm_id )
+ );
+
+COMMENT ON COLUMN  vm_migrate.state IS '= 0 int;n= 1 BEGINn= 2 END n';
+
+CREATE TABLE  vm_pg ( 
+	pg_id                numeric( 19 ) NOT NULL,
+	pg_type              int4 DEFAULT 20 NOT NULL,
+	CONSTRAINT idx_mgr_pg_2 UNIQUE ( pg_id ),
+	CONSTRAINT pk_vnic_pg UNIQUE ( pg_id ),
+	CONSTRAINT pk_vm_pg PRIMARY KEY ( pg_id ),
+	CONSTRAINT idx_vm_pg UNIQUE ( pg_id, pg_type )
+ );
+
+ALTER TABLE  vm_pg ADD CONSTRAINT ck_63 CHECK ( pg_type = 20 OR pg_type = 21 );
+
+COMMENT ON COLUMN  vm_pg.pg_type IS '=20 sharen=21 private';
+
+CREATE TABLE  vna ( 
+	id                   numeric( 19 ) NOT NULL,
+	vna_uuid             varchar( 64 ) NOT NULL,
+	vna_application      varchar( 64 ) NOT NULL,
+	vnm_application      varchar( 64 ) NOT NULL,
+	host_name            varchar( 64 ) NOT NULL,
+	os_name              varchar( 128 ) NOT NULL,
+	is_online            int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_vna PRIMARY KEY ( id ),
+	CONSTRAINT pk_host_0 UNIQUE ( id ),
+	CONSTRAINT idx_vna UNIQUE ( vna_uuid ),
+	CONSTRAINT idx_vna_0 UNIQUE ( vna_application )
+ );
+
+ALTER TABLE  vna ADD CONSTRAINT ck_2 CHECK ( is_online = 0 OR is_online = 1 OR is_online = 2 );
+
+CREATE TABLE  wildcast_cfg_create_virtual_port ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	port_type            int4 DEFAULT 3 NOT NULL,
+	port_name            varchar( 32 ) NOT NULL,
+	CONSTRAINT pk_wildcast_cfg_port_0 PRIMARY KEY ( id ),
+	CONSTRAINT pk_wildcast_cfg_create_virtual_port UNIQUE ( id, port_type ),
+	CONSTRAINT idx_wildcast_cfg_create_virtual_port UNIQUE ( uuid ),
+	CONSTRAINT idx_wildcast_cfg_create_virtual_port_0 UNIQUE ( port_name )
+ );
+
+ALTER TABLE  wildcast_cfg_create_virtual_port ADD CONSTRAINT ck_82 CHECK ( port_type = 3 OR port_type = 4 );
+
+COMMENT ON COLUMN  wildcast_cfg_create_virtual_port.port_type IS '=3 kernel port;n=4 uplink loop port;';
+
+CREATE TABLE  wildcast_cfg_loopback_port ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	port_name            varchar( 32 ) NOT NULL,
+	is_loop              int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_wildcast_cfg_port_1 PRIMARY KEY ( id )
+ );
+
+ALTER TABLE  wildcast_cfg_loopback_port ADD CONSTRAINT ck_40 CHECK ( is_loop = 0 OR is_loop = 1 );
+
+CREATE TABLE  wildcast_cfg_switch ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	switch_name          varchar( 64 ) NOT NULL,
+	switch_type          int4 DEFAULT 1 NOT NULL,
+	state                int4 DEFAULT 0 NOT NULL,
+	evb_mode             int4 DEFAULT 0 NOT NULL,
+	upg_id               numeric( 19 ) NOT NULL,
+	mtu_max              int4 DEFAULT 1500 NOT NULL,
+	nic_max_num          int4 DEFAULT 100 NOT NULL,
+	port_name            varchar( 64 ) NOT NULL,
+	port_type            int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_port_switch_mgr_0 PRIMARY KEY ( id ),
+	CONSTRAINT idx_switch_wildcast_cfg UNIQUE ( switch_name ),
+	CONSTRAINT pk_wildcast_cfg_switch UNIQUE ( id, port_type ),
+	CONSTRAINT idx_wildcast_cfg_switch UNIQUE ( uuid )
+ );
+
+ALTER TABLE  wildcast_cfg_switch ADD CONSTRAINT ck_37 CHECK ( switch_type = 1 OR switch_type = 2 );
+
+ALTER TABLE  wildcast_cfg_switch ADD CONSTRAINT ck_69 CHECK ( port_type = 0 OR port_type = 1 OR port_type = 4 );
+
+CREATE INDEX idx_switch_uplinkport_cfg_0 ON  wildcast_cfg_switch ( upg_id );
+
+COMMENT ON COLUMN  wildcast_cfg_switch.switch_type IS '=1 sdvs; n=2 edvs;';
+
+COMMENT ON COLUMN  wildcast_cfg_switch.port_type IS '=0 physical port;n=1 bond port;n=4 uplink loop port;';
+
+CREATE TABLE  wildcast_cfg_switch_bond ( 
+	wildcast_cfg_switch_id numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 1 NOT NULL,
+	bond_mode            int4 DEFAULT 1 NOT NULL,
+	CONSTRAINT pk_su_cfg_port_bond PRIMARY KEY ( wildcast_cfg_switch_id )
+ );
+
+ALTER TABLE  wildcast_cfg_switch_bond ADD CONSTRAINT ck_36 CHECK ( bond_mode = 1 OR bond_mode = 4 );
+
+ALTER TABLE  wildcast_cfg_switch_bond ADD CONSTRAINT ck_80 CHECK ( port_type = 1 );
+
+CREATE INDEX idx_wildcast_cfg_bond ON  wildcast_cfg_switch_bond ( wildcast_cfg_switch_id, port_type );
+
+CREATE TABLE  wildcast_cfg_switch_bond_map ( 
+	id                   numeric( 19 ) NOT NULL,
+	wildcast_cfg_bond_id numeric( 19 ) NOT NULL,
+	phy_port_name        varchar( 64 ) NOT NULL,
+	CONSTRAINT pk_su_cfg_port_bond_map PRIMARY KEY ( id ),
+	CONSTRAINT idx_switch_wildcast_cfg_port_bond_map UNIQUE ( wildcast_cfg_bond_id, phy_port_name )
+ );
+
+CREATE INDEX idx_su_cfg_port_bond_map ON  wildcast_cfg_switch_bond_map ( wildcast_cfg_bond_id );
+
+CREATE INDEX idx_su_cfg_port_bond_map_0 ON  wildcast_cfg_switch_bond_map ( phy_port_name );
+
+CREATE TABLE  wildcast_task_create_vport ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	wildcast_cfg_create_vport_id numeric( 19 ) NOT NULL,
+	state                int4 NOT NULL,
+	send_num             int4,
+	CONSTRAINT pk_wildcast_task_switch_0 PRIMARY KEY ( id ),
+	CONSTRAINT idx_wildcast_task_create_vport_0 UNIQUE ( vna_id, wildcast_cfg_create_vport_id )
+ );
+
+ALTER TABLE  wildcast_task_create_vport ADD CONSTRAINT ck_81 CHECK ( state = 0 OR state = 1 OR state = 2 OR state = 3 );
+
+CREATE INDEX idx_wildcast_task_switch_0 ON  wildcast_task_create_vport ( wildcast_cfg_create_vport_id );
+
+CREATE INDEX idx_wildcast_task_create_vport ON  wildcast_task_create_vport ( vna_id );
+
+COMMENT ON COLUMN  wildcast_task_create_vport.state IS '= 0 init;n= 1 消息已经发给VNM 等待应答;n= 2 消息应答失败;n= 3 消息应答成功;n';
+
+CREATE TABLE  wildcast_task_loopback ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	wildcast_cfg_loopback_port_id numeric( 19 ) NOT NULL,
+	state                int4 NOT NULL,
+	send_num             int4,
+	CONSTRAINT pk_wildcast_task_switch_1 PRIMARY KEY ( id ),
+	CONSTRAINT idx_wildcast_task_loopback_0 UNIQUE ( vna_id, wildcast_cfg_loopback_port_id )
+ );
+
+CREATE INDEX idx_wildcast_task_switch_1 ON  wildcast_task_loopback ( wildcast_cfg_loopback_port_id );
+
+CREATE INDEX idx_wildcast_task_loopback ON  wildcast_task_loopback ( vna_id );
+
+COMMENT ON COLUMN  wildcast_task_loopback.state IS '= 0 init;n= 1 消息已经发给VNM 等待应答;n= 2 消息应答失败;n= 3 消息应答成功;n';
+
+CREATE TABLE  wildcast_task_switch ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	wildcast_cfg_switch_id numeric( 19 ) NOT NULL,
+	state                int4 NOT NULL,
+	send_num             int4,
+	CONSTRAINT pk_wildcast_task_switch PRIMARY KEY ( id ),
+	CONSTRAINT idx_wildcast_task_switch_3 UNIQUE ( vna_id, wildcast_cfg_switch_id )
+ );
+
+ALTER TABLE  wildcast_task_switch ADD CONSTRAINT ck_79 CHECK ( state = 0 OR state = 1 OR state = 2 OR state = 3 );
+
+CREATE INDEX idx_wildcast_task_switch ON  wildcast_task_switch ( wildcast_cfg_switch_id );
+
+CREATE INDEX idx_wildcast_task_switch_2 ON  wildcast_task_switch ( vna_id );
+
+COMMENT ON COLUMN  wildcast_task_switch.state IS '= 0 init;n= 1 消息已经发给VNM 等待应答;n= 2 消息应答失败;n= 3 消息应答成功;n';
+
+CREATE TABLE  ip_range ( 
+	id                   numeric( 19 ) NOT NULL,
+	netplane_id          numeric( 19 ) NOT NULL,
+	ip_begin             varchar( 64 ) NOT NULL,
+	ip_end               varchar( 64 ) NOT NULL,
+	mask                 varchar( 64 ) NOT NULL,
+	ip_begin_num         numeric( 19 ) NOT NULL,
+	ip_end_num           numeric( 19 ) NOT NULL,
+	mask_num             numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_vlan_range_1 PRIMARY KEY ( id )
+ );
+
+CREATE INDEX idx_mac_range_1 ON  ip_range ( netplane_id );
+
+CREATE TABLE  kernel_cfg_report ( 
+	id                   numeric( 19 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	switch_name          varchar( 64 ) NOT NULL,
+	ip                   varchar( 64 ) NOT NULL,
+	mask                 varchar( 64 ) NOT NULL,
+	is_online            int4 DEFAULT 0 NOT NULL,
+	kernel_port_name     varchar( 64 ) NOT NULL,
+	uplink_port_name     varchar( 64 ) NOT NULL,
+	uplink_port_type     int4 DEFAULT 0 NOT NULL,
+	is_dhcp              int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_kernel_nic_report PRIMARY KEY ( id ),
+	CONSTRAINT idx_kernel_cfg_report UNIQUE ( vna_id ),
+	CONSTRAINT idx_kernel_cfg_report_0 UNIQUE ( vna_id, switch_name ),
+	CONSTRAINT pk_kernel_cfg_report UNIQUE ( id, vna_id ),
+	CONSTRAINT pk_kernel_cfg_report_0 UNIQUE ( vna_id, id ),
+	CONSTRAINT idx_kernel_cfg_report_1 UNIQUE ( uuid ),
+	CONSTRAINT pk_kernel_cfg_report_1 UNIQUE ( id, vna_id, uplink_port_type )
+ );
+
+ALTER TABLE  kernel_cfg_report ADD CONSTRAINT ck_25 CHECK ( is_online = 0 OR is_online = 1 );
+
+ALTER TABLE  kernel_cfg_report ADD CONSTRAINT ck_45 CHECK ( uplink_port_type = 0 OR uplink_port_type = 1 );
+
+COMMENT ON COLUMN  kernel_cfg_report.switch_name IS 'kernel';
+
+COMMENT ON COLUMN  kernel_cfg_report.uplink_port_type IS '=0 physical port;n=1 bond port;';
+
+COMMENT ON COLUMN  kernel_cfg_report.is_dhcp IS '=1 通过dhcp方式来获取地址';
+
+CREATE TABLE  kernel_cfg_report_bond ( 
+	kernel_cfg_report_id numeric( 19 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	uplink_port_type     int4 DEFAULT 1 NOT NULL,
+	bond_mode            int4 DEFAULT 1 NOT NULL,
+	CONSTRAINT pk_su_cfg_port_bond_0 PRIMARY KEY ( kernel_cfg_report_id ),
+	CONSTRAINT pk_kernel_cfg_report_bond UNIQUE ( kernel_cfg_report_id, vna_id )
+ );
+
+ALTER TABLE  kernel_cfg_report_bond ADD CONSTRAINT ck_26 CHECK ( bond_mode = 1 OR bond_mode = 4 );
+
+ALTER TABLE  kernel_cfg_report_bond ADD CONSTRAINT ck_75 CHECK ( uplink_port_type = 1 );
+
+CREATE INDEX idx_kernel_cfg_report_bond ON  kernel_cfg_report_bond ( kernel_cfg_report_id, vna_id, uplink_port_type );
+
+CREATE TABLE  kernel_cfg_report_bond_map ( 
+	id                   numeric( 19 ) NOT NULL,
+	kernel_cfg_report_bond_id numeric( 19 ) NOT NULL,
+	phy_port_name        varchar( 64 ) NOT NULL,
+	CONSTRAINT pk_su_cfg_port_bond_map_0 PRIMARY KEY ( id ),
+	CONSTRAINT idx_kernel_cfg_report_port_bond_map UNIQUE ( kernel_cfg_report_bond_id, phy_port_name )
+ );
+
+CREATE INDEX idx_su_cfg_port_bond_map_1 ON  kernel_cfg_report_bond_map ( kernel_cfg_report_bond_id );
+
+CREATE INDEX idx_su_cfg_port_bond_map_2 ON  kernel_cfg_report_bond_map ( phy_port_name );
+
+CREATE TABLE  kernel_pg ( 
+	pg_id                numeric( 19 ) NOT NULL,
+	pg_type              int4 DEFAULT 10 NOT NULL,
+	CONSTRAINT idx_mgr_pg_3 UNIQUE ( pg_id ),
+	CONSTRAINT pk_mgr_pg_0 UNIQUE ( pg_id ),
+	CONSTRAINT pk_kernel_data_pg PRIMARY KEY ( pg_id ),
+	CONSTRAINT idx_kernel_data_pg UNIQUE ( pg_id, pg_type )
+ );
+
+ALTER TABLE  kernel_pg ADD CONSTRAINT ck_30 CHECK ( pg_type = 10 OR pg_type = 11 );
+
+COMMENT ON COLUMN  kernel_pg.pg_type IS '=10 kernel mgrn=11 kernel storage';
+
+CREATE TABLE  logic_network ( 
+	id                   numeric( 19 ) NOT NULL,
+	name                 varchar( 64 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	vm_pg_id             numeric( 19 ) NOT NULL,
+	description          varchar( 512 ),
+	ip_bootprotocolmode  int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_logic_network PRIMARY KEY ( id ),
+	CONSTRAINT idx_logic_network_0 UNIQUE ( name ),
+	CONSTRAINT idx_logic_network_1 UNIQUE ( uuid )
+ );
+
+ALTER TABLE  logic_network ADD CONSTRAINT ck_92 CHECK ( ip_bootprotocolmode = 0 OR ip_bootprotocolmode = 1 OR ip_bootprotocolmode = 2 );
+
+CREATE INDEX idx_logic_network ON  logic_network ( vm_pg_id );
+
+COMMENT ON COLUMN  logic_network.ip_bootprotocolmode IS '=0 static;n=1 dynamic';
+
+CREATE TABLE  logic_network_ip_pool ( 
+	id                   numeric( 19 ) NOT NULL,
+	logic_network_id     numeric( 19 ) NOT NULL,
+	ip                   varchar( 64 ) NOT NULL,
+	mask                 varchar( 64 ) NOT NULL,
+	ip_num               numeric( 19 ) NOT NULL,
+	mask_num             numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_vlan_pool_2 PRIMARY KEY ( id ),
+	CONSTRAINT idx_logic_network_ip_pool UNIQUE ( ip, logic_network_id )
+ );
+
+CREATE INDEX idx_vlan_pool_1 ON  logic_network_ip_pool ( logic_network_id );
+
+CREATE TABLE  logic_network_ip_range ( 
+	id                   numeric( 19 ) NOT NULL,
+	logic_network_id     numeric( 19 ) NOT NULL,
+	ip_begin             varchar( 64 ) NOT NULL,
+	ip_end               varchar( 64 ) NOT NULL,
+	mask                 varchar( 64 ) NOT NULL,
+	ip_begin_num         numeric( 19 ) NOT NULL,
+	ip_end_num           numeric( 19 ) NOT NULL,
+	mask_num             numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_logic_network_ip_range PRIMARY KEY ( id )
+ );
+
+CREATE INDEX idx_logic_network_ip_range ON  logic_network_ip_range ( logic_network_id );
+
+CREATE TABLE  mac_pool ( 
+	id                   numeric( 19 ) NOT NULL,
+	netplane_id          numeric( 19 ) NOT NULL,
+	mac                  varchar( 64 ) NOT NULL,
+	mac_num              numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_vlan_pool_1 PRIMARY KEY ( id ),
+	CONSTRAINT idx_mac_pool UNIQUE ( mac, netplane_id )
+ );
+
+CREATE INDEX idx_vlan_pool_0 ON  mac_pool ( netplane_id );
+
+CREATE TABLE  mac_range ( 
+	id                   numeric( 19 ) NOT NULL,
+	netplane_id          numeric( 19 ) NOT NULL,
+	mac_begin            varchar( 64 ) NOT NULL,
+	mac_end              varchar( 64 ) NOT NULL,
+	mac_begin_num        numeric( 19 ) NOT NULL,
+	mac_end_num          numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_vlan_range_0 PRIMARY KEY ( id )
+ );
+
+CREATE INDEX idx_mac_range_0 ON  mac_range ( netplane_id );
+
+CREATE TABLE  pg_switchport_access_isolate ( 
+	pg_id                numeric( 19 ) NOT NULL,
+	pg_type              int4 DEFAULT 21 NOT NULL,
+	switchport_mode      int4 NOT NULL,
+	isolate_no           int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_pg_trunk_vlan_2 PRIMARY KEY ( pg_id )
+ );
+
+ALTER TABLE  pg_switchport_access_isolate ADD CONSTRAINT ck_73 CHECK ( pg_type = 21 );
+
+ALTER TABLE  pg_switchport_access_isolate ADD CONSTRAINT ck_74 CHECK ( isolate_no >= 1 AND isolate_no <= 100 );
+
+ALTER TABLE  pg_switchport_access_isolate ADD CONSTRAINT ck_39 CHECK ( switchport_mode = 1 );
+
+CREATE INDEX idx_pg_switchport_trunk_isolate_0 ON  pg_switchport_access_isolate ( pg_id, pg_type );
+
+CREATE INDEX idx_pg_switchport_access_isolate ON  pg_switchport_access_isolate ( pg_id, pg_type, switchport_mode );
+
+CREATE TABLE  pg_switchport_access_vlan ( 
+	pg_id                numeric( 19 ) NOT NULL,
+	pg_type              int4 NOT NULL,
+	switchport_mode      int4 NOT NULL,
+	vlan_num             int4 NOT NULL,
+	CONSTRAINT pk_pg_trunk_vlan_1 PRIMARY KEY ( pg_id )
+ );
+
+ALTER TABLE  pg_switchport_access_vlan ADD CONSTRAINT ck_71 CHECK ( pg_type = 0 OR pg_type = 10 OR pg_type = 11 OR pg_type = 20   );
+
+ALTER TABLE  pg_switchport_access_vlan ADD CONSTRAINT ck_72 CHECK ( vlan_num >=0 AND vlan_num <= 4094 );
+
+ALTER TABLE  pg_switchport_access_vlan ADD CONSTRAINT ck_1 CHECK ( switchport_mode = 1 );
+
+CREATE INDEX idx_pg_switchport_access_vlan ON  pg_switchport_access_vlan ( pg_id, pg_type );
+
+CREATE INDEX idx_pg_switchport_access_vlan_0 ON  pg_switchport_access_vlan ( vlan_num );
+
+CREATE INDEX idx_pg_switchport_access_vlan_1 ON  pg_switchport_access_vlan ( pg_id, pg_type, switchport_mode );
+
+CREATE TABLE  pg_switchport_trunk ( 
+	pg_id                numeric( 19 ) NOT NULL,
+	switchport_mode      int4 NOT NULL,
+	native_vlan_num      int4 NOT NULL,
+	CONSTRAINT pk_pg_trunk PRIMARY KEY ( pg_id ),
+	CONSTRAINT pk_pg_switchport_trunk UNIQUE ( pg_id )
+ );
+
+ALTER TABLE  pg_switchport_trunk ADD CONSTRAINT ck_83 CHECK ( switchport_mode = 0 );
+
+ALTER TABLE  pg_switchport_trunk ADD CONSTRAINT ck_85 CHECK ( native_vlan_num >= 0 AND native_vlan_num <= 4094 );
+
+CREATE TABLE  pg_switchport_trunk_vlan_range ( 
+	id                   numeric( 19 ) NOT NULL,
+	pg_switchport_trunk_id numeric( 19 ) NOT NULL,
+	vlan_begin           int4 NOT NULL,
+	vlan_end             int4 NOT NULL,
+	CONSTRAINT pk_pg_filter_vlan_range PRIMARY KEY ( id )
+ );
+
+ALTER TABLE  pg_switchport_trunk_vlan_range ADD CONSTRAINT ck_0 CHECK ( vlan_end >= vlan_begin );
+
+ALTER TABLE  pg_switchport_trunk_vlan_range ADD CONSTRAINT ck_58 CHECK ( vlan_begin >=1 AND vlan_begin <= 4094 );
+
+ALTER TABLE  pg_switchport_trunk_vlan_range ADD CONSTRAINT ck_22 CHECK ( vlan_end >=1 AND vlan_end <= 4094 );
+
+CREATE INDEX idx_pg_filter_vlan_range ON  pg_switchport_trunk_vlan_range ( pg_switchport_trunk_id );
+
+CREATE TABLE  physical_switch ( 
+	switch_id            numeric( 19 ) NOT NULL,
+	switch_type          int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_loop_switch PRIMARY KEY ( switch_id )
+ );
+
+ALTER TABLE  physical_switch ADD CONSTRAINT ck_68 CHECK ( switch_type = 0 );
+
+CREATE TABLE  port ( 
+	id                   numeric( 19 ) NOT NULL,
+	port_type            int4 NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	name                 varchar( 32 ) NOT NULL,
+	uuid                 varchar( 64 ) NOT NULL,
+	state                int4 DEFAULT 0 NOT NULL,
+	is_broadcast         int4 DEFAULT 0 NOT NULL,
+	is_running           int4 DEFAULT 0 NOT NULL,
+	is_multicast         int4 DEFAULT 0 NOT NULL,
+	promiscuous          int4 NOT NULL,
+	mtu                  int4 DEFAULT 1500 NOT NULL,
+	is_master            int4 DEFAULT 1 NOT NULL,
+	admin_state          int4 DEFAULT 1 NOT NULL,
+	is_online            int4 DEFAULT 0 NOT NULL,
+	is_cfg               int4 DEFAULT 0 NOT NULL,
+	is_consistency       int4 DEFAULT 0 NOT NULL,
+	total_sriovvf_num    int4 DEFAULT 0 NOT NULL,
+	free_sriovvf_num     int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_port_0 UNIQUE ( id ),
+	CONSTRAINT pk_port_1 UNIQUE ( id ),
+	CONSTRAINT pk_port_2 PRIMARY KEY ( id ),
+	CONSTRAINT idx_port_0 UNIQUE ( vna_id, name ),
+	CONSTRAINT idx_port_1 UNIQUE ( uuid ),
+	CONSTRAINT idx_port_2 UNIQUE ( id, port_type, vna_id ),
+	CONSTRAINT pk_port_3 UNIQUE ( id, vna_id, port_type )
+ );
+
+ALTER TABLE  port ADD CONSTRAINT ck_4 CHECK ( is_online = 0 OR is_online = 1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_5 CHECK ( state = 0 OR state =1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_6 CHECK ( is_broadcast = 0 OR is_broadcast = 1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_7 CHECK ( is_running = 0 OR is_running = 1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_8 CHECK ( is_multicast = 0 OR is_multicast = 1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_9 CHECK ( promiscuous = 0 OR promiscuous = 1 OR promiscuous = 2 OR promiscuous = 3 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_10 CHECK ( admin_state = 0 OR admin_state = 1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_38 CHECK ( is_master = 0 OR is_master = 1 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_31 CHECK ( port_type = 0 OR port_type = 1 OR port_type = 2 OR port_type = 3 OR port_type = 4 OR port_type = 5  );
+
+ALTER TABLE  port ADD CONSTRAINT ck_33 CHECK ( is_cfg = 0 OR is_cfg = 1 OR is_cfg = 2 );
+
+ALTER TABLE  port ADD CONSTRAINT ck_90 CHECK ( is_consistency = 0 OR is_consistency = 1 );
+
+CREATE INDEX idx_port ON  port ( vna_id );
+
+COMMENT ON COLUMN  port.port_type IS '=0 physical port;n=1 bond port;n=2 sriov vf port;n=3 kernel port(mgr, storage);n=4 uplink loop port;n=5 vswitch port;';
+
+COMMENT ON COLUMN  port.state IS '=1 upn=0 down';
+
+COMMENT ON COLUMN  port.is_broadcast IS '=1 setn=0 unset';
+
+COMMENT ON COLUMN  port.is_running IS '=0 unset n=1 set';
+
+COMMENT ON COLUMN  port.is_multicast IS '=0 unset;n=1 set';
+
+COMMENT ON COLUMN  port.promiscuous IS '=0 none;n=1 unicast promiscuous; n=2 multicast promiscuous; n=3 unicast and multicast promiscuous';
+
+COMMENT ON COLUMN  port.is_master IS '=1 master;n=0 slave';
+
+COMMENT ON COLUMN  port.admin_state IS '=0 n=1 ';
+
+COMMENT ON COLUMN  port.is_online IS '=0 off line;n=1 on line';
+
+CREATE TABLE  port_ip ( 
+	id                   numeric( 19 ) NOT NULL,
+	port_id              numeric( 64 ) NOT NULL,
+	port_name            varchar( 32 ) NOT NULL,
+	ip                   varchar( 64 ) NOT NULL,
+	mask                 varchar( 64 ) NOT NULL,
+	is_cfg               int4 DEFAULT 0 NOT NULL,
+	is_online            int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_port_ip PRIMARY KEY ( id ),
+	CONSTRAINT idx_port_ip_1 UNIQUE ( port_id, port_name )
+ );
+
+ALTER TABLE  port_ip ADD CONSTRAINT ck_11 CHECK ( is_cfg = 0 OR is_cfg = 1 OR is_cfg = 2 );
+
+CREATE INDEX idx_bond_address ON  port_ip ( port_id );
+
+CREATE INDEX idx_port_ip ON  port_ip ( id );
+
+COMMENT ON COLUMN  port_ip.port_name IS '存在别名情况';
+
+CREATE TABLE  port_mac ( 
+	id                   numeric( 19 ) NOT NULL,
+	port_id              numeric( 19 ) NOT NULL,
+	mac                  varchar( 64 ) NOT NULL,
+	CONSTRAINT pk_port_mac PRIMARY KEY ( id )
+ );
+
+CREATE INDEX idx_port_mac ON  port_mac ( port_id );
+
+CREATE TABLE  regist_module ( 
+	id                   numeric( 19 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	module_name          varchar( 64 ) NOT NULL,
+	module_uuid          varchar( 64 ) NOT NULL,
+	role                 int4 NOT NULL,
+	is_online            int4 NOT NULL,
+	CONSTRAINT pk_reg_module PRIMARY KEY ( id ),
+	CONSTRAINT idx_regist_module_0 UNIQUE ( module_uuid ),
+	CONSTRAINT idx_regist_module UNIQUE ( vna_id, module_name, role )
+ );
+
+ALTER TABLE  regist_module ADD CONSTRAINT ck_3 CHECK ( is_online = 0 OR is_online = 1 OR is_online = 2 );
+
+ALTER TABLE  regist_module ADD CONSTRAINT ck_88 CHECK ( role = 1 OR role = 2 OR role = 3 OR role = 4  OR role = 5 OR role = 6 OR role = 7 );
+
+CREATE INDEX idx_reg_module ON  regist_module ( vna_id );
+
+COMMENT ON COLUMN  regist_module.role IS '=1 hc;n=2 cc;n=3 dhcp;n=4 nat;n=5 watchdog;n=6 TC main;n=7 api sever;';
+
+CREATE TABLE  uplink_loop_port ( 
+	port_id              numeric( 19 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 4 NOT NULL,
+	is_cfg               int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT idx_switch_port UNIQUE ( port_id ),
+	CONSTRAINT pk_virtualswitch_port UNIQUE ( port_id ),
+	CONSTRAINT pk_uplink_loop_port PRIMARY KEY ( port_id )
+ );
+
+ALTER TABLE  uplink_loop_port ADD CONSTRAINT ck_23 CHECK ( is_cfg = 0 OR is_cfg = 1 );
+
+ALTER TABLE  uplink_loop_port ADD CONSTRAINT ck_78 CHECK ( port_type = 4 );
+
+CREATE INDEX idx_uplink_loop_port ON  uplink_loop_port ( port_id, vna_id, port_type );
+
+CREATE TABLE  virtual_switch_map ( 
+	id                   numeric( 19 ) NOT NULL,
+	port_id              numeric( 19 ) NOT NULL,
+	virtual_switch_id    numeric( 19 ) NOT NULL,
+	is_cfg               int4 DEFAULT 0 NOT NULL,
+	is_selected          int4 DEFAULT 0 NOT NULL,
+	is_consistency       int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_map_virtualswitch_uplinkport UNIQUE ( id ),
+	CONSTRAINT pk_map_virtualswitch_uplinkport_0 PRIMARY KEY ( id ),
+	CONSTRAINT idx_map_virtualswitch_uplinkport UNIQUE ( port_id, virtual_switch_id )
+ );
+
+CREATE INDEX idx_map_nss_uplinkport ON  virtual_switch_map ( virtual_switch_id );
+
+CREATE TABLE  vlan_map ( 
+	id                   numeric( 19 ) NOT NULL,
+	project_id           numeric( 19 ) NOT NULL,
+	vm_pg_id             numeric( 19 ) NOT NULL,
+	vlan_id              numeric( 19 ) DEFAULT 0 NOT NULL,
+	isolate_no           int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_vlan_pool PRIMARY KEY ( id ),
+	CONSTRAINT idx_vlan_map UNIQUE ( project_id, isolate_no, vm_pg_id )
+ );
+
+CREATE INDEX idx_vlan_map_0 ON  vlan_map ( vm_pg_id );
+
+CREATE TABLE  vsi_profile ( 
+	id                   numeric( 19 ) NOT NULL,
+	vsi_id_value         varchar( 64 ) NOT NULL,
+	vsi_id_format        int4 DEFAULT 5 NOT NULL,
+	vm_pg_id             numeric( 19 ) NOT NULL,
+	mac_id               numeric( 19 ) NOT NULL,
+	logic_network_ip_id  numeric( 19 ),
+	virtual_switch_id    numeric( 19 ),
+	CONSTRAINT pk_vsi_profile_0 PRIMARY KEY ( id ),
+	CONSTRAINT idx_vsi_profile UNIQUE ( mac_id ),
+	CONSTRAINT idx_vsi_profile_1 UNIQUE ( vsi_id_value )
+ );
+
+ALTER TABLE  vsi_profile ADD CONSTRAINT ck_32 CHECK ( vsi_id_format = 5 );
+
+CREATE INDEX pk_vsi_profile ON  vsi_profile ( vm_pg_id );
+
+CREATE INDEX idx_vsi_profile_0 ON  vsi_profile ( logic_network_ip_id );
+
+CREATE INDEX idx_vsi_profile_2 ON  vsi_profile ( virtual_switch_id );
+
+CREATE TABLE  vswitch_port ( 
+	port_id              numeric( 19 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	port_type            int4 NOT NULL,
+	CONSTRAINT pk_vswitch_port PRIMARY KEY ( port_id )
+ );
+
+ALTER TABLE  vswitch_port ADD CONSTRAINT ck_84 CHECK ( port_type = 5  );
+
+CREATE INDEX idx_vswitch_port ON  vswitch_port ( port_id, vna_id, port_type );
+
+CREATE TABLE  wildcast_cfg_create_kernel_port ( 
+	wildcast_create_vport_id numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 3 NOT NULL,
+	kernel_type          int4 DEFAULT 0 NOT NULL,
+	kernel_pg_id         numeric( 19 ) NOT NULL,
+	switch_id            numeric( 19 ) NOT NULL,
+	is_dhcp              int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_wildcast_cfg_kernel_port PRIMARY KEY ( wildcast_create_vport_id )
+ );
+
+ALTER TABLE  wildcast_cfg_create_kernel_port ADD CONSTRAINT ck_46 CHECK ( port_type = 3 );
+
+CREATE INDEX idx_wildcast_cfg_kernel_port ON  wildcast_cfg_create_kernel_port ( wildcast_create_vport_id, port_type );
+
+CREATE INDEX idx_wildcast_cfg_create_kernel_port ON  wildcast_cfg_create_kernel_port ( kernel_pg_id );
+
+CREATE INDEX idx_wildcast_cfg_create_kernel_port_0 ON  wildcast_cfg_create_kernel_port ( switch_id );
+
+COMMENT ON COLUMN  wildcast_cfg_create_kernel_port.kernel_type IS '=11 kernel_storage';
+
+COMMENT ON COLUMN  wildcast_cfg_create_kernel_port.is_dhcp IS '=1 通过dhcp方式来获取地址';
+
+CREATE TABLE  bond ( 
+	port_id              numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 1 NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	bond_mode            int4 DEFAULT 1 NOT NULL,
+	policy               varchar( 64 ) NOT NULL,
+	total_sriovport_num  int4 DEFAULT 0 NOT NULL,
+	valid_sriovport_num  int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_bond_port_0 UNIQUE ( port_id ),
+	CONSTRAINT pk_bond_1 PRIMARY KEY ( port_id ),
+	CONSTRAINT pk_bond_5 UNIQUE ( port_id, vna_id ),
+	CONSTRAINT pk_bond_6 UNIQUE ( port_id, bond_mode )
+ );
+
+ALTER TABLE  bond ADD CONSTRAINT ck_15 CHECK ( bond_mode = 1 OR bond_mode = 4 );
+
+ALTER TABLE  bond ADD CONSTRAINT ck_42 CHECK ( port_type = 1 );
+
+COMMENT ON COLUMN  bond.bond_mode IS 'bond模式  =1 backup; = 4 lacp';
+
+COMMENT ON COLUMN  bond.policy IS '策略';
+
+CREATE TABLE  bond_backup ( 
+	bond_id              numeric( 19 ) NOT NULL,
+	bond_mode            int4 DEFAULT 1 NOT NULL,
+	CONSTRAINT pk_bond_0 UNIQUE ( bond_id ),
+	CONSTRAINT pk_bond_backup PRIMARY KEY ( bond_id )
+ );
+
+ALTER TABLE  bond_backup ADD CONSTRAINT ck_87 CHECK ( bond_mode = 1 );
+
+CREATE TABLE  bond_lacp ( 
+	bond_id              numeric( 19 ) NOT NULL,
+	bond_mode            int4 DEFAULT 4 NOT NULL,
+	state                int4 DEFAULT 0 NOT NULL,
+	aggregator_id        varchar( 64 ),
+	partner_mac          varchar( 64 ),
+	CONSTRAINT pk_bond UNIQUE ( bond_id ),
+	CONSTRAINT pk_bond_lacp PRIMARY KEY ( bond_id )
+ );
+
+ALTER TABLE  bond_lacp ADD CONSTRAINT ck_16 CHECK ( state = 0 OR state = 1 );
+
+ALTER TABLE  bond_lacp ADD CONSTRAINT ck_86 CHECK ( bond_mode = 4 );
+
+COMMENT ON COLUMN  bond_lacp.state IS '协议状态 = 0 failed; = 1 success;';
+
+CREATE TABLE  hc_info ( 
+	regist_module_id     numeric( 19 ) NOT NULL,
+	cluster_name         varchar( 64 ) NOT NULL,
+	role                 int4 DEFAULT 1 NOT NULL,
+	CONSTRAINT pk_host_1 UNIQUE ( regist_module_id ),
+	CONSTRAINT pk_hc_info PRIMARY KEY ( regist_module_id )
+ );
+
+ALTER TABLE  hc_info ADD CONSTRAINT ck_89 CHECK ( role = 1 );
+
+CREATE TABLE  kernel_port ( 
+	port_id              numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 3 NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	virtual_switch_id    numeric( 19 ),
+	kernel_pg_id         numeric( 19 ),
+	type                 int4 DEFAULT 10 NOT NULL,
+	is_cfg               int4 DEFAULT 0 NOT NULL,
+	is_dhcp              int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_kernel_nic UNIQUE ( port_id ),
+	CONSTRAINT pk_kernel_port PRIMARY KEY ( port_id )
+ );
+
+ALTER TABLE  kernel_port ADD CONSTRAINT ck_24 CHECK ( is_cfg = 0 OR is_cfg = 1 OR is_cfg = 2 );
+
+ALTER TABLE  kernel_port ADD CONSTRAINT ck_43 CHECK ( type = 10 OR type = 11 );
+
+ALTER TABLE  kernel_port ADD CONSTRAINT ck_77 CHECK ( port_type = 3 );
+
+CREATE INDEX idx_mnic_profile_0 ON  kernel_port ( virtual_switch_id );
+
+CREATE INDEX idx_kernel_port ON  kernel_port ( kernel_pg_id );
+
+COMMENT ON COLUMN  kernel_port.type IS '=10 kernel_mgr;n=11 kernel_storage';
+
+COMMENT ON COLUMN  kernel_port.is_dhcp IS '=1 通过dhcp方式来获取地址';
+
+CREATE TABLE  physical_port ( 
+	port_id              numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 0 NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	supported_ports      varchar( 64 ) NOT NULL,
+	supported_link_modes varchar( 64 ) NOT NULL,
+	is_support_auto_negotiation int4 DEFAULT 1 NOT NULL,
+	advertised_link_modes varchar( 64 ) NOT NULL,
+	advertised_pause_frame_use varchar( 64 ) NOT NULL,
+	is_advertised_auto_negotiation int4 DEFAULT 1 NOT NULL,
+	speed                varchar( 64 ) NOT NULL,
+	duplex               varchar( 32 ) NOT NULL,
+	port                 varchar( 64 ) NOT NULL,
+	phyad                varchar( 32 ) NOT NULL,
+	transceiver          varchar( 32 ) NOT NULL,
+	auto_negotiate       varchar( 32 ) NOT NULL,
+	supports_wake_on     varchar( 32 ) NOT NULL,
+	wake_on              varchar( 32 ) NOT NULL,
+	current_msg_level    varchar( 32 ) NOT NULL,
+	is_linked            int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_port PRIMARY KEY ( port_id ),
+	CONSTRAINT pk_physical_port UNIQUE ( port_id, vna_id )
+ );
+
+ALTER TABLE  physical_port ADD CONSTRAINT ck_12 CHECK ( is_linked = 0 OR is_linked = 1 );
+
+ALTER TABLE  physical_port ADD CONSTRAINT ck_56 CHECK ( is_support_auto_negotiation = 0 OR is_support_auto_negotiation = 1 );
+
+ALTER TABLE  physical_port ADD CONSTRAINT ck_57 CHECK ( is_advertised_auto_negotiation = 0 OR is_advertised_auto_negotiation = 1 );
+
+ALTER TABLE  physical_port ADD CONSTRAINT ck_64 CHECK ( port_type = 0 );
+
+COMMENT ON TABLE  physical_port IS '物理主机端口表';
+
+COMMENT ON COLUMN  physical_port.is_support_auto_negotiation IS '=0 no;n=1 yes';
+
+COMMENT ON COLUMN  physical_port.is_advertised_auto_negotiation IS '=0 no;n=1 yesn';
+
+COMMENT ON COLUMN  physical_port.speed IS '速率';
+
+COMMENT ON COLUMN  physical_port.duplex IS '双工模式';
+
+COMMENT ON COLUMN  physical_port.auto_negotiate IS '协商模式';
+
+COMMENT ON COLUMN  physical_port.is_linked IS '=0 no;n=1 yes';
+
+CREATE TABLE  physical_port_extend ( 
+	physical_port_id     numeric( 19 ) NOT NULL,
+	is_rx_checksumming   int4 DEFAULT 0 NOT NULL,
+	is_tx_checksumming   int4 DEFAULT 0 NOT NULL,
+	is_scatter_gather    int4 DEFAULT 0 NOT NULL,
+	is_tcp_segmentation_offload int4 DEFAULT 0 NOT NULL,
+	is_udp_fragmentation_offload int4 DEFAULT 0 NOT NULL,
+	is_generic_segmentation_offload int4 DEFAULT 0 NOT NULL,
+	is_generic_receive_offload int4 DEFAULT 0 NOT NULL,
+	is_large_receive_offload int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_physical_port_extend PRIMARY KEY ( physical_port_id )
+ );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_48 CHECK ( is_rx_checksumming = 0 OR is_rx_checksumming =1  );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_49 CHECK ( is_tx_checksumming = 0 OR is_tx_checksumming = 1  );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_50 CHECK ( is_scatter_gather = 0 OR is_scatter_gather = 1  );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_51 CHECK ( is_tcp_segmentation_offload = 0 OR is_tcp_segmentation_offload = 1  );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_52 CHECK ( is_udp_fragmentation_offload = 0 OR is_udp_fragmentation_offload = 1 );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_53 CHECK ( is_generic_segmentation_offload = 0 OR is_generic_segmentation_offload = 1  );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_54 CHECK ( is_generic_receive_offload = 0 OR is_generic_receive_offload = 1  );
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT ck_55 CHECK ( is_large_receive_offload = 0 OR is_large_receive_offload = 1  );
+
+COMMENT ON COLUMN  physical_port_extend.is_rx_checksumming IS '=0 off; n=1 on;';
+
+COMMENT ON COLUMN  physical_port_extend.is_tx_checksumming IS '=0 off;n=1 on';
+
+COMMENT ON COLUMN  physical_port_extend.is_scatter_gather IS '=0 off;n=1 on';
+
+COMMENT ON COLUMN  physical_port_extend.is_tcp_segmentation_offload IS '=0 off;n=1 on';
+
+COMMENT ON COLUMN  physical_port_extend.is_udp_fragmentation_offload IS '=0 off;n=1 on';
+
+COMMENT ON COLUMN  physical_port_extend.is_generic_segmentation_offload IS '=0 off;n=1 on';
+
+COMMENT ON COLUMN  physical_port_extend.is_generic_receive_offload IS '=0 off;n=1 on';
+
+COMMENT ON COLUMN  physical_port_extend.is_large_receive_offload IS '=0 off;n=1 on';
+
+CREATE TABLE  sriov_port ( 
+	physical_port_id     numeric( 19 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	is_loop_report       int4 DEFAULT 0 NOT NULL,
+	is_loop_cfg          int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_sriov_port PRIMARY KEY ( physical_port_id ),
+	CONSTRAINT pk_sriov_port_0 UNIQUE ( physical_port_id, vna_id )
+ );
+
+ALTER TABLE  sriov_port ADD CONSTRAINT ck_13 CHECK ( is_loop_cfg = 0 OR is_loop_cfg = 1 OR is_loop_cfg = 2 );
+
+ALTER TABLE  sriov_port ADD CONSTRAINT ck_70 CHECK ( is_loop_report = 0 OR is_loop_report = 1 );
+
+CREATE TABLE  sriov_vf_port ( 
+	port_id              numeric( 19 ) NOT NULL,
+	port_type            int4 DEFAULT 2 NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	sriov_port_id        numeric( 19 ) NOT NULL,
+	pci                  varchar( 64 ) NOT NULL,
+	vlan_num             int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT idx_virtual_port UNIQUE ( port_id ),
+	CONSTRAINT pk_virtual_port UNIQUE ( port_id ),
+	CONSTRAINT pk_sriov_vf_port PRIMARY KEY ( port_id ),
+	CONSTRAINT idx_sriov_vf_port_0 UNIQUE ( sriov_port_id, pci )
+ );
+
+ALTER TABLE  sriov_vf_port ADD CONSTRAINT ck_44 CHECK ( vlan_num >=0 AND vlan_num <= 4094 );
+
+ALTER TABLE  sriov_vf_port ADD CONSTRAINT ck_76 CHECK ( port_type = 2 );
+
+CREATE INDEX idx_sriov_vf_port ON  sriov_vf_port ( sriov_port_id );
+
+CREATE TABLE  vnic ( 
+	id                   numeric( 19 ) NOT NULL,
+	vm_id                numeric( 19 ) NOT NULL,
+	nic_index            int4 NOT NULL,
+	is_sriov             int4 NOT NULL,
+	is_loop              int4 NOT NULL,
+	logic_network_uuid   varchar( 64 ) NOT NULL,
+	port_type            varchar( 64 ) NOT NULL,
+	vsi_profile_id       numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_vm_nic_1 PRIMARY KEY ( id ),
+	CONSTRAINT idx_vnic_0 UNIQUE ( vm_id, nic_index )
+ );
+
+ALTER TABLE  vnic ADD CONSTRAINT ck_34 CHECK ( is_sriov = 0 OR is_sriov = 1 );
+
+ALTER TABLE  vnic ADD CONSTRAINT ck_35 CHECK ( is_loop = 0 OR is_loop = 1 );
+
+CREATE INDEX idx_vnic_1 ON  vnic ( vsi_profile_id );
+
+CREATE INDEX idx_vnic ON  vnic ( vm_id );
+
+CREATE TABLE  vsi_sriov ( 
+	vsi_profile_id       numeric( 19 ) NOT NULL,
+	sriov_vf_port_id     numeric( 19 ) NOT NULL,
+	CONSTRAINT pk_vnic_sriov PRIMARY KEY ( vsi_profile_id )
+ );
+
+CREATE INDEX idx_vnic_sriov ON  vsi_sriov ( sriov_vf_port_id );
+
+CREATE TABLE  bond_map ( 
+	id                   numeric( 19 ) NOT NULL,
+	vna_id               numeric( 19 ) NOT NULL,
+	bond_id              numeric( 19 ) NOT NULL,
+	physical_port_id     numeric( 19 ) NOT NULL,
+	is_cfg               int4 DEFAULT 0 NOT NULL,
+	is_selected          int4 DEFAULT 0 NOT NULL,
+	lacp_is_success      int4 DEFAULT 0 NOT NULL,
+	backup_is_active     int4 DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_bond_port PRIMARY KEY ( id ),
+	CONSTRAINT idx_bond_port UNIQUE ( bond_id, physical_port_id )
+ );
+
+ALTER TABLE  bond_map ADD CONSTRAINT ck_17 CHECK ( is_cfg = 0 OR is_cfg = 1 OR is_cfg = 2 );
+
+ALTER TABLE  bond_map ADD CONSTRAINT ck_18 CHECK ( is_selected = 0 OR is_selected = 1 );
+
+ALTER TABLE  bond_map ADD CONSTRAINT ck_14 CHECK ( lacp_is_success = 0 OR lacp_is_success =1  );
+
+ALTER TABLE  bond_map ADD CONSTRAINT ck_91 CHECK ( backup_is_active = 0 OR backup_is_active = 1  );
+
+CREATE INDEX idx_bond_port_0 ON  bond_map ( bond_id );
+
+COMMENT ON COLUMN  bond_map.lacp_is_success IS '=0 init/aggregate failed;;n=1 aggregate success;';
+
+COMMENT ON COLUMN  bond_map.backup_is_active IS '=0 init/other nic;n=1 active nic;';
+
+ALTER TABLE  bond ADD CONSTRAINT fk_bond_port FOREIGN KEY ( port_id, vna_id, port_type ) REFERENCES  port( id, vna_id, port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  bond_backup ADD CONSTRAINT fk_bond_backup_bond_port FOREIGN KEY ( bond_id, bond_mode ) REFERENCES  bond( port_id, bond_mode ) ON DELETE CASCADE;
+
+ALTER TABLE  bond_lacp ADD CONSTRAINT fk_bond_lacp_bond_port FOREIGN KEY ( bond_id, bond_mode ) REFERENCES  bond( port_id, bond_mode ) ON DELETE CASCADE;
+
+ALTER TABLE  bond_map ADD CONSTRAINT fk_bond_port_bond FOREIGN KEY ( bond_id, vna_id ) REFERENCES  bond( port_id, vna_id ) ON DELETE CASCADE;
+
+ALTER TABLE  bond_map ADD CONSTRAINT fk_bond_port_host_port FOREIGN KEY ( physical_port_id, vna_id ) REFERENCES  physical_port( port_id, vna_id ) ON DELETE CASCADE;
+
+ALTER TABLE  hc_info ADD CONSTRAINT fk_hc_info_reg_module FOREIGN KEY ( regist_module_id ) REFERENCES  regist_module( id ) ON DELETE CASCADE;
+
+ALTER TABLE  ip_range ADD CONSTRAINT fk_ip_range_netplane FOREIGN KEY ( netplane_id ) REFERENCES  netplane( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  kernel_cfg_report ADD CONSTRAINT fk_kernel_cfg_report_vna FOREIGN KEY ( vna_id ) REFERENCES  vna( id ) ON DELETE CASCADE;
+
+ALTER TABLE  kernel_cfg_report_bond ADD CONSTRAINT fk_kernel_cfg_report_bond FOREIGN KEY ( kernel_cfg_report_id, vna_id, uplink_port_type ) REFERENCES  kernel_cfg_report( id, vna_id, uplink_port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  kernel_cfg_report_bond_map ADD CONSTRAINT fk_kernel_cfg_report_port_bond_map FOREIGN KEY ( kernel_cfg_report_bond_id ) REFERENCES  kernel_cfg_report_bond( kernel_cfg_report_id ) ON DELETE CASCADE;
+
+ALTER TABLE  kernel_pg ADD CONSTRAINT fk_kernel_data_pg_port_group FOREIGN KEY ( pg_id, pg_type ) REFERENCES  port_group( id, pg_type ) ON DELETE CASCADE;
+
+ALTER TABLE  kernel_port ADD CONSTRAINT fk_kernel_port_virtual_switch FOREIGN KEY ( virtual_switch_id ) REFERENCES  virtual_switch( switch_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  kernel_port ADD CONSTRAINT fk_kernel_port_kernel_pg FOREIGN KEY ( kernel_pg_id ) REFERENCES  kernel_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  kernel_port ADD CONSTRAINT fk_kernel_nic_port FOREIGN KEY ( port_id, port_type, vna_id ) REFERENCES  port( id, port_type, vna_id ) ON DELETE CASCADE;
+
+ALTER TABLE  logic_network ADD CONSTRAINT fk_logic_network_vnic_pg FOREIGN KEY ( vm_pg_id ) REFERENCES  vm_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  logic_network_ip_pool ADD CONSTRAINT fk_ln_ip_pool_logic_network FOREIGN KEY ( logic_network_id ) REFERENCES  logic_network( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  logic_network_ip_range ADD CONSTRAINT fk_logic_network_ip_range FOREIGN KEY ( logic_network_id ) REFERENCES  logic_network( id ) ON DELETE CASCADE;
+
+ALTER TABLE  mac_pool ADD CONSTRAINT fk_mac_pool_netplane FOREIGN KEY ( netplane_id ) REFERENCES  netplane( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  mac_range ADD CONSTRAINT fk_mac_range_netplane FOREIGN KEY ( netplane_id ) REFERENCES  netplane( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  pg_switchport_access_isolate ADD CONSTRAINT fk_pg_switchport_access_isolate FOREIGN KEY ( pg_id, pg_type, switchport_mode ) REFERENCES  port_group( id, pg_type, switchport_mode ) ON DELETE CASCADE;
+
+ALTER TABLE  pg_switchport_access_vlan ADD CONSTRAINT fk_pg_switchport_access_vlan FOREIGN KEY ( pg_id, pg_type, switchport_mode ) REFERENCES  port_group( id, pg_type, switchport_mode ) ON DELETE CASCADE;
+
+ALTER TABLE  pg_switchport_trunk ADD CONSTRAINT fk_pg_trunk_port_group FOREIGN KEY ( pg_id, switchport_mode ) REFERENCES  port_group( id, switchport_mode ) ON DELETE CASCADE;
+
+ALTER TABLE  pg_switchport_trunk_vlan_range ADD CONSTRAINT fk_pg_trunk_vlan_range FOREIGN KEY ( pg_switchport_trunk_id ) REFERENCES  pg_switchport_trunk( pg_id ) ON DELETE CASCADE;
+
+ALTER TABLE  physical_port ADD CONSTRAINT fk_host_phy_port_port FOREIGN KEY ( port_id, port_type, vna_id ) REFERENCES  port( id, port_type, vna_id ) ON DELETE CASCADE;
+
+ALTER TABLE  physical_port_extend ADD CONSTRAINT fk_physical_port_extend FOREIGN KEY ( physical_port_id ) REFERENCES  physical_port( port_id ) ON DELETE CASCADE;
+
+ALTER TABLE  physical_switch ADD CONSTRAINT fk_loop_switch_switch FOREIGN KEY ( switch_id, switch_type ) REFERENCES  switch( id, switch_type ) ON DELETE CASCADE;
+
+ALTER TABLE  port ADD CONSTRAINT fk_port_vna FOREIGN KEY ( vna_id ) REFERENCES  vna( id ) ON DELETE CASCADE;
+
+ALTER TABLE  port_group ADD CONSTRAINT fk_port_group_netplane FOREIGN KEY ( netplane_id ) REFERENCES  netplane( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  port_ip ADD CONSTRAINT fk_port_ip_port FOREIGN KEY ( port_id ) REFERENCES  port( id ) ON DELETE CASCADE;
+
+ALTER TABLE  port_mac ADD CONSTRAINT fk_port_mac_port FOREIGN KEY ( port_id ) REFERENCES  port( id ) ON DELETE CASCADE;
+
+ALTER TABLE  regist_module ADD CONSTRAINT fk_reg_module_vna FOREIGN KEY ( vna_id ) REFERENCES  vna( id ) ON DELETE CASCADE;
+
+ALTER TABLE  sriov_port ADD CONSTRAINT fk_sriov_port_host_port FOREIGN KEY ( physical_port_id, vna_id ) REFERENCES  physical_port( port_id, vna_id ) ON DELETE CASCADE;
+
+ALTER TABLE  sriov_vf_port ADD CONSTRAINT fk_sriov_vf_port_sriov_port FOREIGN KEY ( sriov_port_id, vna_id ) REFERENCES  sriov_port( physical_port_id, vna_id ) ON DELETE CASCADE;
+
+ALTER TABLE  sriov_vf_port ADD CONSTRAINT fk_sriov_vf_port_port FOREIGN KEY ( port_id, vna_id, port_type ) REFERENCES  port( id, vna_id, port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  uplink_loop_port ADD CONSTRAINT fk_uplink_loop_port_port FOREIGN KEY ( port_id, vna_id, port_type ) REFERENCES  port( id, vna_id, port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  uplink_pg ADD CONSTRAINT fk_uplink_pg_port_group FOREIGN KEY ( pg_id, pg_type ) REFERENCES  port_group( id, pg_type ) ON DELETE CASCADE;
+
+ALTER TABLE  virtual_switch ADD CONSTRAINT fk_virtual_switch_uplink_pg FOREIGN KEY ( uplink_pg_id ) REFERENCES  uplink_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  virtual_switch ADD CONSTRAINT fk_normal_switch_switch FOREIGN KEY ( switch_id, switch_type ) REFERENCES  switch( id, switch_type ) ON DELETE CASCADE;
+
+ALTER TABLE  virtual_switch_map ADD CONSTRAINT fk_map_sdvs_uplinkport_port FOREIGN KEY ( port_id ) REFERENCES  port( id ) ON DELETE CASCADE;
+
+ALTER TABLE  virtual_switch_map ADD CONSTRAINT fk_map_virtualswitch_uplinkport FOREIGN KEY ( virtual_switch_id ) REFERENCES  virtual_switch( switch_id ) ON DELETE CASCADE;
+
+ALTER TABLE  vlan_map ADD CONSTRAINT fk_vlan_vlan_pool FOREIGN KEY ( vlan_id ) REFERENCES  vlan_pool( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vlan_map ADD CONSTRAINT fk_vlan_map_vm_pg FOREIGN KEY ( vm_pg_id ) REFERENCES  vm_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vlan_pool ADD CONSTRAINT fk_vlan_pool_netplane FOREIGN KEY ( netplane_id ) REFERENCES  netplane( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vlan_range ADD CONSTRAINT fk_vlan_range_netplane FOREIGN KEY ( netplane_id ) REFERENCES  netplane( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vm_pg ADD CONSTRAINT fk_vm_pg_port_group FOREIGN KEY ( pg_id, pg_type ) REFERENCES  port_group( id, pg_type ) ON DELETE CASCADE;
+
+ALTER TABLE  vnic ADD CONSTRAINT fk_vnic_vsi_profile FOREIGN KEY ( vsi_profile_id ) REFERENCES  vsi_profile( id ) ON DELETE CASCADE;
+
+ALTER TABLE  vnic ADD CONSTRAINT fk_vnic_vm FOREIGN KEY ( vm_id ) REFERENCES  vm( vm_id ) ON DELETE CASCADE;
+
+ALTER TABLE  vsi_profile ADD CONSTRAINT fk_vnic_profile_vnic_pg FOREIGN KEY ( vm_pg_id ) REFERENCES  vm_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vsi_profile ADD CONSTRAINT fk_vsi_profile_mac_pool FOREIGN KEY ( mac_id ) REFERENCES  mac_pool( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vsi_profile ADD CONSTRAINT fk_vsi_profile FOREIGN KEY ( logic_network_ip_id ) REFERENCES  logic_network_ip_pool( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vsi_profile ADD CONSTRAINT fk_vsi_profile_virtual_switch FOREIGN KEY ( virtual_switch_id ) REFERENCES  virtual_switch( switch_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vsi_sriov ADD CONSTRAINT fk_vnic_sriov_sriov_vf_port FOREIGN KEY ( vsi_profile_id ) REFERENCES  vsi_profile( id ) ON DELETE CASCADE;
+
+ALTER TABLE  vsi_sriov ADD CONSTRAINT fk_vnic_sriov_sriov_vf_port_1 FOREIGN KEY ( sriov_vf_port_id ) REFERENCES  sriov_vf_port( port_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  vswitch_port ADD CONSTRAINT fk_vswitch_port_port FOREIGN KEY ( port_id, vna_id, port_type ) REFERENCES  port( id, vna_id, port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  wildcast_cfg_create_kernel_port ADD CONSTRAINT fk_wildcast_cfg_kernel_port FOREIGN KEY ( wildcast_create_vport_id, port_type ) REFERENCES  wildcast_cfg_create_virtual_port( id, port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  wildcast_cfg_create_kernel_port ADD CONSTRAINT fk_wildcast_cfg_create_kernel_port FOREIGN KEY ( kernel_pg_id ) REFERENCES  kernel_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  wildcast_cfg_create_kernel_port ADD CONSTRAINT fk_wildcast_cfg_create_kernel_port_001 FOREIGN KEY ( switch_id ) REFERENCES  virtual_switch( switch_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  wildcast_cfg_switch ADD CONSTRAINT fk_switch_uplinkport_cfg FOREIGN KEY ( upg_id ) REFERENCES  uplink_pg( pg_id ) ON DELETE RESTRICT;
+
+ALTER TABLE  wildcast_cfg_switch_bond ADD CONSTRAINT fk_wildcast_cfg_bond FOREIGN KEY ( wildcast_cfg_switch_id, port_type ) REFERENCES  wildcast_cfg_switch( id, port_type ) ON DELETE CASCADE;
+
+ALTER TABLE  wildcast_cfg_switch_bond_map ADD CONSTRAINT fk_su_cfg_port_bond_map FOREIGN KEY ( wildcast_cfg_bond_id ) REFERENCES  wildcast_cfg_switch_bond( wildcast_cfg_switch_id ) ON DELETE CASCADE;
+
+ALTER TABLE  wildcast_task_create_vport ADD CONSTRAINT fk_wildcast_task_create_vport FOREIGN KEY ( wildcast_cfg_create_vport_id ) REFERENCES  wildcast_cfg_create_virtual_port( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  wildcast_task_create_vport ADD CONSTRAINT fk_wildcast_task_create_vport_1 FOREIGN KEY ( vna_id ) REFERENCES  vna( id ) ON DELETE CASCADE;
+
+ALTER TABLE  wildcast_task_loopback ADD CONSTRAINT fk_wildcast_task_loopback FOREIGN KEY ( wildcast_cfg_loopback_port_id ) REFERENCES  wildcast_cfg_loopback_port( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  wildcast_task_loopback ADD CONSTRAINT fk_wildcast_task_loopback_vna FOREIGN KEY ( vna_id ) REFERENCES  vna( id ) ON DELETE CASCADE;
+
+ALTER TABLE  wildcast_task_switch ADD CONSTRAINT fk_wildcast_task_switch FOREIGN KEY ( wildcast_cfg_switch_id ) REFERENCES  wildcast_cfg_switch( id ) ON DELETE RESTRICT;
+
+ALTER TABLE  wildcast_task_switch ADD CONSTRAINT fk_wildcast_task_switch_vna FOREIGN KEY ( vna_id ) REFERENCES  vna( id ) ON DELETE CASCADE;
+

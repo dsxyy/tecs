@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_usergroup_query.xml">
+	<interface>tecs.usergroup.query</interface>
+	<shortdesc lang_cn="查询用户组信息" lang_en="Query usergroup info"/>
+	<description lang_cn="查询用户组信息，如果成功，则第一个参数返回0，第二个为用户组信息数组。如果失败，则第一个参数返回非0，第二个为错误信息" lang_en="Query usergroup info. If operation success, the first renturn parameter is 0, second is array of usergroup info. If failed, the first is not 0, second is appending error information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <parameter name="start_index" type="int64" lang_cn="查询起始位置，起始值为0。" lang_en="query start index, start value is 0."/>
+        <parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-200。" lang_en="num once query,range 1-200."/>
+		<parameter name="groupname" type="string" lang_cn="用户组名，必须由数字、字母或下划线组成，范围0-64个字符，为空则查询所有用户组。" lang_en="Usergroup name, only consist of numbers,letters or underscores, range 0-64 characters, null will query all."/>
+    </parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码：0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+			    <struct>
+			    <parameter name="groupname" type="string" lang_cn="用户组名。" lang_en="Usergroup name."/>
+			    <parameter name="grouptype" type="int" lang_cn="用户组类型。" lang_en="Usergroup type."/>
+			    <parameter name="description" type="string" lang_cn="用户组描述信息。" lang_en="Usergroup description info."/>
+			    <parameter name="enabled" type="int" lang_cn="用户组是否启用。" lang_en="Usergroup is enable or not.">
+					<enum name="1" lang_cn="启用" lang_en="enable"/>
+					<enum name="2" lang_cn="禁用" lang_en="disable"/>
+			    </parameter>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：非0表示失败。" lang_en="Error code, not 0 means failed.">
+				<enum name="8003" lang_cn="错误: 用户组不存在" lang_en="Error, usergroup does not exist."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.usergroup.allocate" href="tecs_usergroup_allocate.xml"/>
+		<xref name="tecs.usergroup.set" href="tecs_usergroup_set.xml"/>
+		<xref name="tecs.usergroup.delete" href="tecs_usergroup_delete.xml"/>
+	</reference>
+</method>

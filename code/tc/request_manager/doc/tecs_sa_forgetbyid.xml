@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_sa_forgetbyid.xml">
+	<interface>tecs.sa.forgetbyid</interface>
+	<shortdesc lang_cn="通过ID将已注销磁阵从SC中遗忘掉" lang_en="Forget the unregistered sa from sc by id."/>
+	<description lang_cn="通过ID将已注销磁阵从 sc 中遗忘掉。" lang_en="Forget the unregistered sa from sc by id. "/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="sid" type="int64" lang_cn="需要维护的磁阵编号,这个编号必须是已经存在的磁阵的编号." lang_en="the id of the sa, the id that stand for sa   must exist."/>		
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="13001" lang_cn="失败，SC未应答" lang_en="Failed, SC is not answered"/>
+				<enum name="13002" lang_cn="错误，对应的磁阵并不存在" lang_en="Error, the sa not exist."/>
+				<enum name="13004" lang_cn="失败，删除SC数据库失败" lang_en="Failed, delete sc db fail"/>	
+				<enum name="13008" lang_cn="失败，sa 仍然在使用，不能删除" lang_en="Failed, sa  is still used,can't be delete "/>				
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.sa.enable" href="tecs_sa_enable.xml"/>
+	</reference>
+</method>

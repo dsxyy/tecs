@@ -1,0 +1,32 @@
+##svn:http://10.44.19.237/svn/ZXTULIP/branches/ZXTULIP(TECS)_V01.01.10.P3.B2_20120312_bugfix/tecs/tools
+##build_id = 2012-04-12_19-25-19
+##target = 10.44.129.115
+
+##job build directory = /home/ci_server/Tecs_stinit00
+##agent build directory = $target:/home/ci_agent/$build_id
+##agent script directory =$target:/home/ci_agent/script_home
+##version_path = /home/tecs/$version_no
+
+#正式开始系统测试流程，host_el6为tecs测试机（agent）
+host_el6=10.44.129.115
+image=ttylinux0.img
+job_bulid_dir=/home/ci_server/Tecs_stinit00
+
+#测试虚拟机部署流程
+cd $job_bulid_dir/test
+
+#test_tecs_remote.sh在远程tecs测试机上执行st_test_001.py
+#./test_tecs_remote.sh $WORKSPACE $BUILD_ID $host_el6 "./test/st_pytest/st_test_001.py"
+
+#test_tecs.sh在本地server机上执行st_ltest_002.py
+./test_tecs.sh $WORKSPACE $BUILD_ID $host_el6 "./test/st_pytest/st_ltest_002.py"
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TECS</title>
+</head>
+
+<body>
+    <div style="display:none;">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#" data-value="myvm_overview.html"><OamStaticUI bindattr="text" maptype="display" bindvalue="my_vm"/></a> <span class="divider">/</span>
+            </li>
+            <li class="active">
+                <a href="#" data-value="myvm_overview.html"><OamStaticUI bindattr="text" maptype="display" bindvalue="overview"/></a>
+            </li>
+        </ul>
+    </div>
+    <div class="box-content">
+        <ul class="nav nav-tabs" id="tabsVrOverview">
+            <li class="active"><a href="#tabVrOverview"><OamStaticUI bindattr="text" maptype="display" bindvalue="overview"/></a></li>
+        </ul> 
+        <div>
+            <div class="tab-pane active" id="tabVrOverview">
+                <div class="row-fluid myvm_overview_count">
+                    <a data-rel="tooltip" title="" class="well span2 top-block" data-value="myvm_project.html" href="#">
+                        <span><img src="img/project32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="project_cnt"/></div>
+                        <div>0</div>
+                        <span></span>
+                    </a>
+                    <div class="span3"> <div class="row-fluid"> <div class="span2"></div>
+                    <a data-rel="tooltip" title="" class="well span8 top-block" data-value="myvm_vm.php" href="#">
+                        <span><img src="img/computer32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="vm_cnt"/></div>
+                        <div>0</div>
+                        <span></span>
+                    </a>
+                    <div class="span2"></div> </div></div>
+                    <a data-rel="tooltip" title="" class="well span2 top-block" data-value="myvm_portabledisk.php" href="#">
+                        <span><img src="img/portable_disk32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="portabledisk_cnt"/></div>
+                        <div>0</div>
+                        <span></span>
+                    </a>					
+                    <div class="span3"> <div class="row-fluid"> <div class="span2"></div>  			
+                    <a data-rel="tooltip" title="" class="well span8 top-block" data-value="myvm_vt.html" href="#">
+                        <span><img src="img/template32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="vt_cnt"/></div>
+                        <div>0</div>
+                        <span></span>
+                    </a>
+                    <div class="span2"></div> </div></div>
+                    <a data-rel="tooltip" title="" class="well span2 top-block" data-value="myvm_image.html" href="#">
+                        <span><img src="img/image32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="image_cnt"/></div>
+                        <div>0</div>
+                        <span></span>
+                    </a>
+                </div><!--/row-->
+                
+                <div class="row-fluid">
+                    <div class="box span6" style="height:350px;">
+                        <div class="box-header well" data-original-title>
+                            <h2><i class="icon-info-sign"></i> <span><OamStaticUI bindattr="text" maptype="display" bindvalue="introduction"/></span></h2>
+                        </div>
+                        <div class="box-content">
+                            <div class="hero-unit"  style="height:170px;"> 
+                                <h2><OamStaticUI bindattr="text" maptype="display" bindvalue="welecome_use_vm"/></h2>
+                                <p class="text-info"><OamStaticUI bindattr="text" maptype="display" bindvalue="welecome_use_vm_info"/></p>
+                                <p>
+                                    <a class="btn btn-primary" id="aCreateVm"><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="create_blank"/></span></a>
+                                    <a class="btn btn-primary" data-value="myvm_vt.html" id="aUseVt"><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="use_template"/></span></a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                     
+                    <div class="box span6" style="height:350px;">
+                        <div class="box-header well" data-original-title>
+                            <h2><i class="icon-list-alt"></i> <span><OamStaticUI bindattr="text" maptype="display" bindvalue="vm_status"/></span></h2>
+                        </div>
+                        <div class="box-content">
+                            <div class="row-fluid">
+                                <div class="span6">
+                                    <div id="myvmdeploy_piechart" style="height:150px;"></div>
+                                    <div class="row-fluid">
+                                        <div class="span4"></div>
+                                        <div id="myvm_deploy_info"></div>
+                                    </div>
+                                </div>
+                                <div class="span6">
+                                    <div id="myvmrunning_piechart" style="height:150px;"></div>
+                                    <div class="row-fluid">
+                                        <div class="span4"></div>
+                                        <div id="myvm_running_info"></div>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div> 
+    
+    <!--/row-->    
+	<!-- external javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/tecs/myvm_overview.js"></script>
+</body>
+</html>

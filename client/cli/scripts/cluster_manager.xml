@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="0" verno="33">
+	<Modes>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="cluster_manager" treenode-comment-chs="进入集群管理配置模式" treenode-comment-en="Entry cluster manager mode">
+				<Command IdInGroup="0" OprMode="PROCESS" CmdGroup="集群管理" ExecMode="其他" NextMode="cluster_manager" NextInputMode="INMODE_INVALID" ExecutePos="INTERPRETER" _ID="0xA1040000" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode><Mode ID="21" Class="28" HasNo="YES" Prompt="(cluster_manager)#" mode-help-chs="" mode-help-en="" Name="cluster_manager" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="disable" treenode-comment-chs="集群进入维护模式" treenode-comment-en="cluster entry modify mode">
+				<Command CmdGroup="集群管理" IdInGroup="5" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xA1010005">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+					</ParamNode></Command>
+			</TreeNode>
+			<TreeNode Name="enable" treenode-comment-chs="集群退出维护模式" treenode-comment-en="cluster exit modify mode">
+				<Command CmdGroup="集群管理" IdInGroup="6" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xA1010006">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+					</ParamNode></Command>
+			</TreeNode>
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="register" treenode-comment-chs="注册集群" treenode-comment-en="cluster register">
+				<Command CmdGroup="集群管理" IdInGroup="3" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xA1010003">
+					<cmd-postscript>需要输入集群的名称</cmd-postscript>
+					<ParamNode cluster_name="">
+						<Param Name="name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+						<Param Name="[]SQUARE" prammarcomment-chs="集群附加信息" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="info"><Param Name="info" paracomment-chs="集群注释信息" paracomment-en="cluster description info" DataType="DATA_TYPE_STRING" _Type="Param" _Index="1" Max="255" Min="0" Length=""/></Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="查询所有集群" treenode-comment-en="show all cluster info">
+				<Command CmdGroup="集群管理" IdInGroup="4" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;cluster_name = %v%s&#xA;ip = %v%s&#xA;append_info = %v%s&#xA;register = %v%b&#xA;run_state = %v%b&#xA;core_free_max = %v%d&#xA;tcu_unit_free_max = %v%d&#xA;tcu_max_total = %v%d&#xA;tcu_free_total = %v%d&#xA;tcu_free_max = %v%d&#xA;disk_max_total = %v%.2f GB&#xA;disk_free_total = %v%.2f GB&#xA;disk_free_max = %v%.2f GB&#xA;sharedisk_max_total = %v%.2f GB&#xA;sharedisk_free_total = %v%.2f GB&#xA;mem_max_total = %v%.0f MB&#xA;mem_free_total = %v%.0f MB&#xA;mem_free_max = %v%.0f MB&#xA;%re &#xA;%hc1:&#xA;%rs3:&#xA;cluster_name = %v%s&#xA;ip = %v%s&#xA;append_info = %v%s&#xA;register = %v%b&#xA;run_state = %v%b&#xA;core_free_max = %v%d&#xA;tcu_unit_free_max = %v%d&#xA;tcu_max_total = %v%d&#xA;tcu_free_total = %v%d&#xA;tcu_free_max = %v%d&#xA;disk_max_total = %v%.2f GB&#xA;disk_free_total = %v%.2f GB&#xA;disk_free_max = %v%.2f GB&#xA;sharedisk_max_total = %v%.2f GB&#xA;sharedisk_free_total = %v%.2f GB&#xA;mem_max_total = %v%.0f MB&#xA;mem_free_total = %v%.0f MB&#xA;mem_free_max = %v%.0f MB&#xA;%re &#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;cluster_name = %v%s&#xA;ip = %v%s&#xA;append_info = %v%s&#xA;register = %v%b&#xA;run_state = %v%b&#xA;core_free_max = %v%d&#xA;tcu_unit_free_max = %v%d&#xA;tcu_max_total = %v%d&#xA;tcu_free_total = %v%d&#xA;tcu_free_max = %v%d&#xA;disk_max_total = %v%.2f GB&#xA;disk_free_total = %v%.2f GB&#xA;disk_free_max = %v%.2f GB&#xA;sharedisk_max_total = %v%.2f GB&#xA;sharedisk_free_total = %v%.2f GB&#xA;mem_max_total = %v%.0f MB&#xA;mem_free_total = %v%.0f MB&#xA;mem_free_max = %v%.0f MB&#xA;%re &#xA;%hc1:&#xA;%rs3:&#xA;cluster_name = %v%s&#xA;ip = %v%s&#xA;append_info = %v%s&#xA;register = %v%b&#xA;run_state = %v%b&#xA;core_free_max = %v%d&#xA;tcu_unit_free_max = %v%d&#xA;tcu_max_total = %v%d&#xA;tcu_free_total = %v%d&#xA;tcu_free_max = %v%d&#xA;disk_max_total = %v%.2f GB&#xA;disk_free_total = %v%.2f GB&#xA;disk_free_max = %v%.2f GB&#xA;sharedisk_max_total = %v%.2f GB&#xA;sharedisk_free_total = %v%.2f GB&#xA;mem_max_total = %v%.0f MB&#xA;mem_free_total = %v%.0f MB&#xA;mem_free_max = %v%.0f MB&#xA;%re &#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xA1000004">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="mode" paracomment-chs="查询的方式，0-异步 1-同步" paracomment-en="show mode, 0-asyn 1 - syn" DataType="DATA_TYPE_INT" _Type="Param" _Index="0" Max="1" Min="0" Length=""/>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="unregister" treenode-comment-chs="注销集群" treenode-comment-en="cluster unregister">
+				<Command CmdGroup="集群管理" IdInGroup="7" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xA1010007">
+					<cmd-postscript>需要输入集群的名称</cmd-postscript>
+					<ParamNode cluster_name="">
+						<Param Name="name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+		</Mode></Modes>
+	<Maps>
+		<Map Type="1">
+			<MapItem Value="0" Name-chs="FALSE" Name-en=""/>
+			<MapItem Value="1" Name-chs="TRUE" Name-en=""/>
+		</Map>
+		<Map Type="501">
+			<MapItem Value="0" Name-chs="未注册" Name-en="UNREGISTER"/>
+			<MapItem Value="1" Name-chs="已注册" Name-en="REGISTER"/>
+		</Map>
+		<Map Type="502">
+			<MapItem Value="0" Name-en="OFF_LINE" Name-chs="离线"/>
+			<MapItem Value="1" Name-en="ON_LINE" Name-chs="在线"/>
+			<MapItem Value="2" Name-en="Preserve" Name-chs="维护"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="161" groupname="集群管理"/>
+	</CmdGroups>
+</Script>

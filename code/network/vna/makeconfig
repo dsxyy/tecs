@@ -1,0 +1,60 @@
+
+_NETWORK_VNA_PATH = $(_NETWORK_PATH)/vna
+_NETWORK_VNA_TMP_OBJ_PATH = $(_NETWORK_TMP_OBJ_PATH)/vna
+_NETWORK_VNA_TMP_DEP_PATH = $(_NETWORK_TMP_DEP_PATH)/vna
+
+_NETWORK_VNA_MAIN_PATH = $(_NETWORK_VNA_PATH)/main
+_NETWORK_VNA_PUB_PATH = $(_NETWORK_VNA_PATH)/pub
+_NETWORK_VNA_AGENT_PATH = $(_NETWORK_VNA_PATH)/vna_agent
+_NETWORK_VNA_HEART_PATH = $(_NETWORK_VNA_PATH)/vna_heartbeat
+_NETWORK_VNA_ENTRY_PATH = $(_NETWORK_VNA_PATH)/vna_entry
+_NETWORK_VNA_SWITCH_PATH = $(_NETWORK_VNA_PATH)/vna_switch
+_NETWORK_VNA_PORT_PATH = $(_NETWORK_VNA_PATH)/vna_port
+_NETWORK_VNA_MON_PATH = $(_NETWORK_VNA_PATH)/vna_monitor
+_NETWORK_VNA_VM_PATH = $(_NETWORK_VNA_PATH)/vna_vm
+_NETWORK_VNA_VXLAN_PATH = $(_NETWORK_VNA_PATH)/vna_vxlan
+
+_NETWORK_PROTOCOL_PATH = $(_NETWORK_PATH)/protocol
+_NETWORK_PROTOCOL_COMM_PATH  =  $(_NETWORK_PROTOCOL_PATH)/common
+_NETWORK_PROTOCOL_CDCP_PATH  =  $(_NETWORK_PROTOCOL_PATH)/cdcp
+_NETWORK_PROTOCOL_ECP_PATH  =  $(_NETWORK_PROTOCOL_PATH)/ecp
+_NETWORK_PROTOCOL_EVBENTRY_PATH  =  $(_NETWORK_PROTOCOL_PATH)/evb_entry
+_NETWORK_PROTOCOL_EVBTLV_PATH  =  $(_NETWORK_PROTOCOL_PATH)/evbtlv
+_NETWORK_PROTOCOL_LLDP_PATH  =  $(_NETWORK_PROTOCOL_PATH)/lldp
+_NETWORK_PROTOCOL_VDP_PATH  =  $(_NETWORK_PROTOCOL_PATH)/vdp
+_NETWORK_PROTOCOL_EVBPORT_PATH  =  $(_NETWORK_PROTOCOL_PATH)/evbport
+_NETWORK_PROTOCOL_EVBCFG_PATH  =  $(_NETWORK_PROTOCOL_PATH)/evb_cfg
+
+
+
+_NETWORK_VNA_MAIN_MAKEFILE  = $(_NETWORK_VNA_MAIN_PATH)/makefile
+_NETWORK_VNA_PUB_MAKEFILE  = $(_NETWORK_VNA_PUB_PATH)/makefile
+_NETWORK_VNA_AGENT_MAKEFILE  = $(_NETWORK_VNA_AGENT_PATH)/makefile
+_NETWORK_VNA_HEART_MAKEFILE  = $(_NETWORK_VNA_HEART_PATH)/makefile
+_NETWORK_VNA_ENTRY_MAKEFILE  = $(_NETWORK_VNA_ENTRY_PATH)/makefile
+_NETWORK_VNA_SWITCH_MAKEFILE = $(_NETWORK_VNA_SWITCH_PATH)/makefile
+_NETWORK_VNA_PORT_MAKEFILE = $(_NETWORK_VNA_PORT_PATH)/makefile
+_NETWORK_VNA_MON_MAKEFILE = $(_NETWORK_VNA_MON_PATH)/makefile
+_NETWORK_VNA_VM_MAKEFILE = $(_NETWORK_VNA_VM_PATH)/makefile
+_NETWORK_VNA_VXLAN_MAKEFILE = $(_NETWORK_VNA_VXLAN_PATH)/makefile
+
+_NETWORK_INCLUDE_PATH += $(addprefix -I,$(_NETWORK_VNA_MAIN_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_PUB_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_AGENT_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_HEART_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_ENTRY_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_SWITCH_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_PORT_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_MON_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_VM_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_VNA_VXLAN_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_COMM_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_CDCP_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_ECP_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_EVBENTRY_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_EVBTLV_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_LLDP_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_VDP_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_EVBPORT_PATH)/include) \
+                    $(addprefix -I,$(_NETWORK_PROTOCOL_EVBCFG_PATH)/include)
+

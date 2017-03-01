@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_user_query.xml">
+	<interface>tecs.user.query</interface>
+	<shortdesc lang_cn="查询用户信息" lang_en="Query user info"/>
+	<description lang_cn="查询用户信息，如果成功，则第一个参数返回0，第二个为用户信息数组；如果失败，则第一个参数返回非0，第二个为错误信息。" lang_en="Query user info. If operation success, the first renturn parameter is 0, second is array of user info. If failed, the first is not 0, second is appending error information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <parameter name="start_index" type="int64" lang_cn="查询起始位置，起始值为0。" lang_en="query start index, start value is 0."/>
+        <parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-200。" lang_en="num once query,range 1-200."/>
+		<parameter name="username" type="string" lang_cn="用户名，必须由数字、字母或下划线组成，范围0-64个字符，空则查询所有用户。" lang_en="User name, only consist of numbers,letters or underscores, range 0-64 characters, null will query all."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+				<struct>
+					<parameter name="username" type="string" lang_cn="用户名。" lang_en="User name."/>
+					<parameter name="password" type="string" lang_cn="密码。" lang_en="Password."/>
+					<parameter name="role" type="int" lang_cn="角色。" lang_en="Role.">
+						<enum name="1" lang_cn="云管理员" lang_en="cloud administrator"/>
+						<enum name="2" lang_cn="帐户管理员" lang_en="account administrator"/>
+						<enum name="3" lang_cn="普通用户" lang_en="user"/>
+					</parameter>
+					<parameter name="groupname" type="string" lang_cn="所属用户组名。" lang_en="Usergroup name."/>
+					<parameter name="enabled" type="int" lang_cn="用户是否启用。" lang_en="User is enable or not.">
+						<enum name="1" lang_cn="启用" lang_en="enable"/>
+						<enum name="2" lang_cn="禁用" lang_en="disable"/>
+					</parameter>
+					<parameter name="phone" type="string" lang_cn="电话。" lang_en="Telephone."/>
+					<parameter name="email" type="string" lang_cn="电子邮件。" lang_en="Email."/>
+					<parameter name="address" type="string" lang_cn="地址。" lang_en="Address."/>
+					<parameter name="description" type="string" lang_cn="描述信息。" lang_en="Description."/>
+					<parameter name="create_time" type="string" lang_cn="创建时间。" lang_en="Create time."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed.">
+    			<enum name="8002" lang_cn="错误，用户不存在" lang_en="Error, user does not exist."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+		<user name="Account Administrator" lang_cn="帐户管理员。" lang_en="Account Administrator."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+        <xref name="tecs.user.full.query" href="tecs_user_fullquery.xml"/>
+		<xref name="tecs.user.allocate" href="tecs_user_allocate.xml"/>
+		<xref name="tecs.user.set" href="tecs_user_set.xml"/>
+		<xref name="tecs.user.delete" href="tecs_user_delete.xml"/>
+	</reference>
+</method>

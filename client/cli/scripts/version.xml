@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="91" verno="31">
+	<Modes ID="4" Class="28" HasNo="NO" Prompt="#" mode-help-chs="" mode-help-en="" Name="Modes" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+		<Mode ID="91" Class="28" HasNo="YES" Prompt="(version)#" mode-help-chs="版本管理命令:&#xA;" mode-help-en="Version management command:&#xA;" Name="version" mode-Comment-chs="版本管理模式" mode-Comment-en="Version management mode" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command CmdGroup="解释" IdInGroup="5" OprMode="PROCESS" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="" formatstring-en="" _ID="0x80040005">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="getresult" treenode-comment-chs="获取上条命令执行胡结果" treenode-comment-en="get last command result ">
+				<Command CmdGroup="version" IdInGroup="01" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;------------------------------------------------&#xA;target name:%v%s&#xA;result:%v%s&#xA;%rs:&#xA;-----------&#xA;pack_name:%v%s&#xA;pack_ver:%v%s&#xA;%re&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;------------------------------------------------&#xA;target name:%v%s&#xA;result:%v%s&#xA;%rs:&#xA;-----------&#xA;pack_name:%v%s&#xA;pack_ver:%v%s&#xA;%re&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;------------------------------------------------&#xA;target name:%v%s&#xA;result:%v%s&#xA;%rs:&#xA;-----------&#xA;pack_name:%v%s&#xA;pack_ver:%v%s&#xA;%re&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;------------------------------------------------&#xA;target name:%v%s&#xA;result:%v%s&#xA;%rs:&#xA;-----------&#xA;pack_name:%v%s&#xA;pack_ver:%v%s&#xA;%re&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xE7000001">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="show" paracomment-chs="显示上次执行的结果" paracomment-en="show result last command" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="0" Max="" Min=""/>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="install" treenode-comment-chs="版本安装" treenode-comment-en="Install version">
+				<Command CmdGroup="version" IdInGroup="2" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xE7010002">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="{}ANGLE" prammarcomment-chs="节点类型" prammarcomment-en="node type" _Type="Prammar" _Index="0" Flag="grade">
+							<Param Name="WHOLE" prammarcomment-chs="操作CC" prammarcomment-en="handle CC" _Type="Prammar" _Index="0" Flag="CC">
+								<Param Name="CC_name" paracomment-chs="CC的名称(*表示操作所有的CC)" paracomment-en="cc name(handle all cc used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="0"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示安装所有)" prammarcomment-en="package name（handle all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="1"/>
+								</Param>
+							</Param>
+							<Param Name="WHOLE" prammarcomment-chs="操作HC" prammarcomment-en="handle HC" _Type="Prammar" _Index="0" Flag="HC">
+								<Param Name="cc_name" paracomment-chs="归属CC的名称" paracomment-en="cluster name " DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="2"/>
+								<Param Name="hc_name" paracomment-chs="hc名称(*表示操作所主机)" paracomment-en="hc name(handle all host used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="3"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示操作所有主机)" prammarcomment-en="package name（handle all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="4"/>
+								</Param></Param>
+						</Param>
+					</ParamNode></Command>
+			</TreeNode>
+			<TreeNode Name="query" treenode-comment-chs="显示版本信息" treenode-comment-en="Display the version information">
+				<Command CmdGroup="version" IdInGroup="3" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xE7010003">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="{}ANGLE" prammarcomment-chs="节点类型" prammarcomment-en="node type" _Type="Prammar" _Index="0" Flag="grade">
+							<Param Name="WHOLE" prammarcomment-chs="查询CC版本" prammarcomment-en="query cc version info" _Type="Prammar" _Index="0" Flag="CC">
+								<Param Name="cc_name" paracomment-chs="cc的名称(*表示查询所有的cc)" paracomment-en="cc name(query all cc used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="0"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示查询所有)" prammarcomment-en="package name（query all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="1"/>
+								</Param>
+							</Param>
+							<Param Name="WHOLE" prammarcomment-chs="查询HC版本" prammarcomment-en="query cc version info" _Type="Prammar" _Index="0" Flag="HC">
+								<Param Name="cc_name" paracomment-chs="归属CC的名称" paracomment-en="cluster name " DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="2"/>
+								<Param Name="hc_name" paracomment-chs="hc名称(*表示查询所主机)" paracomment-en="hc name(query all host used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="3"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示查询所有)" prammarcomment-en="package name（query all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="4"/>
+								</Param></Param>
+							<Param Name="WHOLE" prammarcomment-chs="查询REPO版本" prammarcomment-en="query repo version info" _Type="Prammar" _Index="0" Flag="REPO">
+								<Param Name="repo_name" paracomment-chs="repo的名称(cc/hc/tc/(*表示查询所有))" paracomment-en="repo name(cc/hc/tc/(query all cc used *))" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="5"/><Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示查询所有)" prammarcomment-en="package name（query all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="6"/>
+								</Param></Param>
+						</Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode CmdGroup="version" IdInGroup="1" OprMode="PROCESS" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="" formatstring-en="" Name="uninstall" treenode-comment-chs="版本卸载" treenode-comment-en="Version uninstall">
+				<Command CmdGroup="version" IdInGroup="4" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xE7010005">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="{}ANGLE" prammarcomment-chs="节点类型" prammarcomment-en="node type" _Type="Prammar" _Index="0" Flag="grade">
+							<Param Name="WHOLE" prammarcomment-chs="操作CC" prammarcomment-en="handle CC" _Type="Prammar" _Index="0" Flag="CC">
+								<Param Name="CC_name" paracomment-chs="CC的名称(*表示操作所有的CC)" paracomment-en="cc name(handle all cc used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="0"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示安装所有)" prammarcomment-en="package name（handle all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="1"/>
+								</Param>
+							</Param>
+							<Param Name="WHOLE" prammarcomment-chs="操作HC" prammarcomment-en="handle HC" _Type="Prammar" _Index="0" Flag="HC">
+								<Param Name="cc_name" paracomment-chs="归属CC的名称" paracomment-en="cluster name " DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="2"/>
+								<Param Name="hc_name" paracomment-chs="hc名称(*表示操作所主机)" paracomment-en="hc name(handle all host used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="3"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示操作所有主机)" prammarcomment-en="package name（handle all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="4"/>
+								</Param></Param>
+						</Param>
+					</ParamNode></Command>
+			</TreeNode>
+			<TreeNode Name="update" treenode-comment-chs="版本更新" treenode-comment-en="version update">
+				<Command CmdGroup="version" IdInGroup="5" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xE7010005">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="{}ANGLE" prammarcomment-chs="节点类型" prammarcomment-en="node type" _Type="Prammar" _Index="0" Flag="grade">
+							<Param Name="WHOLE" prammarcomment-chs="操作CC" prammarcomment-en="handle CC" _Type="Prammar" _Index="0" Flag="CC">
+								<Param Name="CC_name" paracomment-chs="CC的名称(*表示操作所有的CC)" paracomment-en="cc name(handle all cc used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="0"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示安装所有)" prammarcomment-en="package name（handle all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="1"/>
+								</Param>
+							</Param>
+							<Param Name="WHOLE" prammarcomment-chs="操作HC" prammarcomment-en="handle HC" _Type="Prammar" _Index="0" Flag="HC">
+								<Param Name="cc_name" paracomment-chs="归属CC的名称" paracomment-en="cluster name " DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="2"/>
+								<Param Name="hc_name" paracomment-chs="hc名称(*表示操作所主机)" paracomment-en="hc name(handle all host used *)" DataType="DATA_TYPE_STRING" Min="0" Max="32" Length="" _Type="Param" _Index="3"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="包名称(不写表示操作所有主机)" prammarcomment-en="package name（handle all input nothing）" _Type="Prammar" _Index="0" Flag="pack_name">
+									<Param Name="name" paracomment-chs="包名称" paracomment-en="package name" DataType="DATA_TYPE_STRING" Min="0" Max="128" Length="" _Type="Param" _Index="4"/>
+								</Param></Param>
+						</Param>
+					</ParamNode></Command>
+			</TreeNode>
+		</Mode>
+		<Mode ID="2" Class="28" HasNo="NO" Prompt="#" mode-help-chs="可执行的命令" mode-help-en="Executing command:" Name="特权模式" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="version" treenode-comment-chs="进入版本管理模式" treenode-comment-en="Enter version mode">
+				<Command CmdGroup="解释" IdInGroup="4" OprMode="PROCESS" ExecMode="其他" NextMode="version" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="" formatstring-en="" _ID="0x80040004">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode>
+	</Modes>
+	<Maps>
+		<Map Type="1201">
+      <MapItem Value="0" Name-chs="REPO" Name-en="TC"/>
+			<MapItem Value="1" Name-chs="CC" Name-en="CC"/>
+			<MapItem Value="2" Name-chs="HC" Name-en="HC"/>
+		</Map>
+		<Map Type="1202">
+			<MapItem Value="-1" Name-chs="命令超时或其它错误" Name-en="Timeout or error"/>
+			<MapItem Value="0" Name-chs="执行成功" Name-en="Success"/>
+		</Map>
+		<Map Type="1203">
+			<MapItem Value="0" Name-chs="无效" Name-en="Invaild"/>
+			<MapItem Value="1" Name-chs="已加载" Name-en="Load"/>
+			<MapItem Value="2" Name-chs="已安装" Name-en="Install"/>
+			<MapItem Value="3" Name-chs="已卸载" Name-en="Uninstall"/>
+			<MapItem Value="4" Name-chs="已加载新版本" Name-en="Upgrade"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="231" groupname="version"/>
+	</CmdGroups>
+</Script>

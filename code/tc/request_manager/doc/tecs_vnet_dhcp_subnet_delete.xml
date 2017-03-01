@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vnet_dhcp_subnet_delete.xml">
+	<interface>tecs.dhcp_subnet.delete</interface>
+	<shortdesc lang_cn="删除DHCP子网参数" lang_en="Delete DHCP Subnet Param"/>
+	<description lang_cn="删除DHCP子网参数。" lang_en="Delete DHCP Subnet Param."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称。" lang_en="Cluster name."/>
+		<parameter name="vlan" type="int" lang_cn="VLAN平面。">
+			<enum name="0" lang_cn="TECS系统网络管理平面" lang_en="TECS_NETWORK"/>
+			<enum name="4096" lang_cn="VM虚拟机网络管理平面" lang_en="VM_NETWORK"/>
+		</parameter>
+		<parameter name="subnet" type="int" lang_cn="子网地址。" lang_en="subnet ip."/>
+		<parameter name="mask" type="int" lang_cn="子网掩码。" lang_en="subnet mask."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2001" lang_cn="错误: 虚拟网络管理模块启动失败" lang_en="Error, vnet unit start failed"/>
+				<enum name="2002" lang_cn="错误: 网络平面名不存在" lang_en="Error, netplane name is not exist"/>
+				<enum name="2003" lang_cn="冲突: 网络平面名已经存在" lang_en="Conflict, netplane is exist"/>
+				<enum name="2004" lang_cn="失败: 网络平面正在使用" lang_en="Failed, netplane is using"/>
+				<enum name="2005" lang_cn="错误: 数据库操作失败" lang_en="Error, operate DB Failed"/>
+				<enum name="2006" lang_cn="错误: 内存申请失败" lang_en="Error,failed to allocate memory "/>
+				<enum name="2007" lang_cn="冲突: DHCP配置参数冲突" lang_en="Conflict,invalid command parameter"/>
+				<enum name="2008" lang_cn="错误: DHCP读写文件失败" lang_en="Error,failed to read or write file"/>
+				<enum name="2009" lang_cn="错误: IP地址不存在" lang_en="Error,the IP address does not exist"/>
+				<enum name="2010" lang_cn="错误: VLAN设置失败" lang_en="Error,failed to set VLAN"/>
+				<enum name="2011" lang_cn="错误: 接口不存在" lang_en="Error,the interface does not exist"/>
+				<enum name="2013" lang_cn="错误: 配置数据不存在" lang_en="Error,the configure data not exist"/>
+				<enum name="2015" lang_cn="失败: 系统调用失败" lang_en="Failed,system call failed"/>
+				<enum name="2018" lang_cn="失败: 必须先配置VLAN数据" lang_en="Failed,please configure VLAN data first"/>
+				<enum name="2019" lang_cn="失败: DHCP网络配置有误，请检查集群配置文件" lang_en="Failed,DHCP configure error,please check CC configure file"/>
+				<enum name="2021" lang_cn="失败: 获取VLAN数据失败" lang_en="Error,failed to get VLAN information"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.dhcp_subnet.set" href="tecs_vnet_dhcp_subnet_set.xml"/>
+		<xref name="tecs.dhcp.query" href="tecs_vnet_dhcp_query.xml"/>
+	</reference>
+</method>

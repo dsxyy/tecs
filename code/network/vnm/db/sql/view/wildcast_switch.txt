@@ -1,0 +1,81 @@
+
+
+CREATE OR REPLACE VIEW v_net_wildcast_switch AS   
+SELECT 
+  distinct
+  a.id,
+  a.uuid, 
+  a.switch_name,
+  a.switch_type,
+  a.state,
+  a.evb_mode,
+  b.uuid AS pg_uuid,
+  a.mtu_max,
+  a.nic_max_num,
+  port_name,
+  port_type,   
+  CASE 
+     WHEN (SELECT bond_mode IS NOT NULL FROM wildcast_cfg_switch_bond c WHERE a.id = c.wildcast_cfg_switch_id  )
+         THEN (SELECT bond_mode FROM wildcast_cfg_switch_bond c WHERE a.id = c.wildcast_cfg_switch_id )
+     ELSE (NULL ) ::integer
+  END AS  bond_mode
+  
+FROM 
+  wildcast_cfg_switch a,
+  port_group  b
+WHERE 
+  a.upg_id = b.id;  
+  
+  
+CREATE OR REPLACE VIEW v_net_wildcast_switch_bondmap AS  
+SELECT 
+  wildcast_cfg_switch.uuid AS switch_uuid, 
+  wildcast_cfg_switch.switch_name, 
+  wildcast_cfg_switch.switch_type, 
+  wildcast_cfg_switch.port_name AS uplink_port_name, 
+  wildcast_cfg_switch.port_type AS uplink_port_type, 
+  wildcast_cfg_switch_bond.bond_mode, 
+  wildcast_cfg_switch_bond_map.phy_port_name, 
+  port_group.uuid AS pg_uuid, 
+  port_group."name" AS pg_name
+FROM 
+  public.wildcast_cfg_switch, 
+  public.wildcast_cfg_switch_bond, 
+  public.wildcast_cfg_switch_bond_map, 
+  public.port_group
+WHERE 
+  wildcast_cfg_switch.upg_id = port_group.id AND
+  wildcast_cfg_switch_bond.wildcast_cfg_switch_id = wildcast_cfg_switch.id AND
+  wildcast_cfg_switch_bond_map.wildcast_cfg_bond_id = wildcast_cfg_switch_bond.wildcast_cfg_switch_id;
+  
+  
+
+  
+  
+---- task view   
+CREATE OR REPLACE VIEW v_net_wildcast_task_switch AS    
+SELECT 
+  wildcast_task_switch.uuid AS task_uuid, 
+  wildcast_task_switch.state AS task_state, 
+  wildcast_task_switch.send_num AS task_send_num, 
+  wildcast_task_switch.id AS task_id, 
+  v_net_wildcast_switch.uuid AS switch_uuid, 
+  v_net_wildcast_switch.switch_name, 
+  v_net_wildcast_switch.switch_type, 
+  v_net_wildcast_switch.state, 
+  v_net_wildcast_switch.evb_mode, 
+  v_net_wildcast_switch.pg_uuid, 
+  v_net_wildcast_switch.mtu_max, 
+  v_net_wildcast_switch.nic_max_num, 
+  v_net_wildcast_switch.port_name, 
+  v_net_wildcast_switch.port_type, 
+  v_net_wildcast_switch.bond_mode, 
+  vna.vna_uuid, 
+  vna.is_online AS vna_is_online
+FROM 
+  public.wildcast_task_switch, 
+  public.vna, 
+  public.v_net_wildcast_switch
+WHERE 
+  vna.id = wildcast_task_switch.vna_id AND
+  v_net_wildcast_switch.id = wildcast_task_switch.wildcast_cfg_switch_id;  

@@ -1,0 +1,31 @@
+
+_SMART_PATH         = $(_TECS_CODE_PATH)/common/storage/smart
+
+_SMART_TMP_OBJ_PATH = $(_TEMP_OBJ_PATH)/common/storage/smart
+_SMART_TMP_DEP_PATH = $(_TEMP_DEP_PATH)/common/storage/smart
+
+_SMART_SRC_PATH  = $(_SMART_PATH)/src
+_SMART_LIB_PATH  = $(_SMART_SRC_PATH)
+
+export _SMART_ALL_OBJECTS =
+
+_SMARTLIB_MAKEFILE = $(_SMART_LIB_PATH)/makefile
+
+_SMART_INCLUDE_PATH += $(addprefix -I,$(_SMART_PATH)/include) \
+                       $(addprefix -I,$(_SMART_PATH)/pub/include) \
+                       $(addprefix -I,$(_LVM_PATH)/pub/include)
+
+					
+_SMART_MACRO_DEF +=
+export CPPFLAGS += $(_SMART_INCLUDE_PATH) $(_SMART_MACRO_DEF)
+export DEPCPPFLAGS += $(_SMART_INCLUDE_PATH) $(_SMART_MACRO_DEF)
+
+
+ifeq (_LIB_SMART,$(_LIB_VER))
+    ##版本文件名
+    export _VERSION_NAME = libsmart
+    ##依赖的其它库文件
+    export _OTHER_LINK_LIB = -lstorage
+    ##默认库搜索路径以外的其它搜索路径
+    ##export _OTHER_LINK_PATH = -L/XXX
+endif

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_portabledisk_tohost_attach.xml">
+	<interface>tecs.portabledisk.attachhost</interface>
+	<shortdesc lang_cn="挂载移动盘到物理机" lang_en="attach portable disk to host"/>
+	<description lang_cn="挂载移动盘到物理机。" lang_en="detach portable disk to host."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="request id" type="string" lang_cn="移动盘请求ID。" lang_en="portable disk id."/>
+		<parameter name="userip" type="int64" lang_cn="物理机IP地址。" lang_en="host ip address."/>
+		<parameter name="iscsiname" type="string" lang_cn="iscsi标识符。" lang_en="iscsi name."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+			    <enum name="3" lang_cn="操作超时" lang_en="Operation Timeout"/>
+			    <enum name="11" lang_cn="数据库选择失败" lang_en="Falied to query database"/>
+			    <enum name="17" lang_cn="操作对象不存在" lang_en="Object instance not exist"/>
+			    <enum name="18" lang_cn="参数非法" lang_en="Parameter Invalid"/>
+			    <enum name="25" lang_cn="操作进行中" lang_en="Operation Running"/>
+			    <enum name="28" lang_cn="操作被禁止" lang_en="Operation is denied"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.portabledisk.detachhost" href="tecs_portabledisk_tohost_detach.xml"/>
+	</reference>
+</method>

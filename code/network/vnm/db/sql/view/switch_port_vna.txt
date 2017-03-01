@@ -1,0 +1,59 @@
+
+
+
+CREATE OR REPLACE VIEW v_net_switch_port_vna AS 
+SELECT 
+  vna.vna_uuid, 
+  vna.vna_application, 
+  vna.host_name, 
+  vna.vnm_application, 
+  vna.is_online,
+  port.uuid AS port_uuid, 
+  port."name" AS port_name, 
+  port.port_type, 
+  switch.switch_type, 
+  switch."name" AS switch_name, 
+  switch.uuid AS switch_uuid, 
+  virtual_switch.is_active, 
+  virtual_switch.evb_mode, 
+  virtual_switch.uplink_pg_id, 
+  virtual_switch.nic_max_num_cfg,
+  switch.id AS switch_id,
+  port.admin_state AS port_admin_state,
+  port.is_online AS port_is_online,
+  port.is_cfg AS port_is_cfg,
+  port.is_consistency AS port_is_consistency,
+  virtual_switch_map.is_cfg AS switch_map_is_cfg,
+  virtual_switch_map.is_selected AS switch_map_is_selected,
+  virtual_switch_map.is_consistency AS switch_map_is_consistency
+FROM 
+  public.port, 
+  public.vna, 
+  public.switch, 
+  public.virtual_switch, 
+  public.virtual_switch_map
+WHERE 
+  port.vna_id = vna.id AND
+  switch.id = virtual_switch.switch_id AND
+  virtual_switch.switch_id = virtual_switch_map.virtual_switch_id AND
+  virtual_switch_map.port_id = port.id;
+  
+CREATE OR REPLACE VIEW v_net_vswitch AS   
+  SELECT 
+  switch.id,
+  switch."name", 
+  switch.uuid, 
+  switch.switch_type, 
+  switch.state, 
+  switch.max_mtu, 
+  virtual_switch.is_active, 
+  virtual_switch.evb_mode, 
+  virtual_switch.uplink_pg_id, 
+  virtual_switch.nic_max_num_cfg
+FROM 
+  public.switch, 
+  public.virtual_switch
+WHERE 
+  switch.id = virtual_switch.switch_id;
+  
+  

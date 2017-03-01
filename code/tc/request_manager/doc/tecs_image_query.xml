@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_image_query.xml">
+	<interface>tecs.image.query</interface>
+	<shortdesc lang_cn="镜像查询" lang_en="show image"/>
+	<description lang_cn="镜像查询" lang_en="show image."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+                <parameter name="start_index" type="int64" lang_cn="查询起始位置，起始值为0。" lang_en="query start index, start value is 0."/>
+                <parameter name="query_count" type="int64" lang_cn="一次查询数范围1-200" lang_en="num once query,range 1-200."/>
+		<parameter name="type" type="int" lang_cn="查询类型:" lang_en="query_type:">
+			<enum name="-4" lang_cn="用户创建的image" lang_en="show image which create by user"/>
+                        <enum name="-3" lang_cn="用户创建的和可见的image" lang_en="show image which create by user and public"/>
+			<enum name="-2" lang_cn="用户可见的公共image" lang_en="show public image for user"/>
+			<enum name="0" lang_cn="指定用户的image(仅仅管理员有权限或者租户自己的用户)" lang_en="show image which point by user name(only administrator or user self)"/>
+                        <enum name="1" lang_cn="指定image id查询(仅仅管理员有权限或者租户自己的id)" lang_en="show image which point image id(only administrator or user self id)"/>
+                        <enum name="2" lang_cn="查询系统中所有的image(仅仅管理员有权限)" lang_en="query all image in system(only administrator)"/>
+                        <enum name="3" lang_cn="指定image filename查询(仅仅管理员有权限或者租户自己的id)" lang_en="show image which point image filename(only administrator or user self id)"/>
+		</parameter>
+                <parameter name="user_name" type="string" lang_cn="查询的用户名，当type=0的时候，该参数必须填写，否则该参数为NULL" lang_en="query use name, if type is zero this parameter must input else this parameter must NULL."/>
+                <parameter name="image_id" type="int64" lang_cn="指定image id,仅当type=1时，该字段有意义，且必须填" lang_en="image id, this parameter must input when type = 1."/>
+                <parameter name="image_filename" type="string" lang_cn="指定image filename,仅当type=3时，该字段有意义，且必须填" lang_en="image filename, this parameter must input when type = 3."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+				<struct name="ImageInfo">
+					<parameter name="id" type="int64" lang_cn="镜像 id" lang_en="image id."/>
+					<parameter name="user_name" type="string" lang_cn="用户名称" lang_en="user name."/>
+					<parameter name="name" type="string" lang_cn="镜像名称" lang_en="image name."/>
+                    <parameter name="file" type="string" lang_cn="镜像对应的文件名称，不带路径" lang_en="image file name."/>
+                    <parameter name="md5sum" type="string" lang_cn="镜像对应的文件md5摘要" lang_en="image file md5."/>
+					<parameter name="type" type="string" lang_cn="镜像类型" lang_en="image type."/>
+					<parameter name="is_public" type="bool" lang_cn="是否公用" lang_en="public flag:">
+						<enum name="0" lang_cn="私有" lang_en="private"/>
+						<enum name="1" lang_cn="公用" lang_en="public"/>
+					</parameter>
+                    <parameter name="is_enabled" type="bool" lang_cn="是否启用" lang_en="enable flag:">
+                        <enum name="0" lang_cn="禁用" lang_en="enabled"/>
+                        <enum name="1" lang_cn="启用" lang_en="disabled"/>
+					</parameter>
+                    <parameter name="register_time" type="string" lang_cn="注册时间" lang_en="image register time."/>
+					<parameter name="size" type="int64" lang_cn="镜像大小" lang_en="image size."/>
+					<parameter name="running_vms" type="int" lang_cn="该镜像正在被使用次数" lang_en="the image be using num."/>
+					<parameter name="arch" type="string" lang_cn="体系结构" lang_en="Appending error information."/>
+                    <parameter name="bus" type="string" lang_cn="总线类型，一般是ide或者scsi" lang_en="bus type, scsi or ide"/>
+                    <parameter name="description" type="string" lang_cn="描述信息,长度0-512" lang_en="image description,length range 0-512."/>
+                    <parameter name="ref_count_by_private_vt" type="int" lang_cn="被私有虚拟机模板引用次数" lang_en="the number of image that be used by private vm templet."/>
+                    <parameter name="ref_count_by_public_vt" type="int" lang_cn="被公用虚拟机模板引用次数" lang_en="the number of image that be used by public vm templet."/>
+                    <parameter name="os_type" type="string" lang_cn="操作系统类型" lang_en="image os type."/>
+                    <parameter name="disk_size" type="int64" lang_cn="镜像盘大小" lang_en="image disk size."/>
+                    <parameter name="disk_format" type="string" lang_cn="镜像格式" lang_en="image format."/>
+                    <parameter name="container_format" type="string" lang_cn="容器格式" lang_en="container format."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="4003" lang_cn="失败, 无效查询类型" lang_en="Failed, invalid query type"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.image.publish" href="tecs_image_publish.xml"/>
+		<xref name="tecs.image.set" href="tecs_image_set.xml"/>
+		<xref name="tecs.image.query" href="tecs_image_query.xml"/>
+	</reference>
+</method>

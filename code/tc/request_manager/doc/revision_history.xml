@@ -1,0 +1,1695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<revisions>
+    <revision version="V01.01.10">
+	   <entry>
+           <date>2014/3/13</date>
+            <location link="tecs_workflow_query.xml">tecs_workflow_query</location>
+            <desc_cn>修改工作流的接口名</desc_cn>
+            <desc_en>modify the name of interfance</desc_en>
+        </entry> 
+        <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_project_action.xml">tecs_project_action</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_vmcfg_action.xml">tecs_vmcfg_action</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_vmcfg_portable_disk_detach.xml">tecs_vmcfg_portable_disk_detach</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_vmcfg_portable_disk_attach.xml">tecs_vmcfg_portable_disk_attach</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_image_deploy.xml">tecs_image_deploy</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_image_cancel.xml">tecs_image_cancel</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_vmcfg_image_backup_delete.xml">tecs_vmcfg_image_backup_delete</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_vmcfg_image_backup_restore.xml">tecs_vmcfg_image_backup_restore</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_vmcfg_image_backup_create.xml">tecs_vmcfg_image_backup_create</location>
+            <desc_cn>修改工作流名称</desc_cn>
+            <desc_en>modify the name of workflow</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/3/12</date>
+            <location link="tecs_workflow_query.xml">tecs_workflow_query</location>
+            <desc_cn>修改工作流参数的名称</desc_cn>
+            <desc_en>modify the name of parameter</desc_en>
+        </entry> 
+        <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_project_action.xml">tecs_project_action</location>
+            <desc_cn>在工程操作的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in project action </desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_action.xml">tecs_vmcfg_action</location>
+            <desc_cn>在虚拟机操作的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in vmcfg action </desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_portable_disk_detach.xml">tecs_vmcfg_portable_disk_detach</location>
+            <desc_cn>在移动盘解挂载的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in portable disk detach </desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_portable_disk_attach.xml">tecs_vmcfg_portable_disk_attach</location>
+            <desc_cn>在移动盘挂载的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in portable disk attach </desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_image_deploy.xml">tecs_image_deploy</location>
+            <desc_cn>在镜像部署的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in image deploy </desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_image_cancel.xml">tecs_image_cancel</location>
+            <desc_cn>在镜像取消的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in image cancel</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_image_backup_delete.xml">tecs_vmcfg_image_backup_delete</location>
+            <desc_cn>在工程操作的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in image backup delete</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_image_backup_restore.xml">tecs_vmcfg_image_backup_restore</location>
+            <desc_cn>在工程操作的返回参数中增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in image backup restore </desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_image_backup_create.xml">tecs_vmcfg_image_backup_create</location>
+            <desc_cn>在镜像备份创建的返回参数中建增加工作流引擎地址</desc_cn>
+            <desc_en>add the return paramter of the workflow engine in image backup create</desc_en>
+        </entry> 
+	   <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_workflow_query.xml">tecs_workflow_query</location>
+            <desc_cn>增加工作流查询</desc_cn>
+            <desc_en>add workflow query </desc_en>
+        </entry>   
+	    <entry>
+           <date>2014/2/26</date>
+            <location link="tecs_vmcfg_image_backup_create.xml">tecs_vmcfg_image_backup_create</location>
+            <desc_cn>修改入参列表</desc_cn>
+            <desc_en>modify interface list</desc_en>
+        </entry>
+        <entry>
+           <date>2014/2/11</date>
+            <location link="tecs_system_hardware_fingerprint_query.xml">tecs_system_hardware_fingerprint_query</location>
+            <desc_cn>硬件指纹查询</desc_cn>
+            <desc_en>add hardware fingerprint query </desc_en>
+        </entry>          
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_image_getspace.xml">tecs_image_getspace</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>	
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_project_create_by_image.xml">tecs_project_create_by_image</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>	
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_project_save_as_image.xml">tecs_project_save_as_image</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_user_fullquery.xml">tecs_user_fullquery</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_user_set.xml">tecs_user_set</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>	
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_version_cancel.xml">tecs_version_cancel</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>	
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_version_query.xml">tecs_version_query</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>
+		<entry>
+           <date>2014/1/9</date>
+            <location link="tecs_version_update.xml">tecs_version_update</location>
+            <desc_cn>修改错误的入参</desc_cn>
+            <desc_en>modify incorrect interface</desc_en>
+        </entry>
+	    <entry>
+           <date>2014/1/9</date>
+            <location link="tecs_project_action.xml">tecs_project_action</location>
+            <desc_cn>工程操作接口增加强制重启操作类型</desc_cn>
+            <desc_en>project add reset operate</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/28</date>
+            <location link="tecs_portabledisk_tohost_detach.xml">tecs_portabledisk_tohost_detach</location>
+            <desc_cn>卸载移动盘</desc_cn>
+            <desc_en>detach portable disk</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/28</date>
+            <location link="tecs_portabledisk_tohost_attach.xml">tecs_portabledisk_tohost_attach</location>
+            <desc_cn>挂载移动盘到物理机</desc_cn>
+            <desc_en>attach portable disk</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/28</date>
+            <location link="tecs_portabledisk_blockinfo_get.xml">tecs_portabledisk_blockinfo_get</location>
+            <desc_cn>查询移动盘挂载信息</desc_cn>
+            <desc_en>get portable disk block info</desc_en>
+        </entry>
+	    <entry>
+           <date>2013/11/22</date>
+            <location link="tecs_project_action.xml">tecs_project_action</location>
+            <desc_cn>增加虚拟机工程操作接口</desc_cn>
+            <desc_en>add project operate interface</desc_en>
+        </entry>
+	    <entry>
+           <date>2013/11/22</date>
+            <location link="tecs_project_clone.xml">tecs_project_clone</location>
+            <desc_cn>增加虚拟机工程克隆接口</desc_cn>
+            <desc_en>add project clone interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/22</date>
+            <location link="tecs_vmcfg_runninginfo_query.xml">tecs_vmcfg_runninginfo_query</location>
+            <desc_cn>虚拟机运行信息增加网卡信息</desc_cn>
+            <desc_en>add vm nics running information query </desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/4</date>
+            <location link="tecs_vmtemplate_set.xml">tecs_vmtemplate_set</location>
+            <desc_cn>虚拟机模版修改入参修改</desc_cn>
+            <desc_en>modify vmtemplate set interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/4</date>
+            <location link="tecs_vmtemplate_query.xml">tecs_vmtemplate_query</location>
+            <desc_cn>虚拟机模版查询返回值修改</desc_cn>
+            <desc_en>modify vmtemplate query interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/4</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs_vmtemplate_allocate</location>
+            <desc_cn>虚拟机模版创建入参修改</desc_cn>
+            <desc_en>modify vmtemplate allocate interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/4</date>
+            <location link="tecs_vmcfg_set.xml">tecs_vmcfg_set</location>
+            <desc_cn>虚拟机修改入参修改</desc_cn>
+            <desc_en>modify vm set interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/4</date>
+            <location link="tecs_vmcfg_staticinfo_query.xml">tecs_vmcfg_staticinfo_query</location>
+            <desc_cn>虚拟机静态信息查询返回值修改</desc_cn>
+            <desc_en>modify vm query interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/11/4</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs_vmcfg_allocate</location>
+            <desc_cn>虚拟机创建入参修改</desc_cn>
+            <desc_en>modify vm allocate interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/23</date>
+            <location link="tecs_image_deploy.xml">tecs_image_deploy</location>
+            <desc_cn>镜像部署接口整改，成功返回workflow_id和base_uuid</desc_cn>
+            <desc_en>add base_uuid and workflow_idimage into image deploy interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/9</date>
+            <location link="tecs_affinity_region_allocate.xml">tecs_affinity_region_allocate</location>
+            <desc_cn>增加亲和域创建接口</desc_cn>
+            <desc_en>add affinity region allocate interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/9</date>
+            <location link="tecs_affinity_region_delete.xml">tecs_affinity_region_delete</location>
+            <desc_cn>增加亲和域删除接口</desc_cn>
+            <desc_en>add affinity region delete interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/9</date>
+            <location link="tecs_affinity_region_query.xml">tecs_affinity_region_query</location>
+            <desc_cn>增加亲和域查询接口</desc_cn>
+            <desc_en>add affinity region query interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/9</date>
+            <location link="tecs_affinity_region_set.xml">tecs_affinity_region_set</location>
+            <desc_cn>增加亲和域修改接口</desc_cn>
+            <desc_en>add affinity region modify interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/9</date>
+            <location link="tecs_vmcfg_affinity_region_member_add.xml">tecs_vmcfg_affinity_region_member_add</location>
+            <desc_cn>增加虚拟机加入亲和域接口</desc_cn>
+            <desc_en>add vm add into affinity region interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/9/9</date>
+            <location link="tecs_vmcfg_affinity_region_member_delete.xml">tecs_vmcfg_affinity_region_member_delete</location>
+            <desc_cn>增加虚拟机退出亲和域接口</desc_cn>
+            <desc_en>add vm drop from affinity region interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/8/10</date>
+            <location link="tecs_image_deploy.xml">tecs_image_deploy</location>
+            <desc_cn>镜像部署接口成功返回中增加base_uuid和workflow_id</desc_cn>
+            <desc_en>add base_uuid and workflow_idimage into image deploy interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/8/8</date>
+            <location link="tecs_vmcfg_image_backup_delete.xml">tecs_vmcfg_image_backup_delete</location>
+            <desc_cn>新增镜像备份删除接口</desc_cn>
+            <desc_en>add image backup delete interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/7/20</date>
+            <location link="tecs_vmcfg_clone.xml">tecs_vmcfg_clone</location>
+            <desc_cn>增加虚拟机克隆接口</desc_cn>
+            <desc_en>add vm clone interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/7/19</date>
+            <location link="tecs_image_set.xml">tecs_image_set</location>
+            <desc_cn>镜像修改增加容器格式</desc_cn>
+            <desc_en>add container format to image modify info</desc_en>
+        </entry>
+        <entry>
+           <date>2013/7/19</date>
+            <location link="tecs_image_query.xml">tecs_image_query</location>
+            <desc_cn>镜像查询信息增加容器格式</desc_cn>
+            <desc_en>add container format to image query info</desc_en>
+        </entry>
+        <entry>
+           <date>2013/7/18</date>
+            <location link="tecs_project_create_by_image.xml">tecs_project_create_by_image</location>
+            <desc_cn>新增接口:由镜像创建工程</desc_cn>
+            <desc_en>add new interface:create project by image</desc_en>
+        </entry>
+        <entry>
+           <date>2013/7/18</date>
+            <location link="tecs_project_save_as_image.xml">tecs_project_save_as_image</location>
+            <desc_cn>新增接口:工程保存为镜像</desc_cn>
+            <desc_en>add new interface:project save as a image</desc_en>
+        </entry>
+        <entry>
+           <date>2013/6/27</date>
+            <location link="tecs_vmcfg_image_backup_modify.xml">tecs_vmcfg_image_backup_modify</location>
+            <desc_cn>新增镜像备份修改接口</desc_cn>
+            <desc_en>add image backup modify interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/6/27</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs_vmcfg_allocate</location>
+            <desc_cn>machine增加reserved_backup字段</desc_cn>
+            <desc_en>add reserved_backup item in machine</desc_en>
+        </entry>
+        <entry>
+           <date>2013/6/21</date>
+            <location link="tecs_image_getspace.xml">tecs_image_getspace</location>
+            <desc_cn>增加查询镜像服务器剩余空间接口说明</desc_cn>
+            <desc_en>add image get space interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/6/21</date>
+            <location link="tecs_vmcfg_action.xml">tecs_vmcfg_action</location>
+            <desc_cn>虚拟机操作接口返回增加recover_image操作说明</desc_cn>
+            <desc_en>add recover_image items in vmcfg action interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/6/9</date>
+            <location link="tecs_image_query.xml">tecs_image_query</location>
+            <desc_cn>镜像查询接口返回增加disk_size和disk_format</desc_cn>
+            <desc_en>add disk_size and disk_format items in image query interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/5/9</date>
+            <location link="tecs_portabledisk_create.xml">tecs_portabledisk_create</location>
+            <desc_cn>增加移动盘创建接口</desc_cn>
+            <desc_en>add portable disk create interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/5/9</date>
+            <location link="tecs_portabledisk_delete.xml">tecs_portabledisk_delete</location>
+            <desc_cn>增加移动盘删除接口</desc_cn>
+            <desc_en>add portable disk delete interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/5/8</date>
+            <location link="tecs_vmcfg_portable_disk_attach.xml">tecs_vmcfg_portable_disk_attach</location>
+            <desc_cn>增加移动盘附载接口</desc_cn>
+            <desc_en>add portable disk attach interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/5/8</date>
+            <location link="tecs_vmcfg_portable_disk_detach.xml">tecs_vmcfg_portable_disk_detach</location>
+            <desc_cn>增加移动盘分离接口</desc_cn>
+            <desc_en>add portable disk detach interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/4/26</date>
+            <location link="tecs_vmcfg_query_usb_device.xml">tecs_vmcfg_query_usb_device</location>
+            <desc_cn>查询接口增加manufacturer字段</desc_cn>
+            <desc_en>query interface add manufacturer item</desc_en>
+        </entry>
+        <entry>
+           <date>2013/4/16</date>
+            <location link="tecs_image_cancel.xml">tecs_image_cancel</location>
+            <desc_cn>修改id字段类型为string</desc_cn>
+            <desc_en>change id field type to string</desc_en>
+        </entry>
+        <entry>
+           <date>2013/4/16</date>
+            <location link="tecs_image_deploy.xml">tecs_image_deploy</location>
+            <desc_cn>删除duplicate字段</desc_cn>
+            <desc_en>delete duplicate field</desc_en>
+        </entry>
+        <entry>
+           <date>2013/3/26</date>
+            <location link="tecs_image_query.xml">tecs_image_query</location>
+            <desc_cn>增加镜像的操作系统类型os_type查询字段</desc_cn>
+            <desc_en>add image os type query field</desc_en>
+        </entry>
+        <entry>
+           <date>2013/3/26</date>
+            <location link="tecs_image_set.xml">tecs_image_set</location>
+            <desc_cn>增加镜像的操作系统类型os_type设置字段</desc_cn>
+            <desc_en>add image os type set field</desc_en>
+        </entry>
+        <entry>
+           <date>2013/3/20</date>
+            <location link="tecs_vmcfg_query_usb_device.xml">tecs_vmcfg_query_usb_device</location>
+            <desc_cn>增加虚拟机USB查询接口</desc_cn>
+            <desc_en>add vm usb device query interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/3/20</date>
+            <location link="tecs_vmcfg_oprate_usb_device.xml">tecs_vmcfg_oprate_usb_device</location>
+            <desc_cn>增加虚拟机USB操作接口</desc_cn>
+            <desc_en>add vm usb device oprate interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/3/7</date>
+            <location link="tecs_project_query.xml">tecs_project_query</location>
+            <desc_cn>修改工程查询参数</desc_cn>
+            <desc_en>modify project query param</desc_en>
+        </entry>
+        <entry>
+           <date>2013/2/26</date>
+            <location link="tecs_file_query_coredump_url.xml">tecs_file_query_coredump_url</location>
+            <desc_cn>增加file管理的coredump文件url查询接口</desc_cn>
+            <desc_en>add coredump file query rpc interface</desc_en>
+        </entry>
+        <entry>
+           <date>2013/2/26</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs_vmcfg_allocate</location>
+            <desc_cn>增加虚拟机配置的coredump选项</desc_cn>
+            <desc_en>add vmcfg coredump option</desc_en>
+        </entry>
+        <entry>
+           <date>2013/2/26</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs_vmtemplate_allocate</location>
+            <desc_cn>增加虚拟机模板配置的coredump选项</desc_cn>
+            <desc_en>add vmtemplate coredump option</desc_en>
+        </entry>
+        <entry>
+           <date>2012/12/28</date>
+            <location link="tecs_cmm_set.xml">tecs_cmm_set</location>
+            <desc_cn>设置cmm配置</desc_cn>
+            <desc_en>set cmm config</desc_en>
+        </entry>
+        <entry>
+           <date>2012/12/28</date>
+            <location link="tecs_cmm_add.xml">tecs_cmm_add</location>
+            <desc_cn>增加cmm配置</desc_cn>
+            <desc_en>add cmm config</desc_en>
+        </entry>	
+        <entry>
+           <date>2012/12/28</date>
+            <location link="tecs_cmm_delete.xml">tecs_cmm_delete</location>
+            <desc_cn>删除cmm配置</desc_cn>
+            <desc_en>delete cmm config</desc_en>
+        </entry>	
+        <entry>
+           <date>2012/12/28</date>
+            <location link="tecs_cmm_query.xml">tecs_cmm_query</location>
+            <desc_cn>查询cmm配置</desc_cn>
+            <desc_en>query cmm config</desc_en>
+        </entry>			
+        <entry>
+           <date>2012/12/26</date>
+            <location link="tecs_vmcfg_query.xml">tecs_vmcfg_query</location>
+            <desc_cn>看门狗时长范围为600~7200</desc_cn>
+            <desc_en>vm watchdog time range 600~7200</desc_en>
+        </entry>
+        <entry>
+           <date>2012/12/26</date>
+            <location link="tecs_vmtemplate_query.xml">tecs_vmtemplate_query</location>
+            <desc_cn>看门狗时长范围为600~7200</desc_cn>
+            <desc_en>vm watchdog time range 600~7200</desc_en>
+        </entry>
+        <entry>
+           <date>2012/12/26</date>
+            <location link="tecs_system_license_query.xml">tecs_system_license_quer</location>
+            <desc_cn>删除账户管理员和普通用户</desc_cn>
+            <desc_en>delete account administrator and user </desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs_vmtemplate_allocate</location>
+            <desc_cn>镜像增加位置字段</desc_cn>
+            <desc_en>add position for image</desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_vmtemplate_set.xml">tecs_vmtemplate_set</location>
+            <desc_cn>镜像增加位置字段</desc_cn>
+            <desc_en>add position for image</desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_vmtemplate_query.xml">tecs_vmtemplate_query</location>
+            <desc_cn>镜像增加位置字段</desc_cn>
+            <desc_en>add position for image</desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs_vmcfg_allocate</location>
+            <desc_cn>镜像增加位置字段</desc_cn>
+            <desc_en>add position for image</desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_vmcfg_query.xml">tecs_vmcfg_query</location>
+            <desc_cn>镜像增加位置字段</desc_cn>
+            <desc_en>add position for image</desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_vmcfg_set.xml">tecs_vmcfg_set</location>
+            <desc_cn>镜像增加位置字段</desc_cn>
+            <desc_en>add position for image</desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_image_cancel.xml">tecs_image_cancel</location>
+            <desc_cn>增加镜像撤销RPC接口</desc_cn>
+            <desc_en>add image cancel rpc interface </desc_en>
+        </entry>
+	    <entry>
+           <date>2012/12/18</date>
+            <location link="tecs_image_deploy.xml">tecs_image_deploy</location>
+            <desc_cn>增加镜像部署RPC接口</desc_cn>
+            <desc_en>add image deploy rpc interface </desc_en>
+        </entry>
+	    <entry>
+           <date>2012/10/30</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>增加vnc_passwd、context字段的说明</desc_cn>
+            <desc_en>add description of vnc_passwd、context parameters </desc_en>
+        </entry>
+		<entry>
+           <date>2012/10/30</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>增加vnc_passwd、context字段的说明</desc_cn>
+            <desc_en>add description of vnc_passwd、context parameters </desc_en>
+        </entry>
+		<entry>
+           <date>2012/10/30</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>增加vnc_passwd、context字段的说明</desc_cn>
+            <desc_en>add description of vnc_passwd、context parameters </desc_en>
+        </entry>
+		<entry>
+           <date>2012/10/30</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>增加vnc_passwd、context字段的说明</desc_cn>
+            <desc_en>add description of vnc_passwd、context parameters </desc_en>
+        </entry>
+        <entry>
+           <date>2012/10/23</date>
+            <location link="tecs_vmcfg_action.xml">tecs.vmcfg.action</location>
+            <desc_cn>增加虚拟机保存为img的功能</desc_cn>
+            <desc_en>add vm save self to img</desc_en>
+        </entry>
+        <entry>
+           <date>2012/9/29</date>
+            <location link="tecs_system_license_query.xml">tecs.system.license.query</location>
+            <desc_cn>增加许可证查询接口</desc_cn>
+            <desc_en>add license query xmlrpc interface </desc_en>
+        </entry>
+        <entry>
+           <date>2012/9/6</date>
+            <location link="tecs_session_query.xml">tecs.session.query</location>
+            <desc_cn>增加会话查询接口</desc_cn>
+            <desc_en>add sesssion query xmlrpc interface </desc_en>
+        </entry>
+        <entry>
+           <date>2012/9/6</date>
+            <location link="tecs_session_login.xml">tecs.session.login</location>
+            <desc_cn>增加登陆接口</desc_cn>
+            <desc_en>add login xmlrpc interface</desc_en>
+        </entry>
+        <entry>
+           <date>2012/9/6</date>
+            <location link="tecs_session_logout.xml">tecs.session.logout</location>
+            <desc_cn>增加注销接口</desc_cn>
+            <desc_en>add logout xmlrpc interface</desc_en>
+        </entry>
+        <entry>
+           <date>2012/8/29</date>
+            <location/>
+            <desc_cn>tecs_vmcfg_action接口增加操作命令:同步</desc_cn>
+            <desc_en>add operation cmd:sync to tecs_vmcfg_action</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/28</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>修改变量ref_count_by_privat_vt为ref_count_by_private_vt</desc_cn>
+            <desc_en>modify ref_count_by_privat_vt to ref_count_by_private_vt</desc_en>
+        </entry>
+     	<entry>
+            <date>2012/08/28</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>sriov网卡最大支持16个，非sriov网卡最大支持8个</desc_cn>
+            <desc_en>sriov nic max num is 16, non-sriov nic max num is 8</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/28</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>sriov网卡最大支持16个，非sriov网卡最大支持8个</desc_cn>
+            <desc_en>sriov nic max num is 16, non-sriov nic max num is 8</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/28</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>sriov网卡最大支持16个，非sriov网卡最大支持8个</desc_cn>
+            <desc_en>sriov nic max num is 16, non-sriov nic max num is 8</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/28</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>sriov网卡最大支持16个，非sriov网卡最大支持8个</desc_cn>
+            <desc_en>sriov nic max num is 16, non-sriov nic max num is 8</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/20</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>删除kernel、ramdisk字段</desc_cn>
+            <desc_en>delete kernel、ramdisk fields</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/20</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>删除kernel、ramdisk字段</desc_cn>
+            <desc_en>delete kernel、ramdisk fields</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/20</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>删除kernel、ramdisk字段</desc_cn>
+            <desc_en>delete kernel、ramdisk fields</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/20</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>删除kernel、ramdisk字段</desc_cn>
+            <desc_en>delete kernel、ramdisk fields</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/20</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>删除kernel、ramdisk字段</desc_cn>
+            <desc_en>delete kernel、ramdisk fields</desc_en>
+        </entry>
+        <entry>
+            <date>2012/08/20</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>删除kernel、ramdisk字段</desc_cn>
+            <desc_en>delete kernel、ramdisk fields</desc_en>
+        </entry>
+        <entry>
+           <date>2012/8/15</date>
+            <location/>
+            <desc_cn>将tecs_vnic_map_query.xml文件名改名为tecs_vnet_vnic_map_query.xml</desc_cn>
+            <desc_en>modify file name of "tecs_vnic_map_query.xml" as  "tecs_vnet_vnic_map_query.xml"</desc_en>
+        </entry>
+
+
+        <entry>
+           <date>2012/8/15</date>
+            <location link="tecs_host_extern_ctrl_query.xml">tecs.host.extern_ctrl.query</location>
+            <desc_cn>将tecs.host.extern_ctrl_query 修改为 tecs.host.extern_ctrl.query</desc_cn>
+            <desc_en> modify the method name descripton "tecs.host.extern_ctrl_query" as "tecs.host.extern_ctrl.query"</desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/15</date>
+            <location link="tecs_host_extern_ctrl_cfg_get.xml">tecs.host.extern_ctrl_cfg_get</location>
+            <desc_cn>将 tecs.host.extern_ctrl_cfg_getd修改为tecs.host.extern_ctrl_cfg_get</desc_cn>
+            <desc_en> modify the method name descripton "tecs.host.extern_ctrl_cfg_getd" as "tecs.host.extern_ctrl_cfg_get"</desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/15</date>
+            <location link="tecs_vmcfg_fullquery.xml">tecs.vmcfg.full.query</location>
+            <desc_cn>将tecs.vmcfg.fullquery改为tecs.vmcfg.full.query</desc_cn>
+            <desc_en>modify the method name descripton "tecs.vmcfg.fullquery" as "tecs.vmcfg.full.query" </desc_en>
+        </entry>
+        <entry>
+           <date>2012/8/15</date>
+            <location link="tecs_user_fullquery.xml">tecs.user.full.query</location>
+            <desc_cn>将tecs.user.fullquery改为tecs.user.full.query</desc_cn>
+            <desc_en> modify the method name descripton "tecs.user.fullquery" as "tecs.user.full.query"</desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/15</date>
+            <location/>
+            <desc_cn>修改文档中英文拼写错误，将lenth改为length</desc_cn>
+            <desc_en>modify spell mistakes in english descriptions,modify "lenth" as "length" </desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/15</date>
+            <location/>
+            <desc_cn>删除无效超链接，将名字字段的长度描述和表设计对齐。</desc_cn>
+            <desc_en>delete invalid hyperlinks, and modify name length descriptions,including cluster name,host name,user name and usergroup name </desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/15</date>
+            <location link="tecs_vmcfg_action.xml">tecs.vmcfg.action</location>
+            <desc_cn>增加虚拟机强制关机的命令。</desc_cn>
+            <desc_en>add destroy cmd for vm</desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/14</date>
+            <location/>
+            <desc_cn>删除一些不会返回的错误码，包括1005、1006、1007、1009、1014、1019和3004。</desc_cn>
+            <desc_en>delete some error code not support, such as 1005, 1006, 1007, 1009, 1014, 1019 and 3004</desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/10</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>修改虚拟机状态返回值</desc_cn>
+            <desc_en>modify Vm State Value</desc_en>
+        </entry>
+
+        <entry>
+           <date>2012/8/9</date>
+            <location/>
+            <desc_cn>PDF文件标题中XMLRPC改为XML-RPC</desc_cn>
+            <desc_en>replace "XMLRPC" with "XML-RPC" in title of generated PDF file</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location/>
+            <desc_cn>删除 集群配置 和 文件管理 章节</desc_cn>
+            <desc_en>delete the chapters of "cluster config" and "file manager"</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_clustermanager_query_netplane.xml">tecs.cluster.query_netplane</location>
+            <desc_cn>集群管理中 tecs_clustermanager_query_netplan.xml 修改为tecs_clustermanager_query_netplane.xml</desc_cn>
+            <desc_en>modify the file name of "tecs_clustermanager_query_netplan.xml" as  "tecs_clustermanager_query_netplane.xml" in  cluster manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location/>
+            <desc_cn>主机管理中删除tecs.host.register</desc_cn>
+            <desc_en>delete tecs.host.register method in host manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location/>
+            <desc_cn>主机管理中删除tecs.host.unregister</desc_cn>
+            <desc_en>delete tecs.host.unregister method in host manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location/>
+            <desc_cn>映像管理中删除tecs.image.register</desc_cn>
+            <desc_en>delete tecs.image.register method in image manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location/>
+            <desc_cn>映像管理中删除tecs.image.unregister</desc_cn>
+            <desc_en>delete tecs.image.register method in image manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_vmcfg_relation_set.xml">tecs.vmcfg.relation.set</location>
+            <desc_cn>虚拟机配置中将tecs.vmcfg.set_relation改为tecs.vmcfg.relation.set</desc_cn>
+            <desc_en>modify the method name of "tecs.vmcfg.set_relation" as "tecs.vmcfg.relation.set" in  vmcfg</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_dhcp_global_set.xml">tecs.dhcp.global.set</location>
+            <desc_cn>虚拟网络管理中将tecs.dhcp_global.set改为tecs.dhcp.global.set</desc_cn>
+            <desc_en>modify the method name of "tecs.dhcp_global.set" as "tecs.dhcp.global.set" in vnet manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_vnet_dhcp_ip_query.xml">tecs.dhcp.ip.query</location>
+            <desc_cn>虚拟网络管理中将tecs.ip.query改为tecs.dhcp.ip.query</desc_cn>
+            <desc_en>modify the method name of "tecs.ip.query" as "tecs.dhcp.ip.query" in vnet manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_vnic_map_query.xml">tecs.vnic.map.query</location>
+            <desc_cn>虚拟网络管理中 将tecs.vnet_nic_network.query改为tecs.vnic.map.query</desc_cn>
+            <desc_en>modify the method name of "tecs.vnet_nic_network.query" as "tecs.vnic.map.query" in vnet manager</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_tcu_delete.xml">tecs.tcu.delete</location>
+            <desc_cn>将tecs_svcpu_delete.xml 修改为tecs_tcu_delete.xml</desc_cn>
+            <desc_en>modify the method name of "tecs.svcpu.delete" as "tecs.tcu.delete"</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_tcu_query.xml">tecs.tcu.query</location>
+            <desc_cn>将tecs_svcpu_query.xml 修改为tecs_tcu_query.xml</desc_cn>
+            <desc_en>modify the method name of "tecs.svcpu.querey" as "tecs.tcu.query"</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/9</date>
+            <location link="tecs_tcu_set.xml">tecs.tcu.set</location>
+            <desc_cn>将tecs_svcpu_set.xml 修改为 tecs_tcu_set.xml</desc_cn>
+            <desc_en>modify the method name of "tecs.svcpu.set" as "tecs.tcu.set"</desc_en>
+        </entry>
+
+        <entry>
+            <date>2012/8/2</date>
+            <location link="tecs_user_query.xml">tecs.user.query</location>
+            <desc_cn>出参增加ref_count_by_privat_vt和ref_count_by_public_vt字段</desc_cn>
+            <desc_en>new out parameter add ref_count_by_privat_vt/ref_count_by_public_vt field</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/31</date>
+            <location link="tecs_user_query.xml">tecs.user.query</location>
+            <desc_cn>用户信息增加description、create_time字段</desc_cn>
+            <desc_en>user information add description/create_time field</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/31</date>
+            <location link="tecs_user_set.xml">tecs.user.set</location>
+            <desc_cn>入参增加description字段</desc_cn>
+            <desc_en>new parameter "description" added</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/31</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>删除stored_time、state字段，增加is_enabled字段，registered_time字段改名为register_time</desc_cn>
+            <desc_en>remove stored_time、state field, add is_enabled field, registered_time is changed to register_time</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_clustermanager_query.xml">tecs.cluster.query</location>
+            <desc_cn>删除registe_state、run_state字段，增加is_online、enabled字段</desc_cn>
+            <desc_en>remove registe_state、run_state field, add is_online、enabled fields</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>网卡中增加了nic_index字段,增加description字段，vnc_passwd字段从ApiVmCfgAllocateData中移到 ApiVmCfgAllocateData.base_info中</desc_cn>
+            <desc_en>add nic_index field in network card, add description field, move vnc_passwd from ApiVmCfgAllocateData toApiVmCfgAllocateData.base_info</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>网卡中增加了nic_index字段,增加description字段，ApiVtllocateData.base_info中增加vnc_passwd字段</desc_cn>
+            <desc_en>add nic_index field in network card, add description field, add vnc_passwd field to ApiVmCfgAllocateData.base_info</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>网卡中增加了nic_index字段,增加description字段，vnc_passwd字段从ApiVmCfgAllocateData中移到 ApiVmCfgAllocateData.base_info中</desc_cn>
+            <desc_en>add nic_index field in network card, add description field, move vnc_passwd from ApiVmCfgAllocateData toApiVmCfgAllocateData.base_info</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>网卡中增加了nic_index字段,增加description字段，ApiVtllocateData.base_info中增加vnc_passwd字段</desc_cn>
+            <desc_en>add nic_index field in network card, add description field, add vnc_passwd field to ApiVmCfgAllocateData.base_info</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>网卡中增加了nic_index字段,增加description字段，vnc_passwd字段从ApiVmCfgAllocateData中移到 ApiVmCfgAllocateData.base_info中</desc_cn>
+            <desc_en>add nic_index field in network card, add description field, move vnc_passwd from ApiVmCfgAllocateData toApiVmCfgAllocateData.base_info</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/30</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>网卡中增加了nic_index字段,增加description字段，ApiVtllocateData.base_info中增加vnc_passwd字段</desc_cn>
+            <desc_en>add nic_index field in network card, add description field, add vnc_passwd field to ApiVmCfgAllocateData.base_info</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/24</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>增加根据image文件名获取image ID </desc_cn>
+            <desc_en>add image filename fields for getting image ID</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/24</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>增加最多磁盘数量，最多网卡数量，上下文大小的信息</desc_cn>
+            <desc_en>add disk num, nic num, context size information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/24</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>增加最多磁盘数量，最多网卡数量，上下文大小的信息</desc_cn>
+            <desc_en>add disk num, nic num, context size information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/24</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>增加最多磁盘数量，最多网卡数量，上下文大小的信息</desc_cn>
+            <desc_en>add disk num, nic num, context size information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/24</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>增加最多磁盘数量，最多网卡数量，上下文大小的信息</desc_cn>
+            <desc_en>add disk num, nic num, context size information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/10</date>
+            <location link="tecs_system_runtime_query.xml">tecs.system.runtime.query</location>
+            <desc_cn>给消息单元的监控结果增加消息单元注册为关键消息的持续时间字段</desc_cn>
+            <desc_en>add age field for mu runtime information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/9</date>
+            <location link="tecs_system_runtime_query.xml">tecs.system.runtime.query</location>
+            <desc_cn>给消息单元的监控结果增加定时器数量、上电状态、运行时状态等字段</desc_cn>
+            <desc_en>add timer_count,state,runtime_state fields for mu runtime information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/7</date>
+            <location link="tecs_system_runtime_query.xml">tecs.system.runtime.query</location>
+            <desc_cn>查询系统运行时信息</desc_cn>
+            <desc_en>query system runtime information</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/5</date>
+            <location link="tecs_image_set.xml">tecs_image_set</location>
+            <desc_cn>修改描述信息,设置长度时表示清空描述信息</desc_cn>
+            <desc_en>change description,clear description when set NULL</desc_en>
+        </entry>
+        <entry>
+            <date>2012/7/3</date>
+            <location link="tecs_clustermanager_query.xml">tecs.clustermanager.query</location>
+            <desc_cn>修改core_free_max和tcu_unit_free_max描述</desc_cn>
+            <desc_en>modify core_free_max and tcu_unit_free_max description.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/28</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>新增网卡model字段，表示选择的网卡类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/28</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>新增网卡model字段，表示选择的网卡类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/28</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>新增网卡model字段，表示选择的网卡类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/28</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>新增网卡model字段，表示选择的网卡类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/28</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>新增网卡model字段，表示选择的网卡类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/28</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>新增网卡model字段，表示选择的网卡类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/6/15</date>
+            <location link="tecs.cluster.query.xml">tecs.cluster.query</location>
+            <desc_cn>修改该接口中的register_State为register_state</desc_cn>
+            <desc_en>modify register_State to register_state.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/31</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>删除tecs.file.query接口，其功能逻辑被tecs.image.query取代</desc_cn>
+            <desc_en>rpc interface tecs.file.query is deleted, please use tecs.image.query instead.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/31</date>
+            <location link="tecs_vmcfg_action.xml">tecs.vmcfg.action</location>
+            <desc_cn>入参oprate增加选项reset，表示支持虚拟机支持强制重启</desc_cn>
+            <desc_en>parameter "oprate" added enum "reset".</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/18</date>
+            <location link="tecs_image_set.xml">tecs.image.set</location>
+            <desc_cn>入参新增bus字段，表示设置映像的总线类型</desc_cn>
+            <desc_en>new parameter "bus" added.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/18</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>返回值结构体中新增bus字段，表示映像的总线类型</desc_cn>
+            <desc_en>new field "bus" added in returned bus type</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/10</date>
+            <location link="tecs_image_delete.xml">tecs.image.delete</location>
+            <desc_cn>新增接口用于删除映像，效果等同于在ftp客户端删除已经上传的映像文件</desc_cn>
+            <desc_en>new interface added: tecs.image.delete</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/10</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>返回值结构体中新增md5sum字段，表示映像对应的文件md5摘要</desc_cn>
+            <desc_en>new field "md5sum" added in returned ApiImageInfo</desc_en>
+        </entry>
+        <entry>
+            <date>2012/5/9</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>返回值结构体中新增file字段，表示映像对应的文件名称</desc_cn>
+            <desc_en>new field "file" added in returned ApiImageInfo</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/27</date>
+            <location link="tecs_user_fullquery.xml">tecs.user.fullquery</location>
+            <desc_cn>新增接口tecs.user.fullquery</desc_cn>
+            <desc_en>new interface added: tecs.user.fullquery</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/27</date>
+            <location link="tecs_vmcfg_fullquery.xml">tecs.vmcfg.fullquery</location>
+            <desc_cn>更新接口tecs.vmcfg.fullquery，返回结果中增加create_time，表示虚拟机创建时间</desc_cn>
+            <desc_en>new field returned by tecs.vmcfg.fullquery create_time</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/25</date>
+            <location link="tecs_vmcfg_fullquery.xml">tecs.vmcfg.fullquery</location>
+            <desc_cn>新增接口tecs.vmcfg.fullquery</desc_cn>
+            <desc_en>new interface added: tecs.vmcfg.fullquery</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/24</date>
+            <location link="tecs_project_allocate.xml">tecs.project.allocate</location>
+            <desc_cn>当创建project成功时，返回的第二个参数是新创建的project id</desc_cn>
+            <desc_en>when create project successfully, return project id</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/24</date>
+            <location link="tecs_vmcfg_allocate_by_vt.xml">tecs.vmcfg.allocate_by_vt</location>
+            <desc_cn>当创建虚拟机成功时，返回的第二个参数是新创建的虚拟机id</desc_cn>
+            <desc_en>when create vm successfully, return vid</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/24</date>
+            <location link="tecs_vmcfg_allocate_quick.xml">tecs.vmcfg.allocate_quick</location>
+            <desc_cn>当创建虚拟机成功时，返回的第二个参数是新创建的虚拟机id</desc_cn>
+            <desc_en>when create vm successfully, return vid</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/24</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>当创建虚拟机成功时，返回的第二个参数是新创建的虚拟机id</desc_cn>
+            <desc_en>when create vm successfully, return vid</desc_en>
+        </entry>
+        <entry>
+            <date>2012/4/24</date>
+            <location link="tecs_vmcfg_get_id_by_name.xml">tecs.vmcfg.get_id_by_name</location>
+            <desc_cn>新增接口: tecs.vmcfg.get_id_by_name</desc_cn>
+            <desc_en>add new interface: tecs.vmcfg.get_id_by_name</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>修改machine、kernel、ramdisk和disks的类型，删除image_disks、repel_vms和attract_vms.</desc_cn>
+            <desc_en>modify the type of machine、kernel ramdisk and disks, delete image_disks、repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_allocate_by_vt.xml">tecs.vmcfg.allocate_by_vt</location>
+            <desc_cn>删除模板id，增加模板名称</desc_cn>
+            <desc_en>delete vt_id, add vt_name.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_allocate_quick.xml">tecs.vmcfg.allocate_quick</location>
+            <desc_cn>修改machine、kernel和ramdisk的类型，删除repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel and ramdisk, delete repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>修改machine、kernel、ramdisk和disks的类型，删除image_disks、repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel ramdisk and disks, delete image_disks、repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>修改machine、kernel、ramdisk和disks的类型，删除image_disks、repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel ramdisk and disks, delete image_disks、repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_set_disk.xml">tecs.vmcfg.set_disk</location>
+            <desc_cn>增加id字段</desc_cn>
+            <desc_en>add id.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_set_imagedisk.xml">tecs.vmcfg.set_image_disk</location>
+            <desc_cn>增加size字段</desc_cn>
+            <desc_en>add size.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmcfg_set_nic.xml">tecs.vmcfg.set_nic</location>
+            <desc_cn>修改文件格式</desc_cn>
+            <desc_en>adjust file format.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>修改machine、kernel、ramdisk和disks的类型，删除image_disks、repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel ramdisk and disks, delete image_disks、repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_allocate_quick.xml">tecs.vmtemplate.allocate_quick</location>
+            <desc_cn>修改machine、kernel和ramdisk的类型，删除repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel and ramdisk, delete repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>修改machine、kernel、ramdisk和disks的类型，删除image_disks、repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel ramdisk and disks, delete image_disks、repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>修改machine、kernel、ramdisk和disks的类型，删除image_disks、repel_vms和attract_vms</desc_cn>
+            <desc_en>modify the type of machine、kernel ramdisk and disks, delete image_disks、repel_vms and attract_vms.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_set_disk.xml">tecs.vmtemplate.set_disk</location>
+            <desc_cn>增加vt_name字段</desc_cn>
+            <desc_en>add vt_name.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_set_imagedisk.xml">tecs.vmtemplate.set_image_disk</location>
+            <desc_cn>增加vt_name字段</desc_cn>
+            <desc_en>add vt_name.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_set_nic.xml">tecs.vmtemplate.set_nic</location>
+            <desc_cn>修改文件格式</desc_cn>
+            <desc_en>adjust file format.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_delete.xml">tecs.vmtemplate.delete</location>
+            <desc_cn>按id操作模板改成按名称操作模板</desc_cn>
+            <desc_en>modify vmtemplate id to vmtemplate name.</desc_en>
+        </entry>
+        <entry>
+            <date>2012/1/31</date>
+            <location link="tecs_vmtemplate_publish.xml">tecs.vmtemplate.publish</location>
+            <desc_cn>按id操作模板改成按名称操作模板</desc_cn>
+            <desc_en>modify vmtemplate id to vmtemplate name.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/16</date>
+            <location link="tecs_image_unregister.xml">tecs.image.unregister</location>
+            <desc_cn>增加4002错误码</desc_cn>
+            <desc_en>add errno 4002.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_project_query_vm_by_project.xml">tecs.project.query_vm_by_project</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/14</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>修改接口文档的格式</desc_cn>
+            <desc_en>modify xml format.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_host_query.xml">tecs.host.query</location>
+            <desc_cn>支持分包查询</desc_cn>
+            <desc_en>Add start_index, query_count, next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_svcpu_query.xml">tecs.svcpu.query</location>
+            <desc_cn>支持分包查询</desc_cn>
+            <desc_en>Add start_index, query_count, next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_host_register.xml">tecs.host.register</location>
+            <desc_cn>支持主机描述，修改主机名称的最大长度</desc_cn>
+            <desc_en>Add description, modify host name max length.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_host_unregister.xml">tecs.host.unregister</location>
+            <desc_cn>支持主机描述，修改主机名称的最大长度</desc_cn>
+            <desc_en>Add description, modify host name max length.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <desc_cn>修改主机名称的最大长度</desc_cn>
+            <desc_en>Modify host name max length.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_svcpu_set.xml">tecs.svcpu.set</location>
+            <desc_cn>支持CPU型号的描述</desc_cn>
+            <desc_en>Add description of cpu information.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <desc_cn>删除tecs.cpuinfo.query方法</desc_cn>
+            <desc_en>Delete tecs.cpuinfo.query method.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_clustermanager_query.xml">tecs.clustermanager.query</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_file_query.xml">tecs.file.query</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_project_query.xml">tecs.project.query</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_project_query_vm_by_project.xml">tecs.project.query_vm_by_project</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/09</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>入参增加start_index和query_count,出参增加next_index和max_count</desc_cn>
+            <desc_en>paramer in add start_index and query_count, paramer out add next_index and max_count.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_image_enable.xml">tecs.image.enable</location>
+            <desc_cn>修改flag类型为bool</desc_cn>
+            <desc_en>modify flag type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_image_publish.xml">tecs.image.publish</location>
+            <desc_cn>修改flag类型为bool</desc_cn>
+            <desc_en>modify flag type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>修改is_public类型为bool</desc_cn>
+            <desc_en>modify is_public type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_image_register.xml">tecs.image.register</location>
+            <desc_cn>修改is_public和is_available类型为bool</desc_cn>
+            <desc_en>modify is_public and is_available type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_project_query_vm_by_project.xml">tecs.project.query_vm_by_project</location>
+            <desc_cn>修改dhcp类型为bool</desc_cn>
+            <desc_en>modify dhcp type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_vmcfg_allocate.xml">tecs.vmcfg.allocate</location>
+            <desc_cn>修改dhcp类型为bool</desc_cn>
+            <desc_en>modify dhcp type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>修改dhcp类型为bool</desc_cn>
+            <desc_en>modify dhcp type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>修改dhcp类型为bool</desc_cn>
+            <desc_en>modify dhcp type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_vmtemplate_allocate.xml">tecs.vmtemplate.allocate</location>
+            <desc_cn>修改dhcp和is_public类型为bool</desc_cn>
+            <desc_en>modify dhcp adn is_public type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="ttecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>修改dhcp和is_public类型为bool</desc_cn>
+            <desc_en>modify dhcp adn is_public type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/12/02</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>修改dhcp和is_public类型为bool</desc_cn>
+            <desc_en>modify dhcp adn is_public type from int to bool.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/29</date>
+            <location link="tecs_user_delete.xml">tecs.user.delete</location>
+            <desc_cn>增加错误码8005/8006</desc_cn>
+            <desc_en>Add error code 8005/8006.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/29</date>
+            <location link="tecs_user_set.xml">tecs.user.set</location>
+            <desc_cn>增加错误码8005/8006/8007</desc_cn>
+            <desc_en>Add error code 8005/8006/8007.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_register.xml">tecs.host.register</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_unregister.xml">tecs.host.unregister</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_forget.xml">tecs.host.forget</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_disable.xml">tecs.host.disable</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_enable.xml">tecs.host.enable</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_reboot.xml">tecs.host.reboot</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_shutdown.xml">tecs.host.shutdown</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_host_query.xml">tecs.host.query</location>
+            <desc_cn>对入参cluster_name和host_name增加合法性限制。返回成功时不再返回error_info，返回失败时不再返回空array</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and host_name. Delete the error_info when return success, delete the empty array when return failed.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_port_set.xml">tecs.port.set</location>
+            <desc_cn>对入参cluster_name、host_name和port_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name, host_name and port_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_port_delete.xml">tecs.port.delete</location>
+            <desc_cn>对入参cluster_name、host_name和port_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name, host_name and port_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_port_query.xml">tecs.port.query</location>
+            <desc_cn>对入参cluster_name、host_name和port_name增加合法性限制。返回成功时不再返回error_info，返回失败时不再返回空array</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name, host_name and port_name. Delete the error_info when return success, delete the empty array when return failed.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_trunk_set.xml">tecs.trunk.set</location>
+            <desc_cn>对入参cluster_name、host_name和trunk_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name, host_name and trunk_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_trunk_delete.xml">tecs.trunk.delete</location>
+            <desc_cn>对入参cluster_name、host_name和trunk_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name, host_name and trunk_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_trunk_query.xml">tecs.trunk.query</location>
+            <desc_cn>对入参cluster_name、host_name和trunk_name增加合法性限制。返回成功时不再返回error_info，返回失败时不再返回空array</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name, host_name and trunk_name. Delete the error_info when return success, delete the empty array when return failed.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_clustercfg_set.xml">tecs.clustercfg.set</location>
+            <desc_cn>对入参cluster_name和config_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and config_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_clustercfg_delete.xml">tecs.clustercfg.delete</location>
+            <desc_cn>对入参cluster_name和config_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and config_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_clustercfg_query.xml">tecs.clustercfg.query</location>
+            <desc_cn>对入参cluster_name和config_name增加合法性限制。返回成功时不再返回error_info，返回失败时不再返回空array</desc_cn>
+            <desc_en>Add restriction to the input parameter s of cluster_name and config_name. Delete the error_info when return success, delete the empty array when return failed.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_svcpu_set.xml">tecs.svcpu.set</location>
+            <desc_cn>对入参cluster_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter  of cluster_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_svcpu_delete.xml">tecs.svcpu.delete</location>
+            <desc_cn>对入参cluster_name增加合法性限制。返回成功时不再返回error_info</desc_cn>
+            <desc_en>Add restriction to the input parameter  of cluster_name. Delete the error_info when return success.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_svcpu_query.xml">tecs.svcpu.query</location>
+            <desc_cn>对入参cluster_name增加合法性限制。返回成功时不再返回error_info，返回失败时不再返回空array</desc_cn>
+            <desc_en>Add restriction to the input parameter  of cluster_name. Delete the error_info when return success, delete the empty array when return failed.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/26</date>
+            <location link="tecs_cpuinfo_query.xml">tecs.cpuinfo.query</location>
+            <desc_cn>对入参cluster_name增加合法性限制。返回成功时不再返回error_info，返回失败时不再返回空array</desc_cn>
+            <desc_en>Add restriction to the input parameter  of cluster_name. Delete the error_info when return success, delete the empty array when return failed.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_clustermanager_disable.xml">tecs.clustermanager.disable</location>
+            <desc_cn>把以前的tecs_clustermanager_preserve_start.xml改名,修改接口成功返回的时候参数，修改调用函数的方法</desc_cn>
+            <desc_en>Modify success return paramer, rename tecs_clustermanager_preserve_start.xml.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_clustermanager_enable.xml">tecs.clustermanager.enable</location>
+            <desc_cn>把以前的tecs_clustermanager_preserve_stop.xml改名,修改接口成功返回的时候参数，修改调用函数的方法</desc_cn>
+            <desc_en>Modify success return paramer, rename tecs_clustermanager_preserve_stop.xml.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_image_unregister.xml">tecs.image.unregister</location>
+            <desc_cn>把以前的tecs_image_deregister.xml改名,修改接口成功返回的时候参数，修改调用函数的方法</desc_cn>
+            <desc_en>Modify success return paramer, rename tecs_image_unregister.xml.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_project_set.xml">tecs.project.set</location>
+            <desc_cn>把以前的tecs_project_modify.xml改名,修改接口成功返回的时候参数，修改调用函数的方法</desc_cn>
+            <desc_en>Modify success return paramer, rename tecs_project_modify.xml.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_image_set.xml">tecs.image.set</location>
+            <desc_cn>把以前的tecs_image_modify.xml改名,修改接口成功返回的时候参数，修改调用函数的方法</desc_cn>
+            <desc_en>Modify success return paramer, rename tecs_image_modify.xml.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_vmcfg_set.xml">tecs.vmcfg.set</location>
+            <desc_cn>新增</desc_cn>
+            <desc_en>add new.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_vmtemplate_set.xml">tecs.vmtemplate.set</location>
+            <desc_cn>新增</desc_cn>
+            <desc_en>add new.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_image_publish.xml">tecs.image.publish</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_image_enable.xml">tecs.image.enable</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_image_query.xml">tecs.image.query</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_image_register.xml">tecs.image.register</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_clustermanager_query.xml">tecs.clustermanager.query</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_clustermanager_register.xml">tecs.clustermanager.register</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_clustermanager_unregister.xml">tecs.clustermanager.unregister</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_file_query.xml">tecs.file.query</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_project_allocate.xml">tecs.project.allocate</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_project_delete.xml">tecs.project.delete</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_project_query.xml">tecs.project.query</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_project_query_vm_by_project.xml">tecs.project.query_vm_by_project</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_vmcfg_action.xml">tecs.vmcfg.action</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_vmcfg_query.xml">tecs.vmcfg.query</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_vmtemplate_delete.xml">tecs.vmtemplate.delete</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/24</date>
+            <location link="tecs_vmtemplate_query.xml">tecs.vmtemplate.query</location>
+            <desc_cn>修改接口成功返回的时候参数</desc_cn>
+            <desc_en>Modify success return paramer.</desc_en>
+        </entry>
+        <entry>
+            <date>2011/11/21</date>
+            <location/>
+            <desc_cn>正式发布</desc_cn>
+            <desc_en>Official Release.</desc_en>
+        </entry>
+    </revision>
+</revisions>

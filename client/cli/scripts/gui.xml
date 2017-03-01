@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="gb2312"?>
+<nodes>
+	<node name="Modes">
+		<subnodes>
+			<node name="Mode" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="Mode">
+		<attributes>
+			<attribute name="ID" comment="模式编号" type="integer" min="0" max="255" necessary="1"/>
+			<attribute name="Class" comment="模式类别" type="integer" min="0" max="65535" default="28" necessary="1"/>
+			<attribute name="HasNo" comment="是否有No命令" min="0" max="1" type="enum" default="YES" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+			<attribute name="Prompt" comment="命令行提示符" type="string" max="32" default="#" necessary="1"/>
+			<attribute name="mode-help-chs" comment="中文帮助信息" type="string" max="80" necessary="0"/>
+			<attribute name="mode-help-en" comment="英文帮助信息" type="string" max="80" necessary="0"/>
+			<attribute name="Name" comment="模式名称" type="string" max="30" default="new-mode" necessary="1"/>
+			<attribute name="mode-Comment-chs" comment="中文模式注释信息" type="string" max="50" necessary="0"/>
+			<attribute name="mode-Comment-en" comment="英文模式注释信息" type="string" max="50" necessary="0"/>
+			<attribute name="IsPublic" comment="是否全局模式" min="0" max="1" type="enum" default="NO" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+			<attribute name="ShowPublicCmd" comment="是否显示全局命令" min="0" max="1" type="enum" default="YES" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+			<attribute name="NeedPublish" comment="是否需要对外发布" type="enum" default="YES" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+		</attributes>
+		<subnodes>
+			<node name="TreeNode" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="TreeNode">
+		<attributes>
+			<attribute name="Name" comment="节点名称" type="string" max="30" default="new-treenode" necessary="1"/>
+			<attribute name="treenode-comment-chs" comment="中文注释" type="string" max="100" necessary="0"/>
+			<attribute name="treenode-comment-en" comment="英文注释" type="string" max="100" necessary="0"/>
+		</attributes>
+		<subnodes>
+			<node name="Command" multinode="0"/>
+			<node name="TreeNode" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="Command">
+		<attributes>
+			<attribute name="CmdGroup" comment="所属命令组" type="enum" necessary="1"/>
+			<attribute name="IdInGroup" comment="命令组内编号" type="integer" min="0" max="65535" necessary="1"/>
+			<attribute name="OprMode" comment="操作模式" type="enum" necessary="1">
+				<enum value="0" name="GET"/>
+				<enum value="1" name="SET"/>
+				<enum value="2" name="SAVE"/>
+				<enum value="3" name="DEBUG"/>
+				<enum value="4" name="PROCESS"/>
+				<enum value="5" name="PROCESS-OLD"/>
+			</attribute>
+			<attribute name="ExecMode" comment="执行模式" type="enum" default="协议" necessary="1">
+				<enum value="0" name="解释端执行"/>
+				<enum value="2" name="协议"/>
+				<enum value="6" name="其他"/>
+			</attribute>
+			<attribute name="NextMode" comment="下一模式" type="enum" default="相同模式" necessary="1">
+				<enum value="0" name="无模式"/>
+				<enum value="1" name="用户模式"/>
+				<enum value="2" name="特权模式"/>
+				<enum value="251" name="相同模式"/>
+				<enum value="252" name="前模式"/>
+			</attribute>
+			<attribute name="NextInputMode" comment="下一输入模式" type="enum" default="INMODE_NORMAL" necessary="1">
+				<enum value="0" name="INMODE_INVALID"/>
+				<enum value="1" name="INMODE_NORMAL"/>
+			</attribute>
+			<attribute name="ExecutePos" comment="命令执行位置" type="enum" default="XMLRPC" necessary="1">
+				<enum value="1" name="MP"/>
+				<enum value="250" name="XMLRPC"/>
+				<enum value="251" name="INTERPRETER"/>
+			</attribute>
+			<attribute name="CanStop" comment="是否可以中止" type="enum" default="YesAndNotNeedAck" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YesAndNotNeedAck"/>
+				<enum value="2" name="YesAndNeedAck"/>
+			</attribute>
+			<attribute name="HasNoCommand" comment="是否有no命令" type="enum" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+			<attribute name="NeedPublish" comment="是否需要对外发布" type="enum" default="YES" necessary="1">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+			<!--attribute name="NeedRetrun" comment="是否需要返回数据" type="enum" default="YES" necessary="1">
+        <enum value="0" name="NO"/>
+        <enum value="1" name="YES"/>
+      </attribute-->
+			<attribute name="formatstring-chs" comment="中文格式化字符串" type="string" max="65535" necessary="0"/>
+			<attribute name="formatstring-en" comment="英文格式化字符串" type="string" max="65535" necessary="0"/>
+		</attributes>
+		<subnodes>
+			<node name="ParamNode" multinode="0"/>
+			<node name="NoParamNode" multinode="0"/>
+			<node name="cmd-postscript" multinode="0"/>
+		</subnodes>
+	</node>
+	<node name="ParamNode">
+		<subnodes>
+			<node name="Param" multinode="1"/>
+			<node name="Prammar" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="NoParamNode">
+		<subnodes>
+			<node name="Param" multinode="1"/>
+			<node name="Prammar" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="Prammar">
+		<attributes>
+			<attribute name="Name" comment="语法名称" type="enum" max="30" necessary="1">
+				<enum value="1" name="[]SQUARE"/>
+				<enum value="2" name="{}ANGLE"/>
+				<enum value="3" name="WHOLE"/>
+				<enum value="4" name="NO_SYMBOL_WHOLE"/>
+				<enum value="5" name="RECYCLE"/>
+				<enum value="6" name="{}MORE_ANGLE"/>
+			</attribute>
+			<attribute name="prammarcomment-chs" comment="中文语法注释" type="string" max="100" necessary="0"/>
+			<attribute name="prammarcomment-en" comment="英文语法注释" type="string" max="100" necessary="0"/>
+			<attribute name="Flag" comment="语法占位符" type="string" max="30" necessary="0"/>
+			<attribute name="MoreFlags" comment="是否至少选一项" type="enum" default="NO" necessary="0">
+				<enum value="0" name="NO"/>
+				<enum value="1" name="YES"/>
+			</attribute>
+		</attributes>
+		<subnodes>
+			<node name="Param" multinode="1"/>
+			<node name="Prammar" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="Param">
+		<attributes>
+			<attribute name="Name" comment="参数名称" type="string" max="30" default="new-param" necessary="1"/>
+			<attribute name="paracomment-chs" comment="参数中文注释" type="string" max="100" necessary="0"/>
+			<attribute name="paracomment-en" comment="参数英文注释" type="string" max="100" necessary="0"/>
+			<attribute name="DataType" comment="参数数据类型" type="enum" necessary="1">
+				<enum value="1" name="DATA_TYPE_BYTE"/>
+				<enum value="2" name="DATA_TYPE_WORD"/>
+				<enum value="3" name="DATA_TYPE_DWORD"/>
+				<enum value="4" name="DATA_TYPE_INT"/>
+				<!--enum value="5"  name="DATA_TYPE_CHAR"/-->
+				<enum value="6" name="DATA_TYPE_STRING"/>
+				<!--enum value="7"  name="DATA_TYPE_TEXT"/-->
+				<!--enum value="8"  name="DATA_TYPE_TABLE"/-->
+				<enum value="9" name="DATA_TYPE_IPADDR"/>
+				<!--enum value="10" name="DATA_TYPE_DATE"/-->
+				<!--enum value="11" name="DATA_TYPE_TIME"/-->
+				<enum value="12" name="DATA_TYPE_MAP"/>
+				<!--enum value="13" name="DATA_TYPE_LIST"/-->
+				<enum value="14" name="DATA_TYPE_CONST"/>
+				<!--enum value="15" name="DATA_TYPE_IFPORT"/-->
+				<enum value="16" name="DATA_TYPE_HEX"/>
+				<enum value="17" name="DATA_TYPE_MASK"/>
+				<!--enum value="18" name="DATA_TYPE_IMASK"/-->
+				<enum value="19" name="DATA_TYPE_MACADDR"/>
+				<enum value="20" name="DATA_TYPE_FLOAT"/>
+				<!--enum value="21" name="DATA_TYPE_BOARDNAME"/-->
+				<enum value="22" name="DATA_TYPE_IPV6PREFIX"/>
+				<enum value="23" name="DATA_TYPE_IPV6ADDR"/>
+				<enum value="24" name="DATA_TYPE_VPN_ASN"/>
+				<enum value="25" name="DATA_TYPE_VPN_IP"/>
+				<enum value="26" name="DATA_TYPE_PHYADDRESS"/>
+				<enum value="27" name="DATA_TYPE_LOGICADDRESS"/>
+				<enum value="28" name="DATA_TYPE_WORD64"/>
+				<enum value="29" name="DATA_TYPE_SWORD"/>
+				<enum value="30" name="DATA_TYPE_LOGIC_ADDR_M"/>
+				<enum value="31" name="DATA_TYPE_LOGIC_ADDR_U"/>
+				<enum value="32" name="DATA_TYPE_IPVXADDR"/>
+				<enum value="33" name="DATA_TYPE_T_TIME"/>
+				<enum value="34" name="DATA_TYPE_SYSCLOCK"/>
+				<enum value="35" name="DATA_TYPE_PARA"/>
+			</attribute>
+			<attribute name="Min" comment="参数最小值" type="integer" min="0" max="18446744073709551615" necessary="0"/>
+			<attribute name="Max" comment="参数最大值" type="integer" min="0" max="18446744073709551615" necessary="0"/>
+			<attribute name="Length" comment="参数长度或MAP类型编号" type="integer" min="0" max="65535" necessary="0"/>
+		</attributes>
+	</node>
+	<node name="Maps">
+		<subnodes>
+			<node name="Map" multinode="1"/>
+		</subnodes>
+	</node>
+	<node name="Map">
+		<attribute name="Type" comment="类型" type="integer" min="1" max="65535" necessary="1"/>
+	</node>
+	<node name="Languages">
+		<Language name="Chinese" suffix="chs" langId="1"/>
+		<Language name="English" suffix="en" langId="2"/>
+	</node>
+	<!--下面节点定义全局模式和命令(全局命令只能是解释执行) 以及 全局map -->
+	<node name="pub">
+		<Maps>
+			<Map Type="400">
+				<MapItem Value="0" Name-chs="成功" Name-en="OK"/>
+				<MapItem Value="1" Name-chs="错误" Name-en="Error"/>
+				<MapItem Value="2" Name-chs="错误,原因未知" Name-en="Error unknown"/>
+				<MapItem Value="3" Name-chs="错误,操作超时" Name-en="Error operation time out"/>
+				<MapItem Value="4" Name-chs="错误,鉴权管理无效" Name-en="Error, authentication manager is invalid"/>
+				<MapItem Value="5" Name-chs="错误,用户鉴权失败" Name-en="Error, failed to authenticate user"/>
+				<MapItem Value="6" Name-chs="错误,用户操作鉴权失败" Name-en="Error, failed to authorize usr's operation"/>
+				<MapItem Value="7" Name-chs="错误,链接数据库失败" Name-en="Error, falied to connect database"/>
+				<MapItem Value="8" Name-chs="错误,插入数据库失败" Name-en="Error, falied to insert database"/>
+				<MapItem Value="9" Name-chs="错误,更新数据库失败" Name-en="Error, falied to update database"/>
+				<MapItem Value="10" Name-chs="错误,删除数据库失败" Name-en="Error, falied to delete database"/>
+				<MapItem Value="11" Name-chs="错误,查询数据库失败" Name-en="Error, falied to query database"/>
+			    <MapItem Value="12" Name-chs="错误,数据库未知失败" Name-en="Error, unknown database fail"/>
+				<MapItem Value="13" Name-chs="错误,创建对象失败" Name-en="Error, failed to allocate object instance"/>
+				<MapItem Value="14" Name-chs="错误,删除对象失败" Name-en="Error, failed to drop object instance"/>
+				<MapItem Value="15" Name-chs="错误,获取对象失败" Name-en="Error, failed to get object instance"/>
+				<MapItem Value="16" Name-chs="错误,更新对象失败" Name-en="Error, failed to update object instance"/>
+				<MapItem Value="17" Name-chs="错误,对象不存在" Name-en="Error, object instance not exist"/>
+				<MapItem Value="18" Name-chs="错误,无效参数" Name-en="Error, invalide parameter"/>
+			    <MapItem Value="19" Name-chs="错误,操作失败" Name-en="Error, failed to do action"/>
+				<MapItem Value="20" Name-chs="错误,会话格式无效" Name-en="Erorr, session format is invalid"/>
+				<MapItem Value="21" Name-chs="错误,连接数据库失败" Name-en="Error, falied to connect database"/>
+				<MapItem Value="1002" Name-chs="失败,CC未应答" Name-en="Failed, Cluster Controller is not answered"/>
+				<MapItem Value="1003" Name-chs="错误,集群未注册到TC中" Name-en="Error, cluster have not registered into the Tecs Center"/>
+				<MapItem Value="1004" Name-chs="失败,物理机不存在" Name-en="Failed, host is not exist"/>
+				<MapItem Value="1005" Name-chs="失败,物理机正忙" Name-en="Failed, host is busy"/>
+				<MapItem Value="1006" Name-chs="失败,物理机不是已注销" Name-en="Failed, host is not unregistered"/>
+				<MapItem Value="1007" Name-chs="失败,物理机不是已注册" Name-en="Failed, host is not registered"/>
+				<MapItem Value="1008" Name-chs="失败,物理机上运行有虚拟机" Name-en="Failed, there are some VMs running on the host"/>
+				<MapItem Value="1009" Name-chs="失败,物理机已注册到其他集群" Name-en="Conflict, host have joined the other cluster"/>
+				<MapItem Value="1010" Name-chs="错误,命令为空" Name-en="Error, command is empty"/>
+				<MapItem Value="1011" Name-chs="失败,命令执行失败" Name-en="Failed, command execute failed"/>
+				<MapItem Value="1012" Name-chs="错误,网口名称为空" Name-en="Error, port name is empty"/>
+				<MapItem Value="1013" Name-chs="错误,无效的网口配置参数" Name-en="Error, invalid port config info"/>
+				<MapItem Value="1014" Name-chs="失败,创建网口配置失败" Name-en="Failed, create a new port config failed"/>
+				<MapItem Value="1015" Name-chs="失败,不能停用该网口，因为该物理机上运行有虚拟机" Name-en="Failed, can not stop the port, because of there are some VMs running on the host"/>
+				<MapItem Value="1016" Name-chs="失败,网口不存在" Name-en="Failed, port is not exist"/>
+				<MapItem Value="1017" Name-chs="错误,trunk口名称为空" Name-en="Error, trunk name is empty"/>
+				<MapItem Value="1018" Name-chs="失败,trunk口不存在" Name-en="Failed, trunk is not exist"/>
+				<MapItem Value="1019" Name-chs="失败,创建trunk口配置失败" Name-en="Failed, create a new trunk config failed"/>
+				<MapItem Value="1020" Name-chs="失败,不能修改该trunk口的类型，因为该物理机上运行有虚拟机" Name-en="Failed, can not modify the trunk type, because of there are some VMs running on the host"/>
+				<MapItem Value="1021" Name-chs="失败,不能删除该trunk口，因为该物理机上运行有虚拟机" Name-en="Failed, can not delete the trunk, because of there are some VMs running on the host"/>
+				<MapItem Value="1022" Name-chs="错误,集群属性名称非法" Name-en="Error, cluster config name is illegal"/>
+				<MapItem Value="1023" Name-chs="失败,设置集群属性配置失败" Name-en="Failed, set cluster config failed"/>
+				<MapItem Value="1024" Name-chs="失败,删除集群属性配置失败" Name-en="Failed, delete cluster config failed"/>
+				<MapItem Value="1025" Name-chs="错误,该cpu info id不存在" Name-en="Error, cpu_info_id is not exist"/>
+				<MapItem Value="1026" Name-chs="错误,cpu info和cpu info id字段均有效" Name-en="Error, cpu_info and cpu_info_id are both valid"/>
+				<MapItem Value="1027" Name-chs="失败,设置svcpu配置失败" Name-en="Failed, set svcpu config failed"/>
+				<MapItem Value="1028" Name-chs="失败,删除svcpu配置失败" Name-en="Failed, delete svcpu config failed"/>
+				<MapItem Value="2001" Name-chs="错误, 虚拟网络管理模块启动失败。" Name-en="Error, vnet unit start failed"/>
+				<MapItem Value="2002" Name-chs="错误, 网络平面名不存在" Name-en="Error, netplane name is not exist"/>
+				<MapItem Value="2003" Name-chs="冲突, 网络平面名已经存在" Name-en="Conflict, netplane is exist"/>
+				<MapItem Value="2004" Name-chs="失败, 网络平面正在使用" Name-en="Failed, netplane is using"/>
+				<MapItem Value="2005" Name-chs="错误, 数据库操作失败" Name-en="Error, operate DB Failed"/>
+				<MapItem Value="2006" Name-chs="错误, 内存申请失败" Name-en="Error,failed to allocate memory "/>
+				<MapItem Value="2007" Name-chs="冲突, DHCP配置参数冲突" Name-en="Conflict,invalid command parameter"/>
+				<MapItem Value="2008" Name-chs="错误, DHCP读写文件失败" Name-en="Error,failed to read or write file"/>
+				<MapItem Value="2009" Name-chs="错误, IP地址不存在" Name-en="Error,the IP address does not exist."/>
+				<MapItem Value="2010" Name-chs="错误, VLAN设置失败" Name-en="Error,failed to set VLAN"/>
+				<MapItem Value="2011" Name-chs="错误, 接口不存在" Name-en="Error,the interface does not exist"/>
+				<MapItem Value="2012" Name-chs="错误, MAC地址不存在" Name-en="Error,the MAC address does not exist"/>
+				<MapItem Value="2013" Name-chs="错误, 配置数据不存在" Name-en="Error,the configure data not exist."/>
+				<MapItem Value="2014" Name-chs="错误, 物理主机名不存在" Name-en="Error,hostname not exist"/>
+				<MapItem Value="2015" Name-chs="失败, 系统调用失败" Name-en="Failed,system call failed"/>
+				<MapItem Value="2016" Name-chs="失败, 接口正在使用" Name-en="Failed,the interface is using."/>
+				<MapItem Value="2017" Name-chs="失败, 必须先删除host配置" Name-en="Failed,please delete host configuration first"/>
+				<MapItem Value="2018" Name-chs="失败, 必须先配置VLAN数据" Name-en="Failed,please configure VLAN data first"/>
+				<MapItem Value="2019" Name-chs="失败, DHCP网络配置有误，请检查集群配置文件" Name-en="Failed,DHCP configure error,please check CC configure file"/>
+				<MapItem Value="2020" Name-chs="失败, 必须先配置subnet数据" Name-en="Failed,please configure DHCP subnet command first"/>
+				<MapItem Value="2021" Name-chs="失败, 获取VLAN数据失败" Name-en="Error,failed to get VLAN information"/>
+				<MapItem Value="2022" Name-chs="失败, 获取空闲IP地址失败" Name-en="Error,failed to get free ip address"/>
+				<MapItem Value="2023" Name-chs="失败, 必须先删除subnet数据" Name-en="Failed,please delete subnet configuration first"/>
+				<MapItem Value="2024" Name-chs="冲突, 网关地址冲突" Name-en="Conflict,gateway address conflict"/>
+				<MapItem Value="2025" Name-chs="冲突, DHCP正在使用" Name-en="Conflict,DHCP is using"/>
+				<MapItem Value="2026" Name-chs="冲突, 网络平面正在使用" Name-en="Conflict,Netplane is using"/>
+				<MapItem Value="2038" Name-chs="失败, DHCP模块没有配置" Name-en="Failed,the DHCP module is not configured."/>
+				<MapItem Value="2039" Name-chs="失败, DHCP模块没有配置" Name-en="Failed,please configure TECS subnet data first."/>
+				<MapItem Value="3000" Name-chs="超时, 应答超时" Name-en="TimeOut,Ack TimeOut"/>
+				<MapItem Value="3001" Name-chs="失败, 创建集群失败" Name-en="Failed,Create Cluster Fail"/>
+				<MapItem Value="3002" Name-chs="失败, 集群已注册" Name-en="Failed,Cluster have registerd"/>
+				<MapItem Value="3003" Name-chs="失败, 集群不存在" Name-en="Failed,Cluster does not exist"/>
+				<MapItem Value="3004" Name-chs="失败, 集群未注册" Name-en="Failed,Cluster does not register"/>
+				<MapItem Value="3005" Name-chs="失败, 集群资源未释放完毕" Name-en="Failed,Cluster resource is using"/>
+				<MapItem Value="4000" Name-chs="失败, 文件不存在" Name-en="Failed, file not exist"/>
+				<MapItem Value="4001" Name-chs="失败, 映像已经注册" Name-en="Failed, image have already registered"/>
+				<MapItem Value="4002" Name-chs="失败, 映像正在被使用" Name-en="Failed, image is using"/>
+				<MapItem Value="4003" Name-chs="失败, 无效查询类型" Name-en="Failed, invalid query type"/>
+				<MapItem Value="4004" Name-chs="失败, 查询失败" Name-en="Failed to query"/>
+				<MapItem Value="5000" Name-chs="失败, 工程名冲突" Name-en="Failed, project name conflict"/>
+				<MapItem Value="5001" Name-chs="失败, 工程存在虚拟机" Name-en="Failed, project contain virtual machine"/>
+				<MapItem Value="5002" Name-chs="失败, 无效查询类型" Name-en="Failed, invalid query type"/>
+				<MapItem Value="6000" Name-chs="失败, 无效查询类型" Name-en="Failed, invalid query type"/>
+				<MapItem Value="6001" Name-chs="失败, 获取映像失败" Name-en="Failed to acquire image"/>
+				<MapItem Value="6002" Name-chs="失败, 模板名冲突" Name-en="Failed, vmtemplate name conflict"/>
+				<MapItem Value="7000" Name-chs="失败, 获取映像失败" Name-en="Failed to acquire image"/>
+				<MapItem Value="7001" Name-chs="失败, 无效的工程" Name-en="Failed, invalid project"/>
+				<MapItem Value="7002" Name-chs="失败, 获取虚拟机模板失败" Name-en="Failed to acquire vmtemplate"/>
+				<MapItem Value="7003" Name-chs="失败, 该操作当前状态被禁止" Name-en="Failed, the operation is forbidden in current state"/>
+				<MapItem Value="7004" Name-chs="失败, 没有集群适合部署虚拟机" Name-en="Failed, no cluster is suitable to the vm"/>
+				<MapItem Value="7005" Name-chs="失败, 在集群上操作虚拟机失败" Name-en="Failed to action vm in cluster"/>
+				<MapItem Value="7006" Name-chs="失败, 在主机上操作虚拟机失败" Name-en="Failed to action vm in host"/>
+				<MapItem Value="7007" Name-chs="失败, 无效查询类型" Name-en="Failed, invalid query type"/>
+				<MapItem Value="7008" Name-chs="失败, 无效操作类型" Name-en="Failed, invalid action type"/>
+				<MapItem Value="7009" Name-chs="失败, 虚拟机已部署禁止修改操作" Name-en="Failed, modify is forbidden for VM has deployed"/>
+				<MapItem Value="7010" Name-chs="失败, 分配MAC地址失败" Name-en="Failed to allocate mac address"/>
+				<MapItem Value="7011" Name-chs="失败, 释放MAC地址失败" Name-en="Failed to release mac address"/>
+        <MapItem Value="8000" Name-chs="冲突, 用户名已存在" Name-en="Conflict, user already exist."/>
+				<MapItem Value="8001" Name-chs="冲突, 用户组名已存在" Name-en="Conflict, usergroup already exist."/>
+				<MapItem Value="8002" Name-chs="错误, 用户不存在" Name-en="Error, user does not exist."/>
+				<MapItem Value="8003" Name-chs="错误, 用户组不存在" Name-en="Error, usergroup does not exist."/>
+				<MapItem Value="8004" Name-chs="错误, 确认密码与密码不一致" Name-en="Error, confirm password and password are inconsistent."/>
+				<MapItem Value="8005" Name-chs="错误, 默认用户不能禁用或删除" Name-en="Error, the default user cannot be disabled or deleted."/>
+				<MapItem Value="8006" Name-chs="错误, 用户不能禁用或删除自己" Name-en="Error, user cannot disable or delete his own account."/>
+				<MapItem Value="8007" Name-chs="错误, 默认用户必须是云管理员" Name-en="Error, the default user must be a cloud administrator."/>				
+				<MapItem Value="8008" Name-chs="错误，用户组非空" Name-en="Error, usergroup is not empty."/>	
+				<MapItem Value="10001" Name-chs="失败, 通过UID查找用户失败" Name-en="Failed, query user name by uid failed"/>
+				<MapItem Value="10002" Name-chs="失败, 无效查询类型" Name-en="Failed, invalid query type"/>
+				<MapItem Value="12000" Name-chs="失败, 虚拟机不存在" Name-en="This vm is not existed"/>
+			</Map>
+		</Maps>
+	</node>
+</nodes>

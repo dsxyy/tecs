@@ -1,0 +1,6 @@
+#每隔5分钟定时采集一下xm list等信息
+*/5 * * * * /usr/local/bin/LogVmInfo.sh
+#每隔20分钟定时采集一下postgresql数据库操作日志
+*/20 * * * * /usr/local/bin/LogPgsqlInfo.sh
+#每隔1小时检查一下tecs进程运行状态，如果全部停止则自动停止采集任务
+* */1 * * * /usr/local/bin/stoptecslog.sh

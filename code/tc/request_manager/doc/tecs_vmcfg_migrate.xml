@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_migrate.xml">
+	<interface>tecs.vmcfg.migrate</interface>
+	<shortdesc lang_cn="虚拟机迁移" lang_en="migrate vm"/>
+	<description lang_cn="虚拟机迁移。" lang_en="migrate vm."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<struct name="ApiVmCfgMigrate">
+			<parameter name="vid" type="int64" lang_cn="虚拟机ID,必填项。" lang_en="VM ID，this parameter must input."/>
+			<parameter name="hid" type="int64" lang_cn="待迁移到的目标物理机hid.如果为 -1，表示不指定物理机" lang_en="VM project name which used by current vm,string length range 1-32."/>
+			<parameter name="bForced" type="bool" lang_cn="是否强制迁移,仅当热迁移有效; 冷迁移固定为false。" lang_en="force to migrate, valide when live migrate; must be false when cold migrate."/>
+			<parameter name="bLive" type="bool" lang_cn="为热迁移还是冷迁移,true:热迁移,反之冷迁移" lang_en="hot or clod migrate. true: hot migrate, false: cold migrate"/>
+		</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1004" lang_cn="失败, 指定的主机不存在" lang_en="Failed, host is not exist."/>
+				<enum name="7005" lang_cn="失败, 在集群上操作虚拟机失败" lang_en="Failed to action vm in cluster"/>
+				<enum name="7012" lang_cn="失败, 虚拟机不存在" lang_en="Failed, VM not exist"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.set" href="tecs_vmcfg_set.xml"/>
+		<xref name="tecs.vmcfg.query" href="tecs_vmcfg_query.xml"/>
+		<xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+	</reference>
+</method>

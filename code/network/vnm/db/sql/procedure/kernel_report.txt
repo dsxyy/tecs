@@ -1,0 +1,470 @@
+
+
+
+-- 判断逻辑网络能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_add_kernelreport(in_vna_uuid character varying, in_uuid character varying, in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer, in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer, in_is_dhcp integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- check uplink port type
+  IF in_uplink_port_type < 0 THEN 
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  IF in_uplink_port_type > 1 THEN 
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  -- check uplink port bond mode 
+  IF in_uplink_port_type = 1 THEN 
+     IF in_uplink_port_mode = 1 THEN 
+         result := 0; 
+     ELSE
+         IF in_uplink_port_mode = 4 THEN 
+             result := 0; 
+         ELSE             
+             result := RTN_PARAM_INVALID; 
+             return result;
+         END IF;
+     END IF;
+  END IF;
+    
+  -- 查看是否重复添加 
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report WHERE vna_id = vnaid AND switch_name = in_switch_name;
+  IF is_exist > 0 THEN 
+     SELECT count(*) INTO is_same FROM kernel_cfg_report WHERE vna_id = vnaid AND switch_name = in_switch_name 
+               AND ip = in_ip AND mask = in_mask AND is_online = in_is_online;
+     IF is_same > 0 THEN 
+         result := RTN_HAS_SAME_ITEM; 
+         return result;
+     ELSE 
+         result := RTN_ITEM_CONFLICT; 
+         return result;
+     END IF; 
+  END IF;
+  
+  -- 一个vna只能一个kernel report
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report WHERE vna_id = vnaid;
+  IF is_exist > 0 THEN 
+      result := RTN_ITEM_CONFLICT; 
+      return result;
+  END IF;
+          
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_kernelreport(in_vna_uuid character varying, in_uuid character varying, in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer) OWNER TO tecs;
+
+
+-- 逻辑kernel_report添加 
+-- Function: pf_net_add_kernelreport(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_kernelreport(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_kernelreport(in_vna_uuid character varying, in_uuid character varying, in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  vnaid numeric(19,0);
+  uplinkportid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_kernelreport(in_vna_uuid,in_uuid,in_switch_name,in_ip,in_mask,in_is_online,in_kernel_port_name,
+                  in_uplink_port_name,in_uplink_port_type,in_uplink_port_mode,in_is_dhcp);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  -- 不支持重复添加 
+
+  -- insert item 
+  result.id := nextval('serial_kernel_cfg_report');
+  --uplinkportid ：= nextval('serial_kernel_cfg_report_bond');
+  --result.uuid := in_uuid;
+  BEGIN 
+      INSERT INTO kernel_cfg_report(id,uuid,vna_id,switch_name,ip, mask,is_online,kernel_port_name, uplink_port_name, uplink_port_type, is_dhcp) 
+          values(result.id,in_uuid,vnaid,in_switch_name,in_ip,in_mask,in_is_online,in_kernel_port_name,in_uplink_port_name,in_uplink_port_type, in_is_dhcp);
+      
+      -- insert uplink bond                  
+      IF in_uplink_port_type = 1 THEN 
+          INSERT INTO kernel_cfg_report_bond(kernel_cfg_report_id,vna_id,uplink_port_type,bond_mode) 
+             values(result.id, vnaid,in_uplink_port_type,in_uplink_port_mode);
+      END IF;
+      
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_kernelreport(in_vna_uuid character varying, in_uuid character varying, in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer) OWNER TO tecs;
+
+                 
+
+-- check modify        
+CREATE OR REPLACE FUNCTION pf_net_check_modify_kernelreport(in_vna_uuid character varying, in_uuid character varying, in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+  
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  
+  -- 是否存在
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report WHERE vna_id = vnaid AND uuid = in_uuid; 
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST; 
+      return result;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_modify_kernelreport(in_vna_uuid character varying, in_uuid character varying, in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer) OWNER TO tecs;
+                         
+
+
+CREATE OR REPLACE FUNCTION pf_net_modify_kernelreport(in_vna_uuid character varying,  in_uuid character varying,in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer) 
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  vnaid numeric(19,0);
+  kernelreportid numeric(19,0);
+  olduplinkporttype integer;
+  oldportname character varying;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG  integer := 5;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  -- 检查能否add
+  result.ret := pf_net_check_modify_kernelreport(in_vna_uuid,in_uuid,in_switch_name,in_ip,in_mask,in_is_online,in_kernel_port_name,
+        in_uplink_port_name,in_uplink_port_type,in_uplink_port_mode,in_is_dhcp);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+   -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;  
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  -- old uplink port type
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report WHERE vna_id = vnaid AND uuid = in_uuid; 
+  SELECT uplink_port_type INTO olduplinkporttype FROM kernel_cfg_report WHERE vna_id = vnaid AND uuid = in_uuid; 
+  SELECT uplink_port_name INTO oldportname FROM kernel_cfg_report WHERE vna_id = vnaid AND uuid = in_uuid; 
+  SELECT id INTO kernelreportid FROM kernel_cfg_report WHERE vna_id = vnaid AND uuid = in_uuid;   
+  IF is_exist <= 0 THEN 
+      result.ret := RTN_ITEM_NO_EXIST; 
+      return result;
+  END IF;
+  
+  -- modify item
+  result.id  := kernelreportid;
+  result.uuid := in_uuid;
+  BEGIN   
+    
+    -- uplink bond ,需要将bond表删除
+    IF olduplinkporttype = 1 THEN 
+        IF olduplinkporttype = in_uplink_port_type THEN 
+            IF oldportname = in_uplink_port_name THEN                 
+                result.ret := 0;
+            ELSE 
+                DELETE FROM kernel_cfg_report_bond WHERE kernel_cfg_report_id =  kernelreportid;
+            END IF;
+        ELSE
+            DELETE FROM kernel_cfg_report_bond WHERE kernel_cfg_report_id =  kernelreportid;
+        END IF;
+    END IF;
+    
+    UPDATE kernel_cfg_report SET switch_name = in_switch_name, ip = in_ip, mask = in_mask, is_online = in_is_online ,kernel_port_name = in_kernel_port_name,
+           uplink_port_name = in_uplink_port_name, uplink_port_type = in_uplink_port_type, is_dhcp = in_is_dhcp
+        WHERE vna_id = vnaid AND uuid = in_uuid ;    
+        
+    -- modify uplink port         
+    
+    -- uplink bond ,不管是type or name变化，都需要将bond表删除
+    IF olduplinkporttype = 1 THEN 
+        IF olduplinkporttype = in_uplink_port_type THEN 
+            IF oldportname = in_uplink_port_name THEN  
+                UPDATE kernel_cfg_report_bond SET bond_mode = in_uplink_port_mode WHERE kernel_cfg_report_id = kernelreportid;
+            ELSE 
+                INSERT INTO kernel_cfg_report_bond(kernel_cfg_report_id,vna_id,uplink_port_type,bond_mode) 
+                      values (kernelreportid, vnaid, in_uplink_port_type, in_uplink_port_mode);
+            END IF;
+        END IF;
+    END IF;
+    
+    IF olduplinkporttype = 0 THEN 
+        IF in_uplink_port_type = 1 THEN 
+               INSERT INTO kernel_cfg_report_bond(kernel_cfg_report_id,vna_id,uplink_port_type,bond_mode) 
+                values (kernelreportid, vnaid, in_uplink_port_type, in_uplink_port_mode);
+        END IF;
+    END IF;
+    
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_kernelreport(in_vna_uuid character varying,  in_uuid character varying,in_switch_name character varying, 
+                 in_ip character varying,in_mask character varying,in_is_online integer,in_kernel_port_name character varying,
+                 in_uplink_port_name character varying, in_uplink_port_type integer, in_uplink_port_mode integer,in_is_dhcp integer)    OWNER TO tecs;
+
+                                 
+-- check switch_cfg_report del
+CREATE OR REPLACE FUNCTION pf_net_check_del_kernelreport(in_uuid character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+          
+  --查询是否存在
+  SELECT count(*) INTO is_exist FROM kernel_cfg_report WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST; 
+      return result;
+  END IF;
+
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_kernelreport(in_uuid character varying ) OWNER TO tecs;
+
+
+
+CREATE OR REPLACE FUNCTION pf_net_del_kernelreport(in_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  vnaid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  result.ret := pf_net_check_del_kernelreport(in_uuid);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+      
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM kernel_cfg_report WHERE uuid = in_uuid;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_kernelreport(in_uuid character varying ) OWNER TO tecs;
+
+
+-- 查询kernel cfg switch report (通过 vna uuid)
+
+
+CREATE OR REPLACE FUNCTION pf_net_query_kernelreport_by_vna(in_vna_uuid character varying)
+  RETURNS t_kernelreport_query AS
+$BODY$
+DECLARE
+    result t_kernelreport_query;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    result.ret := 0;
+    
+    -- vna uuid 
+    SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+    SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;  
+    IF is_exist <= 0 THEN 
+       result.ret := RTN_ITEM_NO_EXIST; 
+       return result;
+    END IF;  
+      
+    result.vna_uuid  := in_vna_uuid;
+    SELECT uuid INTO result.uuid FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT switch_name INTO result.switch_name FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT ip INTO result.ip FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT mask INTO result.mask FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT is_online INTO result.is_online FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT kernel_port_name INTO result.kernel_port_name FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT uplink_port_name INTO result.uplink_port_name FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT uplink_port_type INTO result.uplink_port_type FROM  kernel_cfg_report WHERE vna_id = vnaid;
+    SELECT is_dhcp INTO result.is_dhcp FROM  kernel_cfg_report WHERE vna_id = vnaid;    
+	 
+    return result;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_kernelreport_by_vna(in_vna_uuid character varying) OWNER TO tecs;
+
+-- 查询kernel cfg switch report (通过 uuid)
+CREATE OR REPLACE FUNCTION pf_net_query_kernelreport(in_uuid character varying)
+  RETURNS t_kernelreport_query AS
+$BODY$
+DECLARE
+    result t_kernelreport_query;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    result.ret := 0;
+    
+    -- vna uuid 
+    SELECT count(*) INTO is_exist FROM kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT vna_id INTO vnaid FROM kernel_cfg_report WHERE uuid = in_uuid;  
+    IF is_exist <= 0 THEN 
+       result.ret := RTN_ITEM_NO_EXIST; 
+       return result;
+    END IF;  
+    
+    -- vna uuid
+    SELECT vna_uuid INTO result.vna_uuid FROM vna WHERE id = vnaid;
+      
+    result.uuid  := in_uuid;
+    
+    SELECT switch_name INTO result.switch_name FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT ip INTO result.ip FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT mask INTO result.mask FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT is_online INTO result.is_online FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT kernel_port_name INTO result.kernel_port_name FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT uplink_port_name INTO result.uplink_port_name FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT uplink_port_type INTO result.uplink_port_type FROM  kernel_cfg_report WHERE uuid = in_uuid;
+    SELECT is_dhcp INTO result.is_dhcp FROM  kernel_cfg_report WHERE vna_id = vnaid;    
+	
+    return result;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_kernelreport(in_uuid character varying) OWNER TO tecs;

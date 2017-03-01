@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_image_backup_modify.xml">
+	<interface>tecs.vmcfg.image_backup.modify</interface>
+	<shortdesc lang_cn="虚拟机镜像备份修改" lang_en="modify vm image backup"/>
+	<description lang_cn="虚拟机镜像备份修改。" lang_en="modify vm image backup."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="request id" type="string" lang_cn="虚拟机镜像备份ID。" lang_en="vm image backup request id."/>
+		<parameter name="description" type="string" lang_cn="虚拟机镜像备份描述信息。" lang_en="vm image backup description."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+			    <enum name="3" lang_cn="操作超时" lang_en="Operation Timeout"/>
+			    <enum name="5" lang_cn="认证失败" lang_en="Auth Failed"/>
+			    <enum name="17" lang_cn="操作对象不存在" lang_en="Object Not Exist"/>
+			    <enum name="18" lang_cn="参数非法" lang_en="Parameter Invalid"/>
+				<enum name="7003" lang_cn="失败, 当前状态操作被禁止" lang_en="Failed, the operation is forbidden in current state"/>
+				<enum name="7008" lang_cn="失败, 无效操作类型" lang_en="Failed, invalid action type"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+	</reference>
+</method>

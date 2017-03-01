@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="DITADocument" default="all" basedir=".">
+    <description>标准DITA编译脚本@机械化研究所</description>
+    
+    <!-- ***********  自定义参数部分开始 ************** -->
+    <!-- 设置文档的主MAP名称 ant寻找该文件名+.ditamap 作为编译对象 -->
+    <property name="MAIN.MAP.NAME" value="tecs_en" />
+
+    <!-- 设置文档的名称（目前仅在HTML格式输出中，供框架替换使用） -->
+    <property name="HTML.FRAME.NAME" value="TECS XMLRPC API REFERENCE" />
+      
+    <!-- 设置HTML多页的时候，框架的缺省页面（目前仅在HTML格式输出中，替换框架使用） -->
+    <property name="HTML.STARTPAGE.FILENAME" value="design/about.html" />
+
+    <!-- DITA源文件所在文件夹(ditamap所在) -->
+    <property name="doc.source.dir" value="../"/>
+
+    <!-- 转换后的结果存放的文件夹 -->
+    <property environment="env"/>
+    <property name="doc.output.dir" value="${env.DOC_TARGET_PATH}"/>
+    
+    <!-- 存放条件编译文件 -->
+    <property name="dita.input.valfile" value="./filter.ditaval"/>
+    
+
+    <!-- DITA文件的扩展名 -->
+    <property name="dita.extname" value=".xml"/>
+
+    <!-- ***********  自定义参数部分结束 ************** -->
+
+    <!-- 引入公共部分 -->
+    <import file="build_base.xml"></import>  
+
+</project>

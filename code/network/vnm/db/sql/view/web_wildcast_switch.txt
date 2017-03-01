@@ -1,0 +1,91 @@
+/*
+CREATE OR REPLACE VIEW web_view_wildcast_cfg_switch AS    
+SELECT 
+   a.id, 
+   a.uuid, 
+   a.switch_name,
+   a.switch_type,
+   a.state,
+   a.evb_mode,
+   a.pg_uuid,
+   a.mtu_max,
+   a.nic_max_num,
+   a.port_type,
+   a.port_name,
+   a.bond_mode
+FROM v_net_wildcast_switch a ;
+*/
+
+CREATE OR REPLACE VIEW web_view_wildcast_cfg_switch_bondmap AS  
+SELECT 
+   switch_uuid,
+   switch_name,
+   switch_type,
+   uplink_port_name,
+   uplink_port_type,
+   bond_mode,
+   phy_port_name,
+   pg_uuid,
+   pg_name   
+FROM v_net_wildcast_switch_bondmap;
+
+
+CREATE OR REPLACE VIEW web_view_wildcast_cfg_switch AS 
+ SELECT 
+ a.id, 
+ a.uuid, 
+ a.switch_name, 
+ a.switch_type, 
+ a.state, 
+ a.evb_mode, 
+ a.pg_uuid, 
+ c.name AS pg_name,
+ a.mtu_max, 
+ a.nic_max_num,
+ a.port_type, 
+ a.port_name, 
+ a.bond_mode,
+ CASE
+     WHEN ( (port_type = 0 OR port_type = 4) AND port_name <> '') THEN 1
+     WHEN ( port_type = 1 ) THEN
+     (SELECT count(*) FROM web_view_wildcast_cfg_switch_bondmap b WHERE b.switch_uuid = 
+     a.uuid)
+     ELSE 0
+  END AS port_num
+ FROM v_net_wildcast_switch a, port_group c
+    WHERE c.uuid = a.pg_uuid;    
+
+
+CREATE OR REPLACE VIEW web_view_wildcast_task_switch AS    
+SELECT 
+   a.uuid,    
+   c.vna_uuid ,
+   c.cluster_name,
+   c.host_name,
+   b.uuid AS wildcast_cfg_swtich_uuid,
+   b.switch_name,
+   b.switch_type,
+   b.state AS switch_state,
+   b.evb_mode AS switch_evb_mode,
+   b.pg_uuid AS switch_pg_uuid,
+   b.pg_name AS switch_pg_name,
+   b.mtu_max AS switch_mut_max,
+   b.nic_max_num AS switch_nic_max_num,
+   b.port_type AS switch_uplinkport_type,
+   b.port_name AS switch_uplinkport_name,
+   b.bond_mode AS switch_uplinkport_bondmode,   
+   a.send_num,
+   CASE 
+      WHEN (a.state = 0 OR a.state = 2 OR (send_num > 5)) 
+	  THEN (1)
+	  ELSE (0)
+   END AS is_can_delete 
+FROM 	
+	wildcast_task_switch a,
+    web_view_wildcast_cfg_switch b,
+	v_net_vna_hc_cluster c
+WHERE 
+    a.wildcast_cfg_switch_id = b.id AND 
+	a.vna_id = c.vna_id ;
+	
+	

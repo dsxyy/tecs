@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="0" verno="86">
+	<Modes>
+		<Mode ID="41" Class="28" HasNo="YES" Prompt="(image)#" mode-help-chs="" mode-help-en="" Name="image" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="enable" treenode-comment-chs="使能/去使能(管理员可用)" treenode-comment-en="enable/disable(use only administrator)">
+				<Command CmdGroup="映像管理" IdInGroup="2" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xB5010002">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="id" paracomment-chs="映像ID" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Length="" _Type="Param" _Index="0" Max="9223372036854775807" Min="1"/>
+						<Param Name="flag" paracomment-chs="是否使能" paracomment-en="is enable?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="1"/>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="publish" treenode-comment-chs="映像发布(管理员可用)" treenode-comment-en="image publish(use only administrator)">
+				<Command CmdGroup="映像管理" IdInGroup="3" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xB5010003">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="id" paracomment-chs="映像ID" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Length="" _Type="Param" _Index="0" Max="9223372036854775807" Min="1"/>
+						<Param Name="flag" paracomment-chs="是否发布" paracomment-en="is publish？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="1"/>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="显示映像" treenode-comment-en="show image">
+				<Command CmdGroup="映像管理" IdInGroup="4" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="NO" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;image_id      =%v%w &#xA;user_name     = %v%s &#xA;name          = %v%s &#xA;type          = %v%s &#xA;public        = %v%b &#xA;store_time    = %v%s&#xA;reg_time      = %v%s&#xA;state         = %v%b&#xA;size          = %v%s&#xA;running_vms   = %v%d&#xA;arch          = %v%s&#xA;des            = %v%s&#xA;------------------------------&#xA;%re &#xA;%hc1:&#xA;%rs3:&#xA;image_id      =%v%w &#xA;user_name     = %v%s &#xA;name          = %v%s &#xA;type          = %v%s &#xA;public        = %v%b &#xA;store_time    = %v%s&#xA;reg_time      = %v%s&#xA;state         = %v%b&#xA;size          = %v%s&#xA;running_vms   = %v%d&#xA;arch          = %v%s&#xA;des            = %v%s&#xA;------------------------------&#xA;%re &#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;image_id      =%v%w &#xA;user_name     = %v%s &#xA;name          = %v%s &#xA;type          = %v%s &#xA;public        = %v%b &#xA;store_time    = %v%s&#xA;reg_time      = %v%s&#xA;state         = %v%b&#xA;size          = %v%s&#xA;running_vms   = %v%d&#xA;arch          = %v%s&#xA;des            = %v%s&#xA;------------------------------&#xA;%re &#xA;%hc1:&#xA;%rs3:&#xA;image_id      =%v%w &#xA;user_name     = %v%s &#xA;name          = %v%s &#xA;type          = %v%s &#xA;public        = %v%b &#xA;store_time    = %v%s&#xA;reg_time      = %v%s&#xA;state         = %v%b&#xA;size          = %v%s&#xA;running_vms   = %v%d&#xA;arch          = %v%s&#xA;des            = %v%s&#xA;------------------------------&#xA;%re &#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xB5000004">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode Name="">
+						<Param Name="{}ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="create" paracomment-chs="查询用户创建的映像" paracomment-en="query all image create by user" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="0" Max="" Min=""/>
+							<Param Name="visible" paracomment-chs="该用户可见的映像" paracomment-en="query all image can used by user" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="1" Max="" Min=""/>
+							<Param Name="WHOLE" prammarcomment-chs="查询指定用户" prammarcomment-en="query point user" _Type="Prammar" _Index="0" Flag="query_point_user">
+								<Param Name="name" paracomment-chs="用户名称" paracomment-en="user name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/>
+							</Param>
+							<Param Name="WHOLE" prammarcomment-chs="指定id查询" prammarcomment-en="query use image id" _Type="Prammar" _Index="0" Flag="id">
+								<Param Name="image_id" paracomment-chs="映像id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="3"/>
+							</Param>
+						</Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show_file" treenode-comment-chs="显示上传的文件" treenode-comment-en="show upload file">
+				<Command CmdGroup="映像管理" IdInGroup="5" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;file_id              name             owner            lock size                 store_time&#xA;-----------------------------------------------------------------------------------------------------------------&#xA;%rs3:&#xA;%v%-20w %v%-16s %v%-16s %v%-b %v%-20s %v%-s&#xA;%re &#xA;%hc1:&#xA;%rs3:&#xA;%v%-20w %v%-16s %v%-16s %v%-b %v%-20s %v%-s&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;file_id              name             owner            lock size                 store_time&#xA;-----------------------------------------------------------------------------------------------------------------&#xA;%rs3:&#xA;%v%-20w %v%-16s %v%-16s %v%-b %v%-20s %v%-s&#xA;%re &#xA;%hc1:&#xA;%rs3:&#xA;%v%-20w %v%-16s %v%-16s %v%-b %v%-20s %v%-s&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xB5000005">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode><Param Name="{}ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="upload" paracomment-chs="显示用户上传的所有映像" paracomment-en="show all image upload by user" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="0" Max="" Min=""/>
+							<Param Name="id" paracomment-chs="映像ID" paracomment-en="Image ID" DataType="DATA_TYPE_WORD64" Length="" _Type="Param" _Index="1" Max="9223372036854775807" Min="1"/></Param></ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="register" treenode-comment-chs="注册映像" treenode-comment-en="regiater image">
+				<Command CmdGroup="映像管理" IdInGroup="8" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xB5010008">
+					<cmd-postscript>注册映像</cmd-postscript>
+					<ParamNode name="">
+						<Param Name="id" paracomment-chs="映像文件ID，请确保文件已上传至TECS系统中" paracomment-en="image file id, the file need upload to tecs system!" DataType="DATA_TYPE_WORD64" Length="" _Type="Param" _Index="0" Max="9223372036854775807" Min="1"/>
+						<Param Name="name" paracomment-chs="映像名称" paracomment-en="image name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="1" Max="32" Min="1" Length=""/>
+						<Param Name="type" paracomment-chs="映像类型" paracomment-en="image type" DataType="DATA_TYPE_MAP" Min="0" Max="4" Length="701" _Type="Param" _Index="2"/>
+						<Param Name="architecture" paracomment-chs="体系结构" paracomment-en="arch" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="702" _Type="Param" _Index="3"/>
+						<Param Name="public" paracomment-chs="是否公用(普通租户只能设置FALSE)" paracomment-en="is public?(accout user only false)" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="4"/>
+						<Param Name="available" paracomment-chs="是否使能(普通租户只能设置TRUE)" paracomment-en="is available?(accout user only true)" DataType="DATA_TYPE_MAP" Length="1" _Type="Param" _Index="5" Max="1" Min="0"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="描述信息" prammarcomment-en="description" _Type="Prammar" _Index="0" Flag="description">
+							<Param Name="description" paracomment-chs="集群描述信息" paracomment-en="description" DataType="DATA_TYPE_STRING" Min="1" Max="255" Length="" _Type="Param" _Index="6"/>
+						</Param>
+					</ParamNode>
+					<NoParamNode>
+						<Param Name="id" paracomment-chs="映像ID" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Length="" _Type="Param" _Index="0" Max="9223372036854775807" Min="1"/></NoParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="set" treenode-comment-chs="设置映像属性" treenode-comment-en="set image attributes">
+				<Command CmdGroup="映像管理" IdInGroup="9" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xB5010009">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode Name="new-param" paracomment-chs="" paracomment-en="" DataType="" Min="" Max="" Length="" _Type="Param" _Index="0">
+						<Param Name="id" paracomment-chs="映像ID" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Length="" _Type="Param" _Index="0" Max="9223372036854775807" Min="1"/>
+						<Param Name="{}MORE_ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" MoreFlags="YES">
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="name"><Param Name="name" paracomment-chs="映像名称" paracomment-en="image name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="1" Max="32" Min="1" Length=""/></Param>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="type"><Param Name="type" paracomment-chs="映像类型" paracomment-en="image type" DataType="DATA_TYPE_MAP" Length="701" _Type="Param" _Index="2" Max="4" Min="0"/></Param>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="arch"><Param Name="arch" paracomment-chs="体系结构" paracomment-en="arch" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="702" _Type="Param" _Index="3"/></Param>
+							<Param Name="[]SQUARE" prammarcomment-chs="描述信息" prammarcomment-en="description" _Type="Prammar" _Index="0" Flag="description">
+								<Param Name="description" paracomment-chs="集群描述信息" paracomment-en="description" DataType="DATA_TYPE_STRING" Min="1" Max="255" Length="" _Type="Param" _Index="4"/>
+							</Param></Param>
+					</ParamNode></Command>
+			</TreeNode>
+		</Mode>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="image" treenode-comment-chs="进入映像管理模式" treenode-comment-en="enter image manager mode">
+				<Command CmdGroup="映像管理" IdInGroup="0" OprMode="SET" ExecMode="其他" NextMode="image" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0xB5010000">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode></Modes>
+	<Maps>
+		<Map Type="1">
+			<MapItem Value="0" Name-chs="FALSE" Name-en="FALSE"/>
+			<MapItem Value="1" Name-chs="TRUE" Name-en="TRUE"/>
+		</Map>
+		<Map Type="701">
+			<MapItem Value="2" Name-chs="machine" Name-en="machine"/>
+			<MapItem Value="3" Name-chs="cdrom" Name-en="cdrom"/>
+			<MapItem Value="4" Name-chs="datablock" Name-en="datablock"/>
+		</Map>
+		<Map Type="702">
+			<MapItem Value="0" Name-chs="x86_64" Name-en="x86_64"/>
+			<MapItem Value="1" Name-chs="i386" Name-en="i386"/>
+		</Map>
+		<Map Type="703">
+			<MapItem Value="0" Name-chs="create" Name-en="create"/>
+			<MapItem Value="1" Name-chs="visible" Name-en="visible"/>
+			<MapItem Value="2" Name-chs="appointed" Name-en="appointed"/>
+		</Map>
+		<Map Type="704">
+			<MapItem Value="0" Name-chs="private" Name-en="private"/>
+			<MapItem Value="1" Name-chs="public" Name-en="public"/>
+		</Map>
+		<Map Type="705">
+			<MapItem Value="1" Name-en="ENABLE" Name-chs="ENABLE"/>
+			<MapItem Value="2" Name-en="DISABLED" Name-chs="DISABLED"/>
+		</Map>
+		<Map Type="706">
+			<MapItem Value="0" Name-chs="NO" Name-en="NO"/>
+			<MapItem Value="1" Name-chs="YES" Name-en="YES"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="181" groupname="映像管理"/>
+	</CmdGroups>
+</Script>

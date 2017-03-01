@@ -1,0 +1,27 @@
+﻿({
+    type:{
+        opr:{
+            enter:">>>enter"
+        }
+    },
+    xid:{
+        html:{
+            introduction:"Introduction",
+            introduction_info:"TULIP Elastic Computing System.",
+            overview_system:"System",
+            system_info:"Content management TECS system has nothing to do with the physical / virtual resources, including alarms, software running status, software version, license, conversation, etc.",
+            overview_host_cluster:"Cluster&Host",
+            host_cluster_info:"Strong correlation object management system with the host that the relationship between the number of objects with the host, cluster, machine frame, the host and virtual machine.",
+            overview_newwork:"Newwork",
+            newwork_info:"The object of the network management system, including the network plane, virtual switches, network port, IP, VLAN, etc.",
+            overview_storage:"Storage",
+            storage_info:"Shared storage resource management system, SA, VG, LV, and shared memory space usage.",
+            overview_vr_app:"Virtual App",
+            vr_app_info:"Management and virtual machine applications relating to non-physical resource object, project, virtual machines, templates, images.",
+            overview_user:"User",
+            user_info:"Manage users and user groups.",
+            overview_my_vm:"My Virtual App",
+            my_vm_info:"Administrator as the tenants of the page."
+        }
+    }
+})

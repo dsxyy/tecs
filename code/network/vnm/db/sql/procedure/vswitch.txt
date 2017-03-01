@@ -1,0 +1,750 @@
+
+-- 查询vswitch vsi num数
+CREATE OR REPLACE FUNCTION pf_net_query_vswitch_vsi_num(in_uuid character varying )
+ RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_conflict integer;
+  switchid numeric(19,0);
+  is_exist integer; 
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- 检查pg uuid 是否有效
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_uuid;
+  SELECT id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_uuid;  
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+
+  -- switch vsi_profile
+  SELECT count(*) INTO result.total_num FROM virtual_switch a, vsi_profile b WHERE a.switch_id = b.virtual_switch_id AND 
+        a.switch_id = switchid;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vswitch_vsi_num(in_uuid character varying ) OWNER TO tecs;
+
+
+
+-- 查询vswitch vsi num数 通过switch vna uuid
+CREATE OR REPLACE FUNCTION pf_net_query_vswitchvna_vsi_num(in_switch_uuid character varying ,in_vna_uuid character varying )
+ RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_conflict integer;
+  switchid numeric(19,0);
+  vnaid numeric(19,0);
+  is_exist integer; 
+  kernelnum integer := 0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- 检查switch uuid 是否有效
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_switch_uuid;
+  SELECT id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_switch_uuid;  
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- 检查 vna uuid 是否有效
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+
+  -- switch vsi_profile
+  SELECT count(*) INTO result.total_num 
+  FROM virtual_switch a, vsi_profile b ,
+  v_net_vna_hc_cluster c,
+  v_net_vsi_vnic d
+  WHERE a.switch_id = b.virtual_switch_id AND 
+        a.switch_id = switchid AND 
+        c.cluster_name = d.vnic_cluster_name AND 
+        c.module_name = d.vnic_host_name AND 
+        c.vna_id = vnaid;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vswitchvna_vsi_num(in_switch_uuid character varying ,in_vna_uuid character varying ) OWNER TO tecs;
+
+
+-- 查询vswitch kernel num数
+CREATE OR REPLACE FUNCTION pf_net_query_vswitch_kernel_num(in_uuid character varying )
+ RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_conflict integer;
+  switchid numeric(19,0);
+  is_exist integer; 
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- 检查pg uuid 是否有效
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_uuid;
+  SELECT id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_uuid;  
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+
+  -- switch kernel
+  SELECT count(*) INTO result.total_num FROM kernel_port 
+  WHERE virtual_switch_id = switchid;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vswitch_kernel_num(in_uuid character varying ) OWNER TO tecs;
+
+
+
+-- 查询vswitch kernel num数 通过switch vna uuid
+-- 将kernel 数目也添加进来 
+CREATE OR REPLACE FUNCTION pf_net_query_vswitchvna_kernel_num(in_switch_uuid character varying ,in_vna_uuid character varying )
+ RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_conflict integer;
+  switchid numeric(19,0);
+  vnaid numeric(19,0);
+  is_exist integer; 
+  kernelnum integer := 0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- 检查switch uuid 是否有效
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_switch_uuid;
+  SELECT id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.uuid = in_switch_uuid;  
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- 检查 vna uuid 是否有效
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+    result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+
+  -- switch kernel num
+  SELECT count(*) INTO result.total_num 
+  FROM virtual_switch a, kernel_port b
+  WHERE a.switch_id = b.virtual_switch_id AND 
+        a.switch_id = switchid AND 
+        b.vna_id = vnaid;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vswitchvna_kernel_num(in_switch_uuid character varying ,in_vna_uuid character varying ) OWNER TO tecs;
+
+
+
+-- 判断能否add switch 
+CREATE OR REPLACE FUNCTION pf_net_can_add_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer )
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  switchid numeric(19,0);
+  is_exist integer; 
+  pgid numeric(19,0);
+  pg_mtu integer;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+  
+  -- 检查pg uuid 是否有效
+  SELECT count(*) INTO is_exist FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;
+  SELECT a.id INTO pgid FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;  
+  SELECT a.mtu INTO pg_mtu FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;  
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+
+  -- switch type
+  IF in_switch_type < 1 THEN 
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  IF in_switch_type > 2 THEN 
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  -- 检查switch name 是否冲突 
+  SELECT count(*) INTO is_exist FROM switch WHERE name = in_name;
+  IF is_exist > 0 THEN 
+    result := RTN_ITEM_CONFLICT;   
+    return result;
+  END IF;
+  
+  -- check max_mtu 
+  /* switch mtu 将废弃 
+  IF in_max_mtu > pg_mtu THEN 
+     result := RTN_SWITCH_MTU_LESS_PG;   
+     return result;
+  END IF;
+  */
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_can_add_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer ) OWNER TO tecs;
+
+        
+        
+-- physical port 添加 
+-- Function: pf_net_add_vswitch(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_vswitch(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_conflict integer;
+  switchid numeric(19,0);
+  is_exist integer; 
+  pgid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- 检查能否add
+  result.ret := pf_net_can_add_vswitch(in_switch_type,in_name,in_uuid,in_state,in_max_mtu,in_evb_mode,in_pg_uuid,in_max_nic_num,in_is_active);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  SELECT count(*) INTO is_exist FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;
+  SELECT a.id INTO pgid FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;  
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+    
+  -- insert item
+  result.id := nextval('serial_switch');
+  result.uuid := in_uuid;
+  
+  BEGIN 
+    INSERT INTO switch(id,switch_type,name,uuid,state,max_mtu) values(result.id,in_switch_type,in_name,in_uuid,in_state,in_max_mtu);
+
+    -- edvs nic_max_num_cfg 添加的时候 必须为0
+    IF in_switch_type = 2 THEN 
+        INSERT INTO virtual_switch(switch_id,switch_type,evb_mode,uplink_pg_id,nic_max_num_cfg,is_active)
+            values(result.id,in_switch_type,in_evb_mode,pgid,0,in_is_active); 
+    ELSE 
+        INSERT INTO virtual_switch(switch_id,switch_type,evb_mode,uplink_pg_id,nic_max_num_cfg,is_active)
+            values(result.id,in_switch_type,in_evb_mode,pgid,in_max_nic_num,in_is_active);    
+    END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer ) OWNER TO tecs;
+
+
+-- check can modify        
+CREATE OR REPLACE FUNCTION pf_net_can_modify_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer )
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  switchid numeric(19,0);
+  switchtype integer;
+  is_exist integer; 
+  uplinkportid numeric(19,0);
+  oldpgid numeric(19,0);
+  pgid numeric(19,0);
+  pg_mtu integer;
+  maxkernelmtu integer;
+  /*错误返回码定义*/
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_UPLINKPGMTU_LESS_KERNELPG integer := 18;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+  
+  -- 检查pg uuid 是否有效
+  SELECT count(*) INTO is_exist FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;
+  SELECT a.id INTO pgid FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;  
+  SELECT a.mtu INTO pg_mtu FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;  
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  -- switch type
+  IF in_switch_type < 1 THEN 
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  IF in_switch_type > 2 THEN 
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  -- swtich uuid 
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;
+  SELECT a.switch_type INTO switchtype FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;    
+  SELECT b.uplink_pg_id INTO oldpgid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;    
+  SELECT a.id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;            
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  -- switch type 不能修改 
+  IF switchtype = in_switch_type THEN 
+      result := 0;
+  ELSE
+      result := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+  
+  -- 检查switch name 是否冲突 
+  SELECT count(*) INTO is_exist FROM switch WHERE uuid = in_uuid AND name = in_name;
+  IF is_exist <= 0 THEN 
+     SELECT count(*) INTO is_exist FROM switch WHERE name = in_name;
+     IF is_exist > 0 THEN 
+        result := RTN_ITEM_CONFLICT;   
+        return result;
+     END IF;
+  END IF;
+  
+  /* check max_mtu 
+  IF in_max_mtu > pg_mtu THEN 
+     result := RTN_SWITCH_MTU_LESS_PG;   
+     return result;
+  END IF;
+  */
+
+  
+  
+  --如果swtich存在虚拟nic的情况下，不能修改pg_id 
+  SELECT count(*) INTO is_exist FROM virtual_switch a, vsi_profile b WHERE a.switch_id = b.virtual_switch_id AND  a.switch_id = switchid;
+  IF is_exist > 0 THEN 
+       IF oldpgid = pgid THEN 
+           result :=0;
+       ELSE
+           result := RTN_ITEM_CONFLICT;   
+           return result;
+       END IF;
+  END IF;
+
+  --如果swtich的uplink 在SDVS EDVS混用的情况下，不能修改pg_id 
+  SELECT count(*) INTO is_exist FROM virtual_switch_map WHERE virtual_switch_id  =   switchid;
+  SELECT port_id INTO uplinkportid FROM virtual_switch_map WHERE virtual_switch_id  =   switchid;
+  IF is_exist > 0 THEN 
+      SELECT count(*) INTO is_exist FROM virtual_switch_map WHERE port_id  =   uplinkportid;
+      -- is_exist > 1 说明存在混用情况 
+      IF is_exist > 1 THEN 
+          IF oldpgid = pgid THEN 
+              result :=0;
+          ELSE
+              result := RTN_ITEM_CONFLICT;   
+           return result;
+          END IF;
+      END IF;
+  END IF;
+  
+  /*
+  如果switch存在kernel port的情况下，uplink pg mtu 必须大于 kernel pg mtu 
+  */
+  SELECT MAX(b.mtu) INTO maxkernelmtu 
+  FROM kernel_port a, port_group b 
+  WHERE a.virtual_switch_id = switchid AND a.kernel_pg_id = b.id ;
+  
+  SELECT count(*) INTO is_exist 
+  FROM kernel_port a, port_group b 
+  WHERE a.virtual_switch_id = switchid AND a.kernel_pg_id = b.id ;
+  
+  IF is_exist > 0 THEN 
+      IF maxkernelmtu > pg_mtu THEN        
+          result := RTN_UPLINKPGMTU_LESS_KERNELPG;   
+          return result;
+      END IF;
+  END IF;
+  
+  
+  /*看看是否需要判断virtual_switch_map表*/
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_can_modify_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer ) OWNER TO tecs;
+        
+-- switch修改
+-- Function: pf_net_modify_vswitch(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_modify_vswitch(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_modify_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  pgid numeric(19,0);
+  switchid numeric(19,0);
+  phyportid numeric(19,0);
+  is_sriov_exist integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG  integer := 5;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  -- 检查能否add
+  result.ret := pf_net_can_modify_vswitch(in_switch_type,in_name,in_uuid,in_state,in_max_mtu,in_evb_mode,in_pg_uuid,in_max_nic_num,in_is_active);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  SELECT count(*) INTO is_exist FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;
+  SELECT a.id INTO pgid FROM port_group a, uplink_pg b WHERE a.id = b.pg_id AND a.pg_type = b.pg_type AND a.uuid = in_pg_uuid;  
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;   -- item has not exist.
+    return result;
+  END IF;  
+  
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;
+  SELECT a.id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;                
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+                 
+  -- modify item
+  result.id  := switchid;
+  result.uuid := in_uuid;
+  BEGIN 
+    
+    UPDATE switch SET name = in_name, state = in_state, max_mtu =in_max_mtu
+       WHERE uuid = in_uuid;
+    
+    -- EDVS 的 nic_max_num_cfg 由db tr 来控制
+    IF in_switch_type = 2 THEN 
+        UPDATE virtual_switch SET evb_mode = in_evb_mode,uplink_pg_id = pgid, is_active = in_is_active 
+           WHERE switch_id = switchid;            
+    ELSE 
+        UPDATE virtual_switch SET evb_mode = in_evb_mode,uplink_pg_id = pgid, nic_max_num_cfg = in_max_nic_num, is_active = in_is_active 
+           WHERE switch_id = switchid;
+    END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_vswitch(in_switch_type integer, in_name character varying,
+        in_uuid character varying, in_state integer, in_max_mtu integer,
+        in_evb_mode integer,in_pg_uuid character varying,in_max_nic_num integer, in_is_active integer )  OWNER TO tecs;
+
+        
+-- can del switch         
+
+CREATE OR REPLACE FUNCTION pf_net_can_del_vswitch(in_uuid character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  switchid numeric(19,0);
+  pgid numeric(19,0);
+  oldpgid numeric(19,0);
+  is_exist integer; 
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- swtich uuid 
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;
+  SELECT a.id INTO switchid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;        
+  SELECT b.uplink_pg_id INTO oldpgid FROM switch a, virtual_switch b WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+        AND a.uuid = in_uuid;     
+        
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+/*    
+  --如果swtich存在虚拟nic的情况下，不能修改pg_id 
+  SELECT count(*) INTO is_exist FROM virtual_switch a, vsi_profile b WHERE a.switch_id = b.virtual_switch_id AND  a.switch_id = switchid;
+  IF is_exist > 0 THEN 
+       IF oldpgid = pgid THEN 
+           result :=0;
+       ELSE
+           result := RTN_SWITCH_MTU_LESS_PG;   
+           return result;
+       END IF;
+  END IF;
+  */
+/*  
+  --如果switch存在kernel port的情况下，不能修改pg_id
+  SELECT count(*) INTO is_exist FROM virtual_switch a, kernel_port b WHERE a.switch_id = b.virtual_switch_id AND  a.switch_id = switchid;
+  IF is_exist > 0 THEN 
+       IF oldpgid = pgid THEN 
+           result :=0;
+       ELSE
+           result := RTN_SWITCH_MTU_LESS_PG;   
+           return result;
+       END IF;
+  END IF;
+*/   
+  -- 看看是否需要判断virtual_switch_map表
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_can_del_vswitch(in_uuid character varying) OWNER TO tecs;
+        
+-- 删除switch
+CREATE OR REPLACE FUNCTION pf_net_del_vswitch(in_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否存在记录
+  result.ret := pf_net_can_del_vswitch(in_uuid);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM switch WHERE uuid = in_uuid ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_vswitch(character varying) OWNER TO tecs;
+
+
+--- 查询phy port summary
+--- 输出 name,uuid
+-- Function: pf_net_query_vswitch_summary()
+
+-- DROP FUNCTION pf_net_query_vswitch_summary();
+
+CREATE OR REPLACE FUNCTION pf_net_query_vswitch_summary()
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+  ref refcursor;
+  is_same integer;
+  is_exist integer;
+  vnaid numeric(19,0);
+  phyportid numeric(19,0);
+BEGIN
+      -- 
+      OPEN ref FOR SELECT a.uuid, a.name, a.switch_type FROM switch a, virtual_switch b  WHERE a.id = b.switch_id AND a.switch_type = b.switch_type ;
+      return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vswitch_summary() OWNER TO tecs;
+
+
+
+-- 查询switch
+-- 输出 
+-- Function: pf_net_query_vswitch(character varying)
+
+-- DROP FUNCTION pf_net_query_vswitch(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_query_vswitch(in_uuid character varying)
+  RETURNS t_vswtich_query AS
+$BODY$
+DECLARE
+  result  t_vswtich_query;
+  is_exist integer;
+  switchid numeric(19,0);
+  pgid numeric(19,0);
+  RTN_ITEM_NO_EXIST integer :=4;
+BEGIN
+  result.ret := 0;
+  
+  SELECT count(*) INTO is_exist FROM switch a, virtual_switch b  WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+           AND a.uuid = in_uuid ;
+  SELECT a.id INTO switchid  FROM switch a, virtual_switch b  WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+           AND a.uuid = in_uuid ;
+  SELECT b.uplink_pg_id INTO pgid  FROM switch a, virtual_switch b  WHERE a.id = b.switch_id AND a.switch_type = b.switch_type 
+           AND a.uuid = in_uuid ;           
+  IF is_exist <= 0 THEN   
+     result.ret := RTN_ITEM_NO_EXIST; -- no exist item
+     return result; 
+  END IF;
+  
+   result.uuid := in_uuid;
+   -- swtich 
+   SELECT switch_type into result.switch_type  FROM switch WHERE uuid = in_uuid;
+   SELECT name into result.name  FROM switch WHERE uuid = in_uuid;
+   SELECT state into result.state FROM switch WHERE uuid = in_uuid;
+   SELECT max_mtu into result.max_mtu  FROM switch WHERE uuid = in_uuid;
+   
+   --uplink pg 
+   SELECT a.uuid INTO result.pg_uuid FROM port_group a, uplink_pg b, virtual_switch c WHERE a.id = b.pg_id AND b.pg_id = c.uplink_pg_id 
+          AND c.switch_id = switchid;
+   
+   -- virtual switch 
+   SELECT evb_mode into result.evb_mode  FROM virtual_switch WHERE switch_id = switchid;
+   SELECT nic_max_num_cfg into result.nic_max_num_cfg  FROM virtual_switch WHERE switch_id = switchid;
+   SELECT is_active into result.is_active  FROM virtual_switch WHERE switch_id = switchid;
+      
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_vswitch(character varying) OWNER TO tecs;
+
+
+
+
+
+

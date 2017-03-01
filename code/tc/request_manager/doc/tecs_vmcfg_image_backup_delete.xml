@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_image_backup_delete.xml">
+	<interface>tecs.vmcfg.image_backup.delete</interface>
+	<shortdesc lang_cn="虚拟机镜像备份修改" lang_en="delete vm image backup"/>
+	<description lang_cn="虚拟机镜像备份修改。" lang_en="delete vm image backup."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="vid" type="int64" lang_cn="虚拟机ID。" lang_en="vm id."/>
+		<parameter name="request id" type="string" lang_cn="虚拟机镜像备份ID。" lang_en="vm image backup request id."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+               	<parameter name="workflow_id" type="string" lang_cn="创建工作流成功返回workflow_id。如果工作流ID为空，表示工作流任务已经成功完成。" lang_en="create workflow success, return workflow_id.If id is null,the task has been completed successfully."/>
+			<parameter name="workflow_engine" type="string" lang_cn="工作流所在节点引擎地址。例如：tecscloud.tc.workflow_engine_0" lang_en="the target of workflow engine.eg:tecscloud.tc.workflow_engine_0"/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+			    <enum name="3" lang_cn="操作超时" lang_en="Operation Timeout"/>
+			    <enum name="5" lang_cn="认证失败" lang_en="Auth Failed"/>
+			    <enum name="17" lang_cn="操作对象不存在" lang_en="Object Not Exist"/>
+			    <enum name="18" lang_cn="参数非法" lang_en="Parameter Invalid"/>
+				<enum name="7003" lang_cn="失败, 当前状态操作被禁止" lang_en="Failed, the operation is forbidden in current state"/>
+				<enum name="7008" lang_cn="失败, 无效操作类型" lang_en="Failed, invalid action type"/>
+                <enum name="7021" lang_cn="失败, 镜像备份激活态，禁止删除" lang_en="Failed, image backup has been actived, forbidden to delete"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+	</reference>
+</method>

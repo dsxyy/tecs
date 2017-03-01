@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_clone.xml">
+	<interface>tecs.vmcfg.clone</interface>
+	<shortdesc lang_cn="虚拟机克隆" lang_en="clone vm "/>
+	<description lang_cn="虚拟机克隆" lang_en="clone vm "/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="id" type="int64" lang_cn="虚拟机ID" lang_en="vm ID"/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="vid" type="int64" lang_cn="创建成功返回vid。" lang_en="create success, return vid."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+                                <enum name="6"  lang_cn="失败, 没有权限执行此操作"  lang_en="Error, failed to authorize usr's operation"/>
+                                <enum name="17" lang_cn="失败, 克隆的虚拟机不存在" lang_en="Error, object instance not exist"/>
+				<enum name="7000" lang_cn="失败, 获取映像失败" lang_en="Failed to acquire image"/>
+				<enum name="7001" lang_cn="失败, 无效的工程" lang_en="Failed, invalid project"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.full.query" href="tecs_vmcfg_fullquery.xml"/>
+		<xref name="tecs.vmcfg.allocate" href="tecs_vmcfg_allocate.xml"/>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.set" href="tecs_vmcfg_set.xml"/>
+		<xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+	</reference>
+</method>

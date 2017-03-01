@@ -1,0 +1,9 @@
+CVNetWatchDog::CheckSupportOVS: call system(lsmod |grep openvswitch_mod > ./__lsmod_wdg_ovs.txt) failed
+CVNetMonitorMgr::InitVNetMonitorMgr: IsSupportBond is FALSE.
+CVmNicMgr::Init: Call  successfully.
+killed by signal 15
+
+
+
+
+

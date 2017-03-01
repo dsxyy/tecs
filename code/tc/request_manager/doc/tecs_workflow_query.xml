@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_workflow_query.xml">
+	<interface>tecs.workflow.query</interface>
+	<shortdesc lang_cn="工作流进度查询" lang_en="Query workflow progress"/>
+	<description lang_cn="用于查询系统工作流进度信息。一次查询数量,范围1-10。只要待查询工作流中，有一个成功，即返回成功。如果成功，则第一个参数返回0，第二个为要查询的系统工作流进度数据结构；如果失败，则第一个参数返回非0，第二个为错误信息。" lang_en="Query system workflow progress info. num once query,range 1-10.If there is a success return in the workflows need to query, the return will be success. If operation success, the first return parameter is 0, second is system workflow progress info need to query. If failed, the first is not 0, second is appending error information."/>
+	<parameters>        
+	   <parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <array name="workflows" repeat="yes">
+        	<struct name="ApiTargeWorkflow">
+        		<parameter name="engine" type="string" lang_cn="待查询目标工作流所在引擎地址。例如：tecscloud.tc.workflow_engine_0。" lang_en="the target of workflow engine.eg:tecscloud.tc.workflow_engine_0."/>
+        		<parameter name="id" type="string" lang_cn="待查询目标工作流ID。" lang_en="workflow id need to query."/>
+        	</struct>
+        </array>
+	</parameters>
+    <return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+                <array name="workflow_states" repeat="yes">
+		           <struct name="ApiWorkflowState">
+	                    <parameter name="engine" type="string" lang_cn="待查询目标工作流所在引擎地址。" lang_en="the target of workflow engine."/>
+	                    <parameter name="id" type="string" lang_cn="待查询目标工作流ID。" lang_en="workflow id"/>
+	                    <parameter name="state" type="int" lang_cn="本工作流的状态" lang_en="state of this workflow">
+	                        	<enum name="0" lang_cn="成功" lang_en="workflow is success"/>
+	                        	<enum name="1" lang_cn="失败" lang_en="workflow is failed"/>
+						<enum name="2" lang_cn="进行中" lang_en="workflow is in running"/>
+						<enum name="3" lang_cn="取消" lang_en="workflow is canceled"/>
+						<enum name="4" lang_cn="未知" lang_en="workflow is unknown"/>
+	                    </parameter>
+	                    <parameter name="progress" type="int" lang_cn="该工作流运行进度百分比" lang_en="progress of the workflow in percentile"/>
+	                </struct>
+                </array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed."/>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+    <xref name="tecs.image.cancel" href="tecs_image_cancel.xml"/>
+    <xref name="tecs.image.deploy" href="tecs_image_deploy.xml"/>
+    <xref name="tecs.vmcfg.image_backup.create" href="tecs_vmcfg_image_backup_create.xml"/>
+    <xref name="tecs.vmcfg.image_backup.delete" href="tecs_vmcfg_image_backup_delete.xml"/>
+    <xref name="tecs.vmcfg.image_backup.restore" href="tecs_vmcfg_image_backup_restore.xml"/>
+    <xref name="tecs.project.action" href="tecs_project_action.xml"/>
+    <xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+    <xref name="tecs.vmcfg.portable_disk.attach" href="tecs_vmcfg_portable_disk_attach.xml"/>
+    <xref name="tecs.vmcfg.portable_disk.detach" href="tecs_vmcfg_portable_disk_detach.xml"/>
+	</reference>
+</method>

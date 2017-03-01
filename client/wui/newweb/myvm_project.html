@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TECS</title>
+</head>
+
+<body>
+    <div style="display:none;">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#" data-value="myvm_overview.html"><OamStaticUI bindattr="text" maptype="display" bindvalue="my_vm"/></a> <span class="divider">/</span>
+            </li>
+            <li class="active">
+                <a href="#" data-value="myvm_project.html"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="project"/></a>
+            </li>
+        </ul>
+    </div>
+    <div class="box-content">
+        <ul class="nav nav-tabs" id="tabsProject">
+            <li class="active"><a href="#tabProject"><OamStaticUI bindattr="text" maptype="display" bindvalue="project_list"/></a></li>
+        </ul> 
+        <div>
+            <div class="tab-pane active" id="tabProject">
+                <div align="right">
+                <div class="btn-toolbar" style="margin: 0;">
+                    <div class="btn-group">
+                    <button class="btn" id="create"><i class="icon-plus"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="create"/></span></button>
+                    </div>
+                    <div class="btn-group">
+                    <button class="btn" id="deployProj"><i class="icon-step-forward"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="deploy"/></span></button>
+                    </div>
+                    <div class="btn-group">
+                    <button class="btn" id="cancelDeployProj"><i class="icon-step-backward"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="cancel_deploy"/></span></button>
+                    </div>
+                    <div class="btn-group"> 
+                    <button class="btn" id="rebootProj"><i class="icon-repeat"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="reboot_project"/></span></button>
+                        <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                        <ul class="dropdown-menu pull-right">
+                            <li><button class="btn span12" id="force_rebootProj"><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="force_rebootProj"/></span></button></li>
+                         </ul>
+                    </div>
+                    <div class="btn-group"> 
+                    <button class="btn" id="remove"><i class="icon-trash"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="remove"/></span></button>
+                    </div>
+                    <div class="btn-group"> 
+                    <button class="btn" id="refresh"><i class="icon-refresh"></i><span><OamStaticUI bindattr="text" maptype="opr" bindvalue="refresh"/></span></button>
+                </div> 
+                </div> 
+                </div>
+                <div>
+                    <table class="table table-striped table-bordered table-condensed bootstrap-datatable datatable" id="tbProject" style="width:100%;word-break:break-all">
+                        <thead> 
+                              <tr> 
+                                 <th align="left" width="5%"><INPUT id="SelecltAll" type="checkbox" value="" /></th>
+                                 <th align="left" width="20%"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="name"/></th> 
+                                 <th align="left" width="45%"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="desc"/></th>
+                                 <th align="left" width="15%"><OamStaticUI bindattr="text" maptype="display" bindvalue="vm_cnt"/></th> 
+                                 <th align="left" width="10%"><OamStaticUI bindattr="text" maptype="field_name" bindvalue="blank"/></th>
+                              </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- external javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/tecs/myvm_project.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#define  MAX_JOB_NUM                     5
+#define JOB_NAME_SIZE                   32
+typedef VOID (*JCBEntry)(WORD16 wState, WORD32 dwMsgId, LPVOID pMsgPara, LPVOID pVar, BOOLEAN bIsSameEndian/*~*/);
+
+typedef struct tagCliJobCreatReg
+{
+    WORD16    wIndex;
+    CHAR        acName[JOB_NAME_SIZE];    /**< JOB名称，XOS_JOB_NAME_SIZE宏值定义为32*/
+    JCBEntry    pEntry;     /**< JOB入口*/
+    WORD32      dwStackSize;   /**<JOB堆栈大小,大小必须为4096的倍数*/
+    WORD32      dwDataRegionSize;  /**<JOB私有数据区大小,大小必须为4096的倍数*/
+} T_CliJobCreatReg;
+
+T_CliJobCreatReg g_atJobRegTbl[] = 
+{ 
+     /*   wIndex                                      acName                      PEntry                         StckSize      DataSize*/
+    {PROCTYPE_OAM_CLIMANAGER,         "OAM_Climanager",      &Oam_Interpret,       4096*20,    4096*25},
+    {PROCTYPE_OAM_TELNETSERVER,      "OAM_TelServer",        &Oam_TelnetServer,  4096*20 ,   4096*20},
+    {PROCTYPE_OAM_SSHSERVER,          "OAM_SSHServer",       &Oam_SSHServer,      4096*16 ,   4096*20},
+    
+};
+
+typedef struct tagCliJobInfo
+{
+    WORD16      wIndex;
+    WORD16      wState;
+    JCBEntry      pEntry;
+    LPVOID        pDataRegion;
+ } T_CliJobInfo;
+T_CliJobInfo  g_atJobSet[MAX_JOB_NUM];
+
+typedef struct tagCliMsg
+{
+    WORD16 wDestIndex;
+    WORD32 dwMsgId;
+    WORD16 wDataLen;
+    BYTE      aucMsg[MAX_APPMSG_LEN];
+}T_CliMsg;
+
+WORD32 g_dwNumOfAppJob = sizeof(g_atJobRegTbl) / sizeof (T_CliJobCreatReg);
+
+void * print_message_function(void *ptr ); 
+
+
+int main()
+{
+    pthread_t thread1, thread2;
+    pthread_attr_t    pthread_attr_default;
+
+     char *message1 = "Hello";
+     char *message2 = "World";
+
+     pthread_attr_init(&pthread_attr_default);
+
+     printf("#### begin ####\n");
+     pthread_create( &thread1, &pthread_attr_default,
+                    print_message_function, (void*) message1);
+     pthread_create(&thread2, &pthread_attr_default, 
+                    print_message_function, (void*) message2);
+
+      printf("#### end ####\n");
+     pthread_exit(0);
+}
+
+
+  void * print_message_function(void *ptr )
+  {
+     int i;
+     char *message;
+     message = (char *) ptr;
+     for (i = 0; i < 3; i++)
+         printf("%s  ", message);
+
+    
+    printf("\n");
+  }
+
+

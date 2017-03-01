@@ -1,0 +1,208 @@
+
+
+
+-- 判断bond backup 能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_bondbackup( in_bond_uuid character varying, in_phy_uuid character varying  )
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  bondid numeric(19,0);
+  phyid numeric(19,0);
+  vlanid numeric(19,0);
+  vnaid numeric(19,0);
+  bondmode integer;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_PG_MUST_CFG_NETPLANE integer := 13;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+        
+  -- bond uuid  
+  SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid ;
+  SELECT a.id INTO bondid FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;
+  SELECT b.bond_mode INTO bondmode FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;   
+  
+  -- bond mode 必须是backup
+  IF bondmode = 1 THEN 
+     result := 0;
+  ELSE
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+  
+  -- phy uuid  
+  SELECT count(*) INTO is_exist FROM port a, physical_port b WHERE a.id = b.port_id AND a.uuid = in_phy_uuid;
+  SELECT a.id INTO phyid FROM port a, physical_port b WHERE a.id = b.port_id AND a.uuid = in_phy_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+  
+  -- 判断bond_map中必须存在记录
+  SELECT count(*) INTO is_exist FROM bond_map WHERE bond_id = bondid AND physical_port_id = phyid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+      
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_bondbackup( in_bond_uuid character varying , in_phy_uuid character varying ) OWNER TO tecs;
+
+
+-- bond bakcup 添加 
+-- Function: pf_net_set_bondbackup_active(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_set_bondbackup_active(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_set_bondbackup_active(in_bond_uuid character varying, in_phy_uuid character varying  )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  bondid numeric(19,0);
+  phyid numeric(19,0);
+  vlanid numeric(19,0);
+  vnaid numeric(19,0);
+  bondmode integer;
+  is_exist_bondbackup integer;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_bondbackup( in_bond_uuid,in_phy_uuid);  
+  IF result.ret > 0 THEN      
+     return result;
+  END IF;
+  
+  -- bond uuid  
+  SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;
+  SELECT a.id INTO bondid FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;
+  SELECT b.bond_mode INTO bondmode FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;   
+  
+  -- phy uuid  
+  SELECT count(*) INTO is_exist FROM port a, physical_port b WHERE a.id = b.port_id AND a.uuid = in_phy_uuid;
+  SELECT a.id INTO phyid FROM port a, physical_port b WHERE a.id = b.port_id AND a.uuid = in_phy_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+  
+  -- 查看bond backup表中是否存在记录
+  SELECT count(*) INTO is_exist_bondbackup FROM bond_backup WHERE bond_id = bondid;
+    
+  
+  -- insert item 
+  result.id := bondid;
+  --result.uuid := in_uuid;
+  BEGIN 
+    -- DELETE bond_lacp 
+    DELETE FROM bond_lacp WHERE bond_id = bondid;
+    
+    -- INSERT bond_backup
+    IF is_exist_bondbackup <= 0 THEN         
+        INSERT INTO bond_backup(bond_id,bond_mode) 
+            values(bondid,bondmode);
+    ELSE 
+           result.ret := 0;
+    END IF;
+    
+    -- 将bond_map中 lacp信息清除 
+    UPDATE bond_map SET lacp_is_success = 0, backup_is_active = 0 WHERE bond_id = bondid;
+    UPDATE bond_map SET backup_is_active = 1 WHERE bond_id = bondid AND physical_port_id = phyid;    
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_set_bondbackup_active(in_bond_uuid character varying, in_phy_uuid character varying  ) OWNER TO tecs;
+
+
+-- bond bakcup clear 清除 
+CREATE OR REPLACE FUNCTION pf_net_unset_bondbackup_active(in_bond_uuid character varying, in_phy_uuid character varying  )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  bondid numeric(19,0);
+  phyid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  -- check 
+  result.ret := pf_net_check_bondbackup( in_bond_uuid,in_phy_uuid);  
+  IF result.ret > 0 THEN      
+     return result;
+  END IF;
+  
+  -- bond uuid  
+  SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;
+  SELECT a.id INTO bondid FROM port a, bond b WHERE a.id = b.port_id AND a.uuid = in_bond_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;   
+  
+  -- phy uuid  
+  SELECT count(*) INTO is_exist FROM port a, physical_port b WHERE a.id = b.port_id AND a.uuid = in_phy_uuid;
+  SELECT a.id INTO phyid FROM port a, physical_port b WHERE a.id = b.port_id AND a.uuid = in_phy_uuid;  
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+  
+  -- update item 
+  result.id := bondid;
+  --result.uuid := in_uuid;
+  BEGIN 
+    UPDATE bond_map SET backup_is_active = 0 WHERE bond_id = bondid AND physical_port_id = phyid;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_unset_bondbackup_active(in_bond_uuid character varying, in_phy_uuid character varying ) OWNER TO tecs;
+

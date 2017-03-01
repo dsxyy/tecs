@@ -1,0 +1,24 @@
+
+-- port ªÒ»°port vna√˚≥∆ 
+CREATE OR REPLACE VIEW v_net_vna_port AS  
+SELECT 
+  vna.id AS vna_id,
+  vna.vna_uuid, 
+  vna.vna_application, 
+  vna.vnm_application AS vna_vnm, 
+  vna.host_name AS vna_host_name, 
+  vna.os_name AS vna_os_name, 
+  vna.is_online AS vna_is_online, 
+  port.id AS port_id,
+  port.port_type, 
+  port."name" AS port_name, 
+  port.uuid AS port_uuid, 
+  port.admin_state AS port_admin_state, 
+  port.is_online AS port_is_online, 
+  port.is_cfg AS port_is_cfg, 
+  port.is_consistency AS port_is_consistency
+FROM 
+  port, 
+  vna
+WHERE 
+  port.vna_id = vna.id;

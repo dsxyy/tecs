@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_system_license_query.xml">
+	<interface>tecs.system.license.query</interface>
+	<shortdesc lang_cn="查询系统许可证信息" lang_en="Query system license info"/>
+	<description lang_cn="查询系统许可证信息，如果成功，则第一个参数返回0，第二个为许可证数据结构；如果失败，则第一个参数返回非0，第二个为错误信息。" lang_en="Query system license info. If operation success, the first renturn parameter is 0, second is system license info. If failed, the first is not 0, second is appending error information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+				<struct name="ApiLicenseInfo">
+					<parameter name="customer_name" type="string" lang_cn="被授权用户名称" lang_en="authorized customer name"/>
+					<parameter name="customer_company" type="string" lang_cn="被授权用户所在公司名称" lang_en="authorized customer company name"/>
+                    <parameter name="customer_address" type="string" lang_cn="被授权用户地址" lang_en="authorized customer address"/>
+                    <parameter name="customer_phone" type="string" lang_cn="被授权用户电话号码" lang_en="authorized customer phone number"/>
+                    <parameter name="customer_email" type="string" lang_cn="被授权用户电子邮件地址" lang_en="authorized customer email"/>
+                    <parameter name="customer_description" type="string" lang_cn="被授权用户描述信息" lang_en="authorized customer description"/>
+                    <parameter name="max_created_vms" type="int64" lang_cn="最多允许创建的虚拟机数量，0表示无限制" lang_en="max virtual machines configuration limited"/>
+                    <parameter name="max_deployed_vms" type="int64" lang_cn="最多允许部署的虚拟机数量，0表示无限制" lang_en="max virtual machines deploy limited"/>
+                    <parameter name="max_images" type="int64" lang_cn="最多允许上传的镜像文件数量，0表示无限制" lang_en="max images limited, zero means no limit"/>
+                    <parameter name="max_users" type="int64" lang_cn="最多允许创建的系统用户数量，0表示无限制" lang_en="max users limited, zero means no limit"/>
+                    <parameter name="max_clusters" type="int64" lang_cn="最多允许注册的集群数量，0表示无限制" lang_en="max clusters limited, zero means no limit"/>
+                    <parameter name="max_hosts" type="int64" lang_cn="最多允许注册的主机数量，0表示无限制" lang_en="max hosts limited, zero means no limit"/>
+                    <parameter name="effective_days" type="int" lang_cn="最多允许系统运行的天数，0表示无限制" lang_en="effective days limited, zero means no limit"/>
+                    <parameter name="expired_date" type="time_t" lang_cn="授权超时日期，0表示无限制" lang_en="expired date, zero means no limit"/>
+                    <parameter name="remaining_days" type="int" lang_cn="剩余授权天数，如果effective_days/expired_date已经无限制，本字段无意义，实际值为0。" lang_en="remained days"/>
+                    <array repeat="yes">
+                        <parameter name="hardware_fingerprints" type="string" lang_cn="被授权的硬件指纹" lang_en="authorized hardware fingerprints"/>
+                    </array>
+				</struct>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed.">
+                <enum name="3" lang_cn="查询超时" lang_en="operation time out."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+	</privilege>
+	<reference>
+	</reference>
+</method>

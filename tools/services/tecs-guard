@@ -1,0 +1,133 @@
+#!/bin/bash
+#
+# tecs-guard		Script to start and stop the TECS guard daemon.
+#
+# Author:       ji xuepeng <ji.xuepeng@zte.com.cn>
+#
+# chkconfig: 2345 99 00
+# description: Starts and stops the TECS guard daemon.
+### BEGIN INIT INFO
+# Provides: ZTE
+# Should-Start: 
+# Default-Start: 3 4 5
+# Short-Description: Start/stop TECS guard
+# Description: Starts and stops the TECS guard daemon.
+### END INIT INFO
+
+# processname: tecs-guard
+# pidfile: /var/run/libvirtd.pid
+#
+
+# Sanity checks.
+EXE=/opt/tecs/guard/tecs-guard
+if [ ! -x $EXE ] ; then
+  echo "$EXE does not exist!"
+  exit 1
+fi
+
+# Source function library.
+if [ -f /etc/init.d/functions ] ; then
+  . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+  . /etc/rc.d/init.d/functions
+else
+  exit 1
+fi
+
+SERVICE=tecs-guard
+PROCESS=tecs-guard
+#tecs-guard服务运行时每5秒钟执行一次/opt/tecs/guard/guard.sh脚本
+GUARDOPTIONS="-i 5 -s /opt/tecs/guard/guard.sh"
+
+if [ -f /etc/sysconfig/guard ]; then
+   . /etc/sysconfig/guard
+fi
+
+RETVAL=0
+
+LOGDIR=/var/log/tecs/guard
+LOGFILE=/var/log/tecs/guard/heartbeat.log
+
+function heartbeatlog()
+{
+    local size
+    if [ ! -d $LOGDIR ]; then
+        mkdir -p $LOGDIR
+    fi
+    if [ ! -f $LOGFILE ]; then
+        touch $LOGFILE
+    fi
+	
+    LANG=en_US.ISO8859-1
+    echo -n `date '+%b %d %T'` >> $LOGFILE
+    echo " $1" >> $LOGFILE
+}
+start() {
+    mod=`lsmod | grep -c boardled`
+    if [ $mod -eq 0 ]; then
+        if [ -e  /usr/local/bin/boardled.ko ]; then
+            insmod /usr/local/bin/boardled.ko 2>/dev/null
+            if [ $? -eq 0 ]; then
+                mod=1
+            fi
+        fi
+    fi
+    if [ $mod -eq 1 ]; then
+        [ -x /usr/local/bin/ledctrl ] && /usr/local/bin/ledctrl -s act off
+        [ -x /usr/local/bin/ledctrl ] && /usr/local/bin/ledctrl -s host off
+    fi
+    mod=`lsmod | grep -c kcsctrldrv`
+    if [ $mod -eq 0 ]; then
+        if [ -e  /usr/local/bin/kcsctrldrv.ko ]; then
+            insmod /usr/local/bin/kcsctrldrv.ko 2>/dev/null
+            if [ $? -eq 0 ]; then
+                mod=1
+            fi
+        fi
+    fi
+    if [ $mod -eq 1 ]; then
+        [ -x /usr/local/bin/heartbeat ] && /usr/local/bin/heartbeat -e 60
+        heartbeatlog "enable with timeout 60 seconds"		
+    fi
+    echo -n $"Starting $SERVICE daemon: "
+    daemon $EXE $GUARDOPTIONS
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SERVICE
+}
+
+stop() {
+    mod=`lsmod | grep -c kcsctrldrv`
+    if [ $mod -eq 1 ]; then
+        [ -x /usr/local/bin/heartbeat ] && /usr/local/bin/heartbeat -d
+        heartbeatlog "disable"
+    fi
+    echo -n $"Stopping $SERVICE daemon: "
+    killproc $PROCESS
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ]; then
+        rm -f /var/lock/subsys/$SERVICE
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start|stop|restart)
+        $1
+        ;;
+    status)
+        status $PROCESS
+        RETVAL=$?
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+	exit 1
+        ;;
+esac
+exit $RETVAL

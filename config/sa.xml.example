@@ -1,0 +1,18 @@
+<sa_cfg_array>
+	<_cfg_array>
+		<item>
+			<sa_cfg>
+				<_type>LOCALSAN</_type>
+				<_control_ip>10.43.114.1</_control_ip>
+				<_user/>
+				<_password/>
+				<_name>disk_localsan</_name>
+				<_description>test1</_description>
+				<_data_ip>
+					<item>10.43.114.1</item>
+				</_data_ip>
+			</sa_cfg>
+		</item>
+	</_cfg_array>
+</sa_cfg_array>
+

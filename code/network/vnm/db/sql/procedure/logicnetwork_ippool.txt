@@ -1,0 +1,322 @@
+
+
+-- 判断逻辑网络IP POOL 能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_add_logicnetwork_ippool(in_uuid character varying, 
+                           in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  lgnetworkid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+  
+  -- ip range 必须已经配置
+  SELECT count(*) INTO is_exist FROM logic_network_ip_range WHERE logic_network_id = lgnetworkid  
+       AND ( in_num_ip >= ip_begin_num AND in_num_ip <= ip_end_num ) ;  
+  IF is_exist <= 0 THEN 
+     result := RTN_MUST_CFG_VALID_RANGE; 
+     return result;
+  END IF;  
+  
+  -- ip pool 不能冲突
+  SELECT count(*) INTO is_exist FROM logic_network_ip_pool WHERE logic_network_id = lgnetworkid  
+       AND ip_num = in_num_ip;
+  IF is_exist > 0 THEN 
+     result := RTN_ITEM_CONFLICT; 
+     return result;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_logicnetwork_ippool(in_uuid character varying, 
+                           in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying) OWNER TO tecs;
+
+
+-- 逻辑网络IP POOL 添加 
+-- Function: pf_net_add_logicnetwork_ippool(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_logicnetwork_ippool(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_logicnetwork_ippool(in_uuid character varying, 
+                            in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  lgnetworkid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_logicnetwork_ippool(in_uuid,in_num_ip,in_num_mask,
+                            in_str_ip,in_str_mask);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+    
+  -- 不支持重复添加 
+
+  -- insert item 
+  result.id := nextval('serial_logicnetwork_ip_pool');
+  --result.uuid := in_uuid;
+  BEGIN 
+    INSERT INTO logic_network_ip_pool(id,logic_network_id,ip,mask,ip_num,mask_num) 
+            values(result.id,lgnetworkid,in_str_ip, in_str_mask,in_num_ip,in_num_mask);
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_logicnetwork_ippool(in_uuid character varying, 
+                           in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying) OWNER TO tecs;
+
+                 
+
+-- 判断逻辑网络IP POOL 能否删除 
+CREATE OR REPLACE FUNCTION pf_net_check_del_logicnetwork_ippool(in_uuid character varying, 
+                           in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  lgnetworkid numeric(19,0);
+  lnippoolid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- ip pool 必须存在
+  SELECT count(*) INTO is_exist FROM logic_network_ip_pool WHERE logic_network_id = lgnetworkid  
+       AND ip_num = in_num_ip AND mask_num = in_num_mask 
+       AND ip = in_str_ip AND mask = in_str_mask; 
+  SELECT id INTO lnippoolid FROM logic_network_ip_pool WHERE logic_network_id = lgnetworkid  
+       AND ip_num = in_num_ip AND mask_num = in_num_mask 
+       AND ip = in_str_ip AND mask = in_str_mask; 
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+  
+  -- 判断vsi是否在用 
+  -- 查看该资源是否在使用
+  SELECT count(*) INTO is_exist FROM vsi_profile WHERE logic_network_ip_id = lnippoolid;
+  IF is_exist > 0 THEN 
+     result := RTN_RESOURCE_USING; 
+     return result;
+  END IF;
+  
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_logicnetwork_ippool(in_uuid character varying, 
+                           in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying) OWNER TO tecs;     
+
+-- 删除 logicnetwork ip pool
+CREATE OR REPLACE FUNCTION pf_net_del_logicnetwork_ippool(in_uuid character varying, 
+                            in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  lgnetworkid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- del 不作检查，由应用保准
+  
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+    
+  SELECT count(*) INTO is_exist FROM logic_network_ip_pool WHERE logic_network_id = lgnetworkid 
+                AND ip_num = in_num_ip AND mask_num = in_num_mask 
+                AND ip = in_str_ip AND mask = in_str_mask;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;                
+    
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM logic_network_ip_pool WHERE logic_network_id = lgnetworkid 
+                AND ip_num = in_num_ip AND mask_num = in_num_mask 
+                AND ip = in_str_ip AND mask = in_str_mask;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_logicnetwork_ippool(in_uuid character varying, 
+                           in_num_ip numeric(19), in_num_mask numeric(19),
+                           in_str_ip character varying,in_str_mask character varying) OWNER TO tecs;
+
+
+
+-- 查询logicnetwork_ippool(通过logic network uuid, type)
+
+CREATE OR REPLACE FUNCTION pf_net_query_logicnetwork_ippool(in_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    lgnetworkid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    -- logicnetwork uuid 
+    SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+    SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF;  
+    
+    SELECT count(*) INTO is_exist FROM logic_network_ip_pool  
+      WHERE logic_network_id = lgnetworkid ;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF; 
+  
+    OPEN ref FOR SELECT in_uuid,  ip_num, mask_num, ip, mask 
+      FROM logic_network_ip_pool   
+      WHERE logic_network_id = lgnetworkid;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_logicnetwork_ippool(in_uuid character varying) OWNER TO tecs;
+
+
+
+
+-- 查询logicnetwork_ippool(通过logic network uuid, begin, end)
+
+CREATE OR REPLACE FUNCTION pf_net_query_logicnetwork_ippool_by_lnrange(in_uuid character varying, in_begin numeric(19,0), in_end numeric(19,0))
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    lgnetworkid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    -- logicnetwork uuid 
+    SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+    SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF;  
+    
+    SELECT count(*) INTO is_exist FROM logic_network_ip_pool  
+      WHERE logic_network_id = lgnetworkid ;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF; 
+  
+    OPEN ref FOR SELECT in_uuid,  ip_num, mask_num, ip, mask 
+      FROM logic_network_ip_pool   
+      WHERE logic_network_id = lgnetworkid
+	      AND (ip_num >= in_begin AND ip_num <= in_end);
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_logicnetwork_ippool_by_lnrange(in_uuid character varying, in_begin numeric(19,0), in_end numeric(19,0)) OWNER TO tecs;
+
+
+
+
+                                 

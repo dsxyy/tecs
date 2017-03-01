@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_user_delete.xml">
+	<interface>tecs.user.delete</interface>
+	<shortdesc lang_cn="删除用户" lang_en="Delete a user"/>
+	<description lang_cn="删除用户，返回0表示成功，非0表示失败，返回的第二个字段中带有附加信息。" lang_en="Delete a user. 0 means success, other means failed, the second return parameter has appending information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="username" type="string" lang_cn="用户名，必须由数字、字母或下划线组成，范围1-64个字符。" lang_en="User name, only consist of numbers,letters or underscores, range 1-64 characters."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed.">
+			    <enum name="8002" lang_cn="错误，用户不存在" lang_en="Error, user does not exist."/>
+                <enum name="8005" lang_cn="错误, 默认用户不能禁用或删除" lang_en="Error, the default user cannot be disabled or deleted."/>
+                <enum name="8006" lang_cn="错误, 用户不能禁用或删除自己" lang_en="Error, user cannot disable or delete his own account."/>
+                <enum name="8009" lang_cn="错误, 用户有已部署的虚拟机" lang_en="Error, The user has deployed vm."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+		<user name="Account Administrator" lang_cn="帐户管理员。" lang_en="Account Administrator."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.user.set" href="tecs_user_set.xml"/>
+		<xref name="tecs.user.allocate" href="tecs_user_allocate.xml"/>
+	</reference>
+</method>

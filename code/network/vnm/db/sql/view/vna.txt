@@ -1,0 +1,35 @@
+-- vna »ñÈ¡ hc cluster Ãû³Æ 
+CREATE OR REPLACE VIEW v_net_vna_hc_cluster AS  
+SELECT 
+  vna.id AS vna_id,
+  vna.vna_uuid, 
+  regist_module.module_name, 
+  regist_module.module_uuid, 
+  regist_module."role" AS module_role, 
+  regist_module.is_online AS module_is_online,
+  hc_info.cluster_name, 
+  vna.vna_application, 
+  vna.vnm_application, 
+  vna.host_name, 
+  vna.is_online AS vna_is_online,
+  CASE 
+     WHEN (SELECT id is not null FROM regist_module b WHERE vna.id  = b.vna_id AND b.role = 5 ) 
+	     THEN (1)
+	 ELSE (0)
+  END AS is_has_watchdog,
+  CASE 
+     WHEN (SELECT id is not null FROM regist_module b WHERE vna.id  = b.vna_id AND b.role = 5 ) 
+	     THEN (SELECT is_online FROM regist_module b WHERE vna.id  = b.vna_id AND b.role = 5)
+	 ELSE (0)
+  END AS watchdog_is_online
+  
+FROM 
+  vna, 
+  regist_module, 
+  hc_info
+WHERE 
+  regist_module.vna_id = vna.id AND
+  hc_info.regist_module_id = regist_module.id; 
+  
+  
+  

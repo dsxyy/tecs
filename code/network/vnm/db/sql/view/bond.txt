@@ -1,0 +1,27 @@
+
+
+
+CREATE OR REPLACE VIEW v_net_bond_vna AS 
+SELECT 
+  port."name" AS bond_name, 
+  port.uuid AS bond_uuid, 
+  port.id AS bond_id, 
+  bond.bond_mode AS bond_mode, 
+  vna.vna_uuid AS vna_uuid, 
+  vna.id AS vna_id,
+  vna.is_online AS vna_is_online,  
+  port.is_online AS bond_is_online,
+  port.is_consistency AS bond_is_consistency,
+  port.is_cfg AS bond_is_cfg,
+  port.admin_state AS bond_admin_state,
+  port.state AS bond_state
+FROM 
+  public.bond, 
+  public.port, 
+  public.vna
+WHERE 
+  bond.port_id = port.id AND
+  bond.vna_id = port.vna_id AND
+  port.vna_id = vna.id;
+  
+  

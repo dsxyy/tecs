@@ -1,0 +1,49 @@
+include  $(_TECS_CODE_PATH)/common/makeconfig
+_STORAGE_PATH    = $(_TECS_CODE_PATH)/storage
+_STORAGE_SC_PATH    =  $(_STORAGE_PATH)/storage_controller
+_STORAGE_SA_PATH    =  $(_STORAGE_PATH)/storage_adaptor
+_STORAGE_COMMON_PATH = $(_STORAGE_PATH)/common
+_STORAGE_MAIN_PATH =   $(_STORAGE_PATH)/main
+_STORAGE_TMP_OBJ_PATH = $(_TEMP_OBJ_PATH)/storage
+_STORAGE_TMP_DEP_PATH = $(_TEMP_DEP_PATH)/storage
+
+export _STORAGE_ALL_OBJECTS :=
+STORAGE_COMMON_MAKEFILE = $(_STORAGE_COMMON_PATH)/makefile
+MAIN_MAKEFILE           = $(_STORAGE_MAIN_PATH)/makefile
+_STORAGE_SA_MAKEFILE    = $(_STORAGE_SA_PATH)/makefile
+_STORAGE_SC_MAKEFILE    = $(_STORAGE_SC_PATH)/makefile
+
+_STORAGE_INCLUDE_PATH += $(addprefix -I,$(_STORAGE_SC_PATH)/include) \
+                    $(addprefix -I,$(_STORAGE_SA_PATH)/include)          \
+                    $(addprefix -I,$(_STORAGE_COMMON_PATH)/include)   \
+                    $(addprefix -I,$(_TECS_TOOLS_PATH)/usplib/include) \
+                    $(addprefix -I,$(_TECS_CODE_PATH)/tc/common/include)
+					
+_STORAGE_MACRO_DEF +=
+export CPPFLAGS += $(_STORAGE_INCLUDE_PATH) $(_STORAGE_MACRO_DEF)
+export DEPCPPFLAGS += $(_STORAGE_INCLUDE_PATH) $(_STORAGE_MACRO_DEF)
+
+ifeq (_SVR_SC,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = SC
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -ltecsdb -lworkflow -lauth
+##默认库搜索路径以外的其它搜索路径
+#export _OTHER_LINK_PATH = -L/XXX
+endif
+
+ifeq (_SVR_SA,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = SA
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -lUspCapi -lstorage
+##默认库搜索路径以外的其它搜索路径
+##export _OTHER_LINK_PATH = -L/XXX
+export _OTHER_LINK_PATH = -L$(_TECS_CODE_PATH)/sky/dist -L$(_TECS_TOOLS_PATH)/usplib/lib
+endif
+
+##依赖的第三方库文件
+#_OTHER_LINK_LIB += -lxmlrpc++ -lxmlrpc_server_abyss++ -lpq
+##define TC dynamic lib search path 
+export PROCESS=storage
+

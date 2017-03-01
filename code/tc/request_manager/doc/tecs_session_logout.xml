@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_session_logout.xml">
+	<interface>tecs.session.logout</interface>
+	<shortdesc lang_cn="登出接口" lang_en="logout"/>
+	<description lang_cn="用户退出此次登录。" lang_en="The User exit the login."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+		<user name="Account Administrator" lang_cn="帐户管理员。" lang_en="Account Administrator."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.session.login" href="tecs_session_login.xml"/>
+		<xref name="tecs.session.query" href="tecs_session_query.xml"/>
+	</reference>
+</method>

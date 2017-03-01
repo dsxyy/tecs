@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="0" verno="85">
+	<Modes Class="28" HasNo="YES" ID="51" IsPublic="NO" Name="project_mode" NeedPublish="YES" Prompt="#" ShowPublicCmd="YES" mode-Comment-chs="" mode-Comment-en="" mode-help-chs="" mode-help-en="">
+		<Mode CmdGroup="虚拟机配置管理" IdInGroup="1" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs1&#xA;%hc0:&#xA;Success:&#xA;%hc1:&#xA;Fail:&#xA;%v%s&#xA;%hc2:&#xA;TimeOut:&#xA;%v%s&#xA;%he&#xA;&#xA;" formatstring-en="%hs1&#xA;%hc0:&#xA;Success:&#xA;%hc1:&#xA;Fail:&#xA;%v%s&#xA;%hc2:&#xA;TimeOut:&#xA;%v%s&#xA;%he&#xA;&#xA;" _ID="0xD3010001" Class="28" HasNo="YES" ID="51" IsPublic="NO" Name="pro_cfg" Prompt="(pro_cfg)#" ShowPublicCmd="YES" mode-Comment-chs="" mode-Comment-en="" mode-help-chs="" mode-help-en="">
+			<TreeNode Name="create" treenode-comment-chs="创建工程" treenode-comment-en="create project">
+				<Command CmdGroup="虚拟工程管理" IdInGroup="1" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;%v%s&#xA;" formatstring-en="%v%b&#xA;%v%s&#xA;" _ID="0xBF010001">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="name" paracomment-chs="工程名称" paracomment-en="project name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="description" paracomment-chs="工程描述" paracomment-en="project description" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="1"/>
+					</ParamNode>
+					<NoParamNode>
+						<Param Name="name" paracomment-chs="工程名称" paracomment-en="project name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="用户名称,不输入为删除自己" prammarcomment-en="user name,delete self if can't input" _Type="Prammar" _Index="0" Flag="user_name">
+							<Param Name="user_name" paracomment-chs="用户名称,不输入为删除自己" paracomment-en="user name,delete self if can't input" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/>
+						</Param></NoParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="modify" treenode-comment-chs="修改工程" treenode-comment-en="modify project"><Command CmdGroup="虚拟工程管理" IdInGroup="2" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xBF010002">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="name" paracomment-chs="工程名称" paracomment-en="project name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="description" paracomment-chs="需要修改的工程描述" paracomment-en="project description by modify" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="1"/>
+					</ParamNode>
+				</Command></TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="查询工程信息" treenode-comment-en="show project info">
+				<Command CmdGroup="虚拟工程管理" IdInGroup="3" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;project_id           user_name           name                 des&#xA;-----------------------------------------------------------------------------------&#xA;%rs3:&#xA;%v%-20w %v%-20s %v%-20s %v%s&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;%v%-20w %v%-20s %v%-20s %v%s&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he&#xA;" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;project_id           user_name            name                 des&#xA;-----------------------------------------------------------------------------------&#xA;%rs3:&#xA;%v%-20w %v%-20s %v%-20s %v%s&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;%v%-20w %v%-20s %v%-20s %v%s&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xBF000003">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="{}ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="create" paracomment-chs="用户创建的工程" paracomment-en="all project creatte by user" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="0" Max="" Min=""/>
+							<Param Name="WHOLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="name"><Param Name="name" paracomment-chs="输入查询的工程名称" paracomment-en="input project name which need query" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="用户名称,不输入为查询自己" prammarcomment-en="user name,query self if can't input" _Type="Prammar" _Index="0" Flag="user_name">
+									<Param Name="user_name" paracomment-chs="用户名称,不输入为查询自己" paracomment-en="user name,query self if can't input" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/>
+								</Param>
+							</Param>
+						</Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show_vm" treenode-comment-chs="显示归属该工程下面的虚拟机" treenode-comment-en="show vm which used in the project">
+				<Command CmdGroup="虚拟工程管理" IdInGroup="4" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;vm_name              vm_id                         &#xA;-------------------------------------------------------------&#xA;%rs3:&#xA;%v%-20s %v%-20w &#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;%v%-20s %v%-20w &#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;vm_name              vm_id                         &#xA;-------------------------------------------------------------&#xA;%rs3:&#xA;%v%-20s %v%-20w &#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;%v%-20s %v%-20w &#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xBF000004">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="name" paracomment-chs="工程名称" paracomment-en="project name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="用户名称,不输入为查询自己" prammarcomment-en="user name,query self if can't input" _Type="Prammar" _Index="0" Flag="user_name">
+							<Param Name="user_name" paracomment-chs="用户名称,不输入为查询自己" paracomment-en="user name,query self if can't input" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/></Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+		</Mode>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="project" treenode-comment-chs="虚拟工程配置" treenode-comment-en="virtual machine project config manager">
+				<Command CmdGroup="虚拟工程管理" IdInGroup="0" OprMode="SET" ExecMode="其他" NextMode="pro_cfg" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0xBF010000">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode></Modes>
+	<Maps>
+		<Map Type="1">
+			<MapItem Value="0" Name-chs="FALSE" Name-en="FALSE"/>
+			<MapItem Value="1" Name-chs="TRUE" Name-en="TRUE"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="191" groupname="虚拟工程管理"/>
+	</CmdGroups>
+</Script>

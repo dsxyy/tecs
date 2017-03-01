@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by yw (zte) -->
+<method id="tecs_image_getspace.xml">
+    <interface>tecs.image.getspace</interface>
+    <shortdesc lang_cn="获取镜像服务器空间" lang_en="get space"/>
+    <description lang_cn="获取镜像服务器空间。" lang_en="get space."/>
+    <parameters>
+        <parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+    </parameters>
+    <return>
+        <success>
+            <parameter name="uid" type="int64" lang_cn="用户id。" lang_en="user id."/>
+            <parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="freespace" type="int64" lang_cn="可用空间。" lang_en="free space."/>
+            <parameter name="totalspace" type="int64" lang_cn="总空间。" lang_en="total space."/>
+        </success>
+        <fail>
+            <parameter name="uid" type="int64" lang_cn="用户id。" lang_en="user id."/>
+            <parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+                <enum name="18" lang_cn="超时" lang_en="time out"/>
+                <enum name="5004" lang_cn="无效的image查询" lang_en="image query is invalid."/>
+            </parameter>
+            <parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+        </fail>
+    </return>
+    <privilege>
+        <user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+        <user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+        <user name="User" lang_cn="普通用户。" lang_en="User."/>
+    </privilege>
+    <reference>
+    </reference>
+</method>

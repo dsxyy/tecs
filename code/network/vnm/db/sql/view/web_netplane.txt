@@ -1,0 +1,315 @@
+
+
+CREATE OR REPLACE VIEW web_view_netplane AS 
+SELECT 
+  a."name", 
+  a.uuid, 
+  a.description, 
+  a.mtu,
+  (SELECT count(*) FROM ip_range b WHERE a.id = b.netplane_id) AS iprange_count,
+  (SELECT count(*) FROM mac_range c WHERE a.id = c.netplane_id) AS macrange_count,
+  (SELECT count(*) FROM vlan_range d WHERE a.id = d.netplane_id) AS vlanrange_count
+FROM 
+  netplane a;
+  
+
+CREATE OR REPLACE VIEW web_view_netplane_iprange AS 
+SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  ip_range.ip_begin, 
+  ip_range.ip_end, 
+  ip_range.mask
+FROM 
+  netplane, 
+  ip_range
+WHERE 
+  netplane.id = ip_range.netplane_id;  
+  
+  
+CREATE OR REPLACE VIEW web_view_netplane_macrange AS   
+  SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  mac_range.mac_begin, 
+  mac_range.mac_end
+FROM 
+  public.netplane, 
+  public.mac_range
+WHERE 
+  netplane.id = mac_range.netplane_id;
+  
+
+CREATE OR REPLACE VIEW web_view_netplane_vlanrange AS   
+SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  vlan_range.vlan_begin, 
+  vlan_range.vlan_end
+FROM 
+  netplane, 
+  vlan_range
+WHERE 
+  netplane.id = vlan_range.netplane_id;
+  
+  
+--- 已分配的资源   
+CREATE OR REPLACE VIEW web_view_netplane_logicnetwork_ipalloc AS 
+SELECT 
+  a.netplane_name, 
+  a.netplane_uuid, 
+  a.logicnetwork_name,
+  a.logicnetwork_uuid,
+  b.ip,
+  b.mask,
+  x.vm_id, 
+  y.nic_index
+FROM 
+  v_net_logicnetwork_portgroup_netplane a,
+  logic_network_ip_pool b ,
+  vm x,
+  vnic y,
+  vsi_profile z
+WHERE 
+  a.logicnetwork_id = b.logic_network_id AND 
+  x.vm_id = y.vm_id AND 
+  y.vsi_profile_id = z.id AND 
+  z.logic_network_ip_id = b.id ;
+  
+  
+CREATE OR REPLACE VIEW web_view_netplane_macalloc AS   
+  SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  mac_pool.mac,
+  x.vm_id, 
+  y.nic_index
+FROM 
+  netplane, 
+  mac_pool,
+  vm x,
+  vnic y,
+  vsi_profile z
+WHERE 
+  netplane.id = mac_pool.netplane_id AND 
+  x.vm_id = y.vm_id AND 
+  y.vsi_profile_id = z.id AND 
+  z.mac_id = mac_pool.id ;
+  
+CREATE OR REPLACE VIEW web_view_netplane_vlanalloc AS   
+SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  vlan_pool.vlan_num,
+  x.project_id,
+  x.vm_id, 
+  y.nic_index,
+  t.isolate_no
+FROM 
+  netplane, 
+  vlan_pool,
+  vlan_map t,
+  vm x,
+  vnic y,
+  vsi_profile z
+WHERE 
+  netplane.id = vlan_pool.netplane_id AND 
+  t.vlan_id = vlan_pool.id AND 
+  x.vm_id = y.vm_id AND 
+  y.vsi_profile_id = z.id AND 
+  z.vm_pg_id = t.vm_pg_id AND 
+  x.project_id = t.project_id 
+ORDER BY  
+  netplane_uuid, project_id, vlan_num ;
+  
+
+
+-- 方便统计视图 (ln (logicnetwork))
+CREATE OR REPLACE  VIEW web_view_logicnetwork_ip_total_num AS  
+SELECT 
+  b.id AS ln_id, 
+  sum(a.ip_end_num - a.ip_begin_num + 1) AS ln_total_num
+FROM 
+  logic_network_ip_range a,
+  logic_network b
+WHERE 
+  a.logic_network_id = b.id 
+GROUP BY  b.id ;
+
+
+-- (logicnetwork) 使用的ip alloc num
+CREATE OR REPLACE  VIEW web_view_logicnetwork_ip_alloc_num AS  
+SELECT 
+  b.id AS ln_id, 
+  count(*) AS ln_alloc_num
+FROM 
+  logic_network_ip_pool a,
+  logic_network b
+WHERE 
+  a.logic_network_id = b.id 
+GROUP BY  b.id ;
+
+
+-- 提供给web的视图(logicnetwork)
+CREATE OR REPLACE VIEW web_view_logicnetwork_res_statatic_ip AS  
+SELECT 
+  c.id AS ln_id,
+  c.name AS ln_name,
+  c.uuid AS ln_uuid,
+  a.ln_total_num,
+  b.ln_alloc_num
+
+FROM 
+  web_view_logicnetwork_ip_total_num a,
+  web_view_logicnetwork_ip_alloc_num b,
+  logic_network c
+WHERE 
+  a.ln_id = b.ln_id AND 
+  b.ln_id = c.id ;
+
+
+
+
+-- 方便统计 np ip 使用情况 
+CREATE OR REPLACE  VIEW web_view_netplane_ip_total_num AS  
+SELECT 
+  d.id AS netplane_id,
+  sum(a.ln_total_num) AS np_total_num
+FROM 
+  web_view_logicnetwork_ip_total_num a,
+  logic_network b,
+  port_group c,
+  netplane d 
+WHERE 
+  a.ln_id = b.id AND   
+  b.vm_pg_id = c.id AND 
+  c.netplane_id = d.id 
+GROUP BY  d.id ;  
+
+CREATE OR REPLACE  VIEW web_view_netplane_ip_alloc_num AS  
+SELECT 
+  d.id AS netplane_id,
+  sum(a.ln_alloc_num) AS np_alloc_num
+FROM 
+  web_view_logicnetwork_ip_alloc_num a,
+  logic_network b,
+  port_group c,
+  netplane d 
+WHERE 
+  a.ln_id = b.id AND   
+  b.vm_pg_id = c.id AND 
+  c.netplane_id = d.id 
+GROUP BY  d.id ; 
+
+
+
+
+
+-- 提供给web使用的统计 IP 
+CREATE OR REPLACE VIEW web_view_netplane_res_statatic_ip AS  
+SELECT 
+  c.id AS np_id,
+  c.name AS np_name,
+  c.uuid AS np_uuid,
+  a.np_total_num,
+  b.np_alloc_num
+
+FROM 
+  web_view_netplane_ip_total_num a,
+  web_view_netplane_ip_alloc_num b,
+  netplane c
+WHERE 
+  a.netplane_id = b.netplane_id AND 
+  b.netplane_id = c.id ;
+
+
+
+-- 方便统计netplane MAC 使用情况 
+
+CREATE OR REPLACE  VIEW web_view_netplane_mac_total_num AS  
+SELECT 
+  b.id AS np_id, 
+  sum(a.mac_end_num - a.mac_begin_num + 1) AS np_total_num
+FROM 
+  mac_range a,
+  netplane b
+WHERE 
+  a.netplane_id = b.id 
+GROUP BY  b.id ;
+
+-- (netplane) 使用的mac alloc num
+CREATE OR REPLACE  VIEW web_view_netplane_mac_alloc_num AS  
+SELECT 
+  b.id AS np_id, 
+  count(*) AS np_alloc_num
+FROM 
+  mac_pool a,
+  netplane b
+WHERE 
+  a.netplane_id = b.id 
+GROUP BY  b.id ;  
+
+-- 提供给web使用的统计 MAC 
+CREATE OR REPLACE VIEW web_view_netplane_res_statatic_mac AS  
+SELECT 
+  c.id AS np_id,
+  c.name AS np_name,
+  c.uuid AS np_uuid,
+  a.np_total_num,
+  b.np_alloc_num
+
+FROM 
+  web_view_netplane_mac_total_num a,
+  web_view_netplane_mac_alloc_num b,
+  netplane c
+WHERE 
+  a.np_id = b.np_id AND 
+  b.np_id = c.id ;  
+
+
+
+
+-- 方便统计netplane vlan 使用情况 
+
+CREATE OR REPLACE  VIEW web_view_netplane_vlan_total_num AS  
+SELECT 
+  b.id AS np_id, 
+  sum(a.vlan_end - a.vlan_begin + 1) AS np_total_num
+FROM 
+  vlan_range a,
+  netplane b
+WHERE 
+  a.netplane_id = b.id 
+GROUP BY  b.id ;
+
+-- (netplane) 使用的vlan alloc num
+CREATE OR REPLACE  VIEW web_view_netplane_vlan_alloc_num AS  
+SELECT 
+  b.id AS np_id, 
+  count(*) AS np_alloc_num
+FROM 
+  vlan_pool a,
+  netplane b
+WHERE 
+  a.netplane_id = b.id 
+GROUP BY  b.id ;  
+
+
+-- 提供给web使用的统计 vlan 
+CREATE OR REPLACE VIEW web_view_netplane_res_statatic_vlan AS  
+SELECT 
+  c.id AS np_id,
+  c.name AS np_name,
+  c.uuid AS np_uuid,
+  a.np_total_num,
+  b.np_alloc_num
+
+FROM 
+  web_view_netplane_vlan_total_num a,
+  web_view_netplane_vlan_alloc_num b,
+  netplane c
+WHERE 
+  a.np_id = b.np_id AND 
+  b.np_id = c.id ;  
+  
+  

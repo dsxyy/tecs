@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_staticinfo_query.xml">
+	<interface>tecs.vmcfg.staticinfo.query</interface>
+	<shortdesc lang_cn="虚拟机静态信息查询" lang_en="show vm static info"/>
+	<description lang_cn="虚拟机静态信息查询。" lang_en="show vm static info."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询起始位置。" lang_en="query start index."/>
+		<parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-50。" lang_en="num once query,range 1-50."/>
+		<parameter name="type" type="string" lang_cn="查询类型:" lang_en="query type:">
+			<enum name="query_all_self" lang_cn="用户创建的所有虚拟机" lang_en="show all vm which create by user."/>
+			<enum name="query_self_appointed" lang_cn="管理员或用户创建的指定虚拟机" lang_en="show appointed vm which create by user."/>
+			<enum name="query_all" lang_cn="管理员查询所有虚拟机" lang_en="show all vm by administrator."/>
+		</parameter>
+		<parameter name="appointed_vid" type="int64" lang_cn="虚拟机ID:" lang_en="vm ID."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+			<parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array name="array_vms" repeat="yes">
+				<struct name="ApiVmStaticInfo">
+					<parameter name="vid" type="int64" lang_cn="虚拟机ID。" lang_en="vm ID."/>
+					<parameter name="project_id" type="int64" lang_cn="工程ID。" lang_en="project ID."/>
+					<parameter name="uid" type="int64" lang_cn="用户ID。" lang_en="user ID."/>
+					<parameter name="user_name" type="string" lang_cn="用户名称。" lang_en="user name."/>
+					<parameter name="config_version" type="int" lang_cn="配置版本信息。" lang_en="config version."/>
+					<parameter name="create_time" type="string" lang_cn="创建时间。" lang_en="create time."/>
+						<struct name="cfg_info">
+							<parameter name="vm_name" type="string" lang_cn="虚拟机名称,字符串长度范围0-32,必填项。" lang_en="VM name,string length range 0-32，this parameter must input."/>
+							<parameter name="project_name" type="string" lang_cn="虚拟机归属的工程名称,字符串长度范围 1-32。" lang_en="VM project name which used by current vm,string length range 1-32."/>
+							<struct name="base_info">
+								<parameter name="description" type="string" lang_cn="虚拟机描述,字符串长度范围0-512。" lang_en="VM description, string length range 0-512."/>
+								<parameter name="vcpu" type="int" lang_cn="虚拟CPU数量,范围1-32。" lang_en="vcpu num,range 1-32."/>
+								<parameter name="tcu" type="int" lang_cn="虚拟CPU能力。" lang_en="one core ability."/>
+								<parameter name="memory" type="int64" lang_cn="RAM大小,单位：字节。" lang_en="memery size，uint:Byte."/>
+								<struct name="machine" lang_cn="machine映像信息,必填项" lang_en="machine image information,this parameter must input ">
+									<parameter name="id" type="int64" lang_cn="machine类型映像id。" lang_en="machine type image id."/>
+									<parameter name="position" type="int" lang_cn="machine映像存储位置：" lang_en="machine image storage position.">
+										<enum name="1" lang_cn="本地存储" lang_en="Local Storage"/>
+										<enum name="2" lang_cn="共享存储" lang_en="Share Storage"/>
+									</parameter>
+									<parameter name="size" type="int64" lang_cn="磁盘大小,不必填写。" lang_en="disk size，no need to input."/>
+									<parameter name="bus" type="string" lang_cn="DomU看到的磁盘总线类型:" lang_en="bus type:">
+										<enum name="ide" lang_cn="ide" lang_en="ide"/>
+										<enum name="scsi" lang_cn="scsi" lang_en="scsi"/>
+									</parameter>
+									<parameter name="type" type="string" lang_cn="磁盘类型，只能填成'machine'" lang_en="disk bus type of DomU，must set to 'machine'">
+									</parameter>
+									<parameter name="target" type="string" lang_cn="DomU看到的磁盘名。" lang_en="disk name of DomU."/>
+									<parameter name="reserved_backup" type="int" lang_cn="预留的备份空间。" lang_en="reserved backup space."/>
+								</struct>
+								<parameter name="root_device" type="string" lang_cn="虚拟机的根分区。" lang_en="VM root partition."/>
+								<parameter name="kernel_command" type="string" lang_cn="传给虚拟机内核的启动项。" lang_en="send vm kernel start option."/>
+								<parameter name="bootloader" type="string" lang_cn="虚拟机bootloader配置项。" lang_en="VM bootloader config."/>
+								<parameter name="virt_type" type="string" lang_cn="虚拟机类型:" lang_en="VM type:">
+									<enum name="hvm" lang_cn="全虚拟化" lang_en="Hardware Virtual Machine"/>
+									<enum name="pvm" lang_cn="半虚拟化" lang_en="Parallel Virtual Machine"/>
+								</parameter>
+								<parameter name="hypervisor" type="string" lang_cn="hypervisor 类型。" lang_en="hypervisor type.">
+									<enum name="xen" lang_cn="xen类型" lang_en="Xen type"/>
+									<enum name="kvm" lang_cn="kvm类型" lang_en="Kvm type"/>
+								</parameter>
+								<parameter name="rawdata" type="string" lang_cn="直接传递给hypervisor的原始配置项。" lang_en="send to hypervisor configuration."/>
+								<struct name="context" lang_cn="所有context文件的内容和文件名称总字节数不能大于100K" ang_en="All context string size can not overload 100K Byte.">
+									<parameter name="" type="string" lang_cn="透传给虚拟机的文件名称。Linux格式：不能含有空格、+等特殊字符" lang_en="the file name pass to virtual machine。Linux style file name：can not contain space、+ and other special characters."/>
+									<parameter name="" type="string" lang_cn="透传给虚拟机的文件内容" lang_en="the content of the file which pass to virtual machine"/>
+								</struct>
+								<array name="qualifications" repeat="yes" lang_cn="该字段暂未支持，必须为空" lang_en="unsupported function, must be null">
+									<struct name="ApiVmExpression">
+										<parameter name="key" type="string" lang_cn="物理机应该满足的表达式条件的关键字。" lang_en="host must meet expression key."/>
+										<parameter name="op" type="string" lang_cn="物理机应该满足的表达式条件的操作码。" lang_en="host must meet expression  option cmd."/>
+										<parameter name="value" type="string" lang_cn="物理机应该满足的表达式条件的值。" lang_en="host must meet expression  value."/>
+									</struct>
+								</array>
+								<array name="disks" repeat="yes" lang_cn="磁盘的数量最多支持16个。" lang_en="disk max num is 16.">
+									<struct name="ApiVmDisk">
+										<parameter name="id" type="int64" lang_cn="映像id,如果磁盘类型为'disk',则该项必须置为-1。" lang_en="image id，if the disk type is 'disk' this parameter must set to -1."/>
+										<parameter name="position" type="int" lang_cn="磁盘存储介质位置，1表示使用hc本地磁盘，2表示使用共享磁阵。" lang_en="disk position."/>
+										<parameter name="size" type="int64" lang_cn="磁盘大小，如果磁盘类型为'disk',有效范围为（0, 524288000000000] 字节。" lang_en="disk size,if the disk type is 'disk', valid range is （0, 524288000000000] Byte."/>
+										<parameter name="bus" type="string" lang_cn="DomU看到的磁盘总线类型:" lang_en="bus type:">
+											<enum name="ide" lang_cn="ide" lang_en="ide"/>
+											<enum name="scsi" lang_cn="scsi" lang_en="scsi"/>
+										</parameter>
+										<parameter name="type" type="string" lang_cn="磁盘类型:" lang_en="disk bus type of DomU:">
+											<enum name="datablock" lang_cn="datablock" lang_en="datablock"/>
+											<enum name="disk" lang_cn="disk" lang_en="disk"/>
+											<enum name="cdrom" lang_cn="cdrom" lang_en="cdrom"/>
+										</parameter>
+										<parameter name="target" type="string" lang_cn="DomU看到的磁盘名。" lang_en="disk name of DomU."/>
+										<parameter name="fstype" type="string" lang_cn="磁盘分配后需要tecs帮助格式化成什么样的文件系统，为空表示无需格式化，否则可以为ext2，ext3或ext4" lang_en="disk will be formated to a filesystem type."/>
+									</struct>
+								</array>
+								<array name="nics" repeat="yes" lang_cn="sriov网卡最多支持16个，非sriov网卡最多支持8个。" lang_en="sriov nic max num is 16, non-sriov nic max num is 8.">
+									<struct name="ApiVmNic">
+										<parameter name="nic_index" type="int" lang_cn="网卡序号.虚拟机内必须唯一，有效范围>=1. 为0时,TECS前台自动重新生成。" lang_en="index of network card, must different from each other in one VM,>=1, Tecs will allocate it when is 0."/>
+										<parameter name="sriov" type="bool" lang_cn="是否为SR-IOV网卡:" lang_en="Is network card with SR-IOV:"/>
+										<parameter name="loop" type="bool" lang_cn="是否为环回网卡" lang_en="Is loop-back network card."/>
+										<parameter name="logic_network_id" type="string" lang_cn="逻辑网络号" lang_en="Id of logical network"/>
+										<parameter name="model" type="string" lang_cn='虚拟网卡的网卡类型:
+1. SR-IOV网卡暂不支持网卡型号选择；
+2. 虚拟机为PVM时，非SR-IOV网卡不允许选择网卡型号，model为空；
+3. 虚拟机为HVM时，非SR-IOV网卡允许选择网卡型号
+  a) 网卡要么全为"netfront"；
+  b)要么全为非"netfront"，即"e1000"、"rtl8139"、"ne2k_pci"和"pcnet"中的一种或组合。' lang_en='VM network card types:
+1. SR-IOV network card do not support to select network card now;
+2. When VM is PVM model, and the network card is not SR-IOV, model is empty;
+3. When VM is HVM model, and the network card is not SR-IOV, select network card as:
+   a) all network cards are "netfront";
+   b) all network cards are not "netfront", it means that the network cards are part of "e1000","rtl8139","ne2k_pci" and "pcnet" .'>
+											<enum name="netfront" lang_cn="netfront网卡" lang_en="netfront network card"/>
+											<enum name="e1000" lang_cn="e1000网卡" lang_en="e1000 network card"/>
+											<enum name="rtl8139" lang_cn="rt18139网卡" lang_en="rt18139 network card"/>
+											<enum name="net2k_pci" lang_cn="ne2k_pci网卡" lang_en="ne2k_pci network card"/>
+											<enum name="pcnet" lang_cn="pcnet网卡" lang_en="pcnet network card"/>
+										</parameter>
+										<parameter name="vsi_profile_id" type="string" lang_cn="系统为网卡分配的vsi号:" lang_en="vsi id of the network card:"/>
+										<parameter name="pci_order" type="bool" lang_cn="系统为虚拟网卡分配的pci总线号" lang_en="Pci order:"/>
+										<parameter name="bridge_name" type="string" lang_cn="系统网桥名" lang_en="network bridge name ."/>
+										<parameter name="ip" type="string" lang_cn="系统为虚拟网卡分配的IP地址" lang_en="ip addr ."/>
+										<parameter name="netmask" type="string" lang_cn="系统为虚拟网卡分配的mask地址。" lang_en="netmask addr ."/>
+										<parameter name="gateway" type="string" lang_cn="系统为虚拟网卡分配的网关地址。" lang_en="gateway addr ."/>
+										<parameter name="mac" type="string" lang_cn="系统为虚拟网卡分配的MAC地址。" lang_en="mac addr."/>
+										<parameter name="c_vlan" type="string" lang_cn="系统为虚拟网卡分配的vlan号" lang_en="vlan."/>
+									</struct>
+								</array>
+								<parameter name="cluster" type="string" lang_cn="虚拟机需要指定部署到哪个集群，只有管理员有权指定" lang_en="which cluster to deploy, only administrators can use"/>
+								<parameter name="host" type="string" lang_cn="虚拟机需要指定部署到哪个主机，只有管理员有权指定" lang_en="which host to deploy, only administrators can use"/>
+								<parameter name="vm_wdtime" type="int" lang_cn="虚拟机看门狗时长，单位：秒，V4平台使用。为0，不启用；为600-7200，启用。" lang_en="vm watchdog time for V4, unit:second。vm_wdtime=0, do not start watchdog；range 600-7200，start watchdog."/>
+								<parameter name="vnc_passwd" type="string" lang_cn="vnc访问的密码。可不填或不全为空格的字符串。" lang_en="vnc password。Optional or not all spaces in string."/>
+								<parameter name="enable_coredump" type="bool" lang_cn="是否开启虚拟机crash保存coredump功能(默认为0):" lang_en="Is Start coredump when vm has been crashed(default 0):">
+									<enum name="0" lang_cn="否" lang_en="No"/>
+									<enum name="1" lang_cn="是" lang_en="Yes"/>
+								</parameter>
+								<parameter name="enable_serial" type="bool" lang_cn="是否开启虚拟机串口功能(默认为0):" lang_en="Is Start serial when vm has been deployed(default 0):">
+									<enum name="0" lang_cn="否" lang_en="No"/>
+									<enum name="1" lang_cn="是" lang_en="Yes"/>
+								</parameter>
+								<array name="devices" repeat="yes">
+									<struct name="ApiVmDevice">
+										<parameter name="type" type="int" lang_cn="虚拟机申请使用的特殊设备类型，虚拟机内必须唯一。" lang_en="Device type for DomU, must different from each other in one VM.">
+											<enum name="1" lang_cn="pdh" lang_en="pdh"/>
+										</parameter>
+										<parameter name="count" type="int" lang_cn="虚拟机使用特殊设备的数量。必须大于0。" lang_en="The count for the special device in DomU, must larger than 0."/>
+									</struct>
+								</array>
+								<parameter name="enable_livemigrate" type="bool" lang_cn="虚拟机热迁移是否使能(默认为1):" lang_en="Is live migration enable(default 1):">
+									<enum name="0" lang_cn="否" lang_en="No"/>
+									<enum name="1" lang_cn="是" lang_en="Yes"/>
+								</parameter>
+							</struct>
+						</struct>  
+				</struct> 
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="7007" lang_cn="失败,无效查询类型" lang_en="Failed, invalid query type"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.runninginfo.query" href="tecs_vmcfg_runninginfo_query.xml"/>
+		<xref name="tecs.vmcfg.allocate" href="tecs_vmcfg_allocate.xml"/>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.set" href="tecs_vmcfg_set.xml"/>
+		<xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+	</reference>
+</method>

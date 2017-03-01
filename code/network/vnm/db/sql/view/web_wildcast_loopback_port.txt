@@ -1,0 +1,32 @@
+
+CREATE OR REPLACE VIEW web_view_wildcast_cfg_loopback AS    
+SELECT 
+   id, 
+   uuid, 
+   port_name,
+   is_loop
+FROM wildcast_cfg_loopback_port ;
+
+
+	
+CREATE OR REPLACE VIEW web_view_wildcast_task_loopback AS    
+SELECT 
+   a.uuid,    
+   c.vna_uuid ,
+   c.cluster_name,
+   c.host_name,
+   b.uuid AS wildcast_cfg_uplinkloopport_uuid,
+   b.port_name,
+   a.send_num,
+   CASE 
+      WHEN (a.state = 0 OR a.state = 2 OR (send_num > 5)) 
+	  THEN (1)
+	  ELSE (0)
+   END AS is_can_delete 
+FROM 	
+	wildcast_task_loopback a,
+    wildcast_cfg_loopback_port b,
+	v_net_vna_hc_cluster c
+WHERE 
+    a.wildcast_cfg_loopback_port_id = b.id AND 
+	a.vna_id = c.vna_id ;

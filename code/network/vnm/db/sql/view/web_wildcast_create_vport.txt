@@ -1,0 +1,91 @@
+CREATE OR REPLACE VIEW web_view_wildcast_cfg_uplinkloopport AS    
+SELECT 
+   id, 
+   uuid, 
+   port_type,
+   port_name
+FROM wildcast_cfg_create_virtual_port
+WHERE 
+    port_type = 4;
+	
+	
+
+CREATE OR REPLACE VIEW web_view_wildcast_cfg_kernelport AS    
+SELECT 
+   a.id, 
+   a.uuid, 
+   a.port_type,
+   a.port_name,
+   b.kernel_type,
+   c.uuid AS kernel_pg_uuid,
+   c.name AS kernel_pg_name,
+   d.uuid AS switch_uuid,
+   d.name AS switch_name,
+   d.switch_type
+FROM 
+	wildcast_cfg_create_virtual_port a,
+	wildcast_cfg_create_kernel_port b,
+	port_group  c,
+	switch d
+WHERE 
+    a.id = b.wildcast_create_vport_id AND 
+    b.kernel_pg_id = c.id AND
+    b.switch_id = d.id AND 
+    a.port_type = 3	;
+	
+	
+	
+CREATE OR REPLACE VIEW web_view_wildcast_task_uplinkloopport AS    
+SELECT 
+   a.uuid,    
+   c.vna_uuid ,
+   c.cluster_name,
+   c.host_name,
+   b.uuid AS wildcast_cfg_uplinkloopport_uuid,
+   b.port_type,
+   b.port_name,
+   a.send_num,
+   CASE 
+      WHEN (a.state = 0 OR a.state = 2 OR a.send_num > 5) 
+	  THEN (1)
+	  ELSE (0)
+   END AS is_can_delete 
+FROM 	
+	wildcast_task_create_vport a,
+    wildcast_cfg_create_virtual_port b,
+	v_net_vna_hc_cluster c
+WHERE 
+    a.wildcast_cfg_create_vport_id = b.id AND 
+	a.vna_id = c.vna_id AND 
+    b.port_type = 4	;
+	
+CREATE OR REPLACE VIEW web_view_wildcast_task_kernelport AS    
+SELECT 
+   a.uuid,    
+   c.vna_uuid,
+   c.cluster_name,
+   c.host_name,
+   b.uuid AS wildcast_cfg_kernelport_uuid,
+   b.port_type,
+   b.port_name,
+   b.kernel_type,   
+   b.kernel_pg_uuid,
+   b.kernel_pg_name,
+   b.switch_uuid,
+   b.switch_name,
+   b.switch_type,
+   CASE 
+      WHEN (a.state = 0 OR a.state = 2 OR (send_num > 5)) 
+	  THEN (1)
+	  ELSE (0)
+   END AS is_can_delete 
+FROM 	
+	wildcast_task_create_vport a,
+    web_view_wildcast_cfg_kernelport b,
+	v_net_vna_hc_cluster c
+WHERE 
+    a.wildcast_cfg_create_vport_id = b.id AND 
+	a.vna_id = c.vna_id AND 
+    b.port_type = 3;	
+	
+	

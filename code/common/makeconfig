@@ -1,0 +1,42 @@
+_TECS_COMMON_INCLUDE_PATH += $(addprefix -I,$(_TECS_API_PATH)/include) \
+				$(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/net-snmp) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/net-snmp/agent) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/net-snmp/data-access) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/net-snmp/library) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/net-snmp/machine) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/net-snmp/system) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/mibII) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/notification) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/notification-log-mib) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/snmp-notification-mib/snmpNotifyFilterTable) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/snmpv3) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/target) \
+                             $(addprefix -I,$(_TECS_CODE_PATH)/tc/snmp/include/mibgroup/utilitie)
+
+export CPPFLAGS += $(_TECS_COMMON_INCLUDE_PATH) 
+export DEPCPPFLAGS += $(_TECS_COMMON_INCLUDE_PATH) 
+
+_TECS_COMMON_SRC_PATH = $(_TECS_CODE_PATH)/common
+_TECS_COMMON_TMP_OBJ_PATH = $(_TEMP_OBJ_PATH)/common
+_TECS_COMMON_TMP_DEP_PATH = $(_TEMP_DEP_PATH)/common
+
+_TECS_COMMON_INIT_PATH = $(_TECS_COMMON_SRC_PATH)/init
+_TECS_COMMON_DB_PATH = $(_TECS_COMMON_SRC_PATH)/db
+_TECS_COMMON_ALARM_PATH = $(_TECS_COMMON_SRC_PATH)/alarm
+_TECS_COMMON_MS_PATH = $(_TECS_COMMON_SRC_PATH)/ms
+_TECS_COMMON_STORAGE_PATH = $(_TECS_COMMON_SRC_PATH)/storage
+_TECS_COMMON_LOG_PATH = $(_TECS_COMMON_SRC_PATH)/log
+_TECS_COMMON_SPECIAL_DEVICE_PATH = $(_TECS_COMMON_SRC_PATH)/special_device
+_TECS_COMMON_MISC_PATH = $(_TECS_COMMON_SRC_PATH)/misc
+
+_TECS_COMMON_INIT_MAKEFILE = $(_TECS_COMMON_INIT_PATH)/makefile
+_TECS_COMMON_DB_MAKEFILE  = $(_TECS_COMMON_DB_PATH)/makefile
+_TECS_COMMON_ALARM_MAKEFILE  = $(_TECS_COMMON_ALARM_PATH)/makefile
+_TECS_COMMON_MS_MAKEFILE  =  $(_TECS_COMMON_MS_PATH)/makefile
+_TECS_COMMON_STORAGE_MAKEFILE  =  $(_TECS_COMMON_STORAGE_PATH)/makefile
+_TECS_COMMON_LOG_MAKEFILE  =  $(_TECS_COMMON_LOG_PATH)/makefile
+_TECS_COMMON_SPECIAL_DEVICE_MAKEFILE  =  $(_TECS_COMMON_SPECIAL_DEVICE_PATH)/makefile
+_TECS_COMMON_MISC_MAKEFILE  =  $(_TECS_COMMON_MISC_PATH)/makefile
+export _TECS_COMMON_OBJS = 

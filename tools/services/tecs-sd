@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# tecs-sd		Script to start and stop the tecs-sd daemons.
+#
+# Author:       zhang wenjian <zhang.wenjian2@zte.com.cn>
+#
+# chkconfig: 2345 99 01
+# description: Starts and stops the tecs-sd daemons.
+### BEGIN INIT INFO
+# Provides: ZTE
+# Should-Start:
+# Default-Start: 3 4 5
+# Short-Description: Start/stop tecs-special-device daemons
+# Description: Starts and stops the tecs-special-device daemons.
+### END INIT INFO
+
+# processname:
+# pidfile:
+#
+
+
+# Source function library.
+if [ -f /etc/init.d/functions ] ; then
+  . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+  . /etc/rc.d/init.d/functions
+else
+  exit 1
+fi
+
+RETVAL=0
+SERVICE=tecs-sd
+pidfile=/var/run/tecs-special-device.pid
+
+############################################################################
+# 增加service脚本必读！！！
+# tecs service prepare函数中调用的脚本或函数必须遵守下面的规范：
+# 1. 可以频繁快速重复运行，因为guard要周期性地通过service xxx start来保证服务可用性！
+# 2. 每做一个准备动作之前，都要首先判断已经成功准备过了，不要重复劳动，要快进快出！
+# 3. 脚本中不能有交互性动作！！！ 如果准备失败了，需要返回约定好的错误码给guard:
+#     exit 150 : 本次服务启动失败，需要把整个物理机重启才行
+# 4. 宝贵的失败信息需要用logger命令记录到系统日志以备后用，例如: logger "prepare disk failed!!!"
+# 5. 如果准备动作比较多，请写成独立的脚本放在/opt/tecs/xx/scripts/目录下，在这里调用即可
+# 6. 独立脚本中的代码也要遵守上述1~4条规范。
+############################################################################
+prepare() {
+    echo "$SERVICE is starting ..."
+    echo 1024 > /proc/sys/net/unix/max_dgram_qlen	
+#请在这里调用服务启动前的准备动作脚本
+}
+
+start() {
+    prepare
+    RETVAL=$?
+    [ 0 != $RETVAL ] && exit $RETVAL
+
+    if [ -e $pidfile ]; then
+        old_pid=`cat $pidfile | grep -E ^[0-9]+$`
+        if [ -z $old_pid ];then
+            rm -f $pidfile
+            echo $pidfile removed!
+        fi
+    fi
+
+    echo -n "Starting $SERVICE: "
+    daemon --pidfile=$pidfile /opt/tecs/sd/bin/tecs-special-device -D /opt/tecs/sd/etc -d
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SERVICE
+}
+
+stop() {
+    echo -n "Stopping $SERVICE: "
+    killproc -p $pidfile -d 5
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$SERVICE
+}
+
+restart() {
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start|stop|restart)
+        $1
+        ;;
+    status)
+        status -p $pidfile $SERVICE
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+	exit 1
+        ;;
+esac
+exit $RETVAL

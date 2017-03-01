@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_runninginfo_query.xml">
+	<interface>tecs.vmcfg.runninginfo.query</interface>
+	<shortdesc lang_cn="虚拟机运行信息查询" lang_en="show vm running info"/>
+	<description lang_cn="虚拟机运行信息查询。" lang_en="show vm running info."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询起始位置。" lang_en="query start index."/>
+		<parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-50。" lang_en="num once query,range 1-50."/>
+		<parameter name="type" type="string" lang_cn="查询类型:" lang_en="query type:">
+			<enum name="query_all_self" lang_cn="用户创建的所有虚拟机" lang_en="show all vm which create by user."/>
+			<enum name="query_self_appointed" lang_cn="管理员或用户创建的指定虚拟机" lang_en="show appointed vm which create by user."/>
+			<enum name="query_all" lang_cn="管理员查询所有虚拟机" lang_en="show all vm by administrator."/>
+		</parameter>
+		<parameter name="appointed_vid" type="int64" lang_cn="虚拟机ID" lang_en="vm ID." />
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+			<parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array name="array_vms" repeat="yes">
+				<struct name="ApiVmRunningInfo">
+					<parameter name="vid" type="int64" lang_cn="虚拟机ID。" lang_en="vm ID."/>
+					<struct name="computationinfo" repeat="yes" lang_cn="计算相关信息" lang_en="computation information">
+						<parameter name="state" type="int" lang_cn="状态:" lang_en="state:">
+							<enum name="2" lang_cn="运行" lang_en="running"/>
+							<enum name="3" lang_cn="暂停" lang_en="paused"/>
+							<enum name="4" lang_cn="关机" lang_en="shutoff"/>
+							<enum name="5" lang_cn="崩溃" lang_en="crashed"/>
+							<enum name="6" lang_cn="未知" lang_en="unknown"/>
+							<enum name="7" lang_cn="配置数据" lang_en="configuration"/>
+						</parameter>
+						<parameter name="deployed_cluster" type="string" lang_cn="虚拟机所在集群名称，只对云管理员开放。" lang_en="cluster name, only open to cloud administrator"/>
+						<parameter name="deployed_hc" type="string" lang_cn="虚拟机所在主机名称，只对云管理员开放。" lang_en="host name, only open to cloud administrator"/>
+						<parameter name="vnc_ip" type="string" lang_cn="vnc 访问的ip" lang_en="vnc view ip"/>
+						<parameter name="vnc_port" type="int" lang_cn="vnc 访问的端口" lang_en="vnc port"/>
+						<parameter name="serial_port" type="int" lang_cn="串口 访问端口" lang_en="serial port"/>
+						<parameter name="cpu_rate" type="int" lang_cn="cpu利用率" lang_en="CPU utilization rate"/>
+						<parameter name="memory_rate" type="int" lang_cn="内存使用率" lang_en="memory utilization rate"/>
+					</struct>
+					<struct name="storageinfo" repeat="yes" lang_cn="存储相关信息" lang_en="storage information">
+						<parameter name="disk_size" type="int64" lang_cn="machine映像、普通映像和虚拟磁盘占用的空间大小。" lang_en="the space size of machine image、other type images and virtual disk"/>
+					</struct>
+					<struct name="netinfo" repeat="yes" lang_cn="网络相关信息" lang_en="network information">
+						<parameter name="use_rate" type="int" lang_cn="网卡利用率" lang_en="nic utilization rate"/>
+						<array name="nic_info" repeat="yes" lang_cn="sriov网卡最多支持16个，非sriov网卡最多支持8个。" lang_en="sriov nic max num is 16, non-sriov nic max num is 8.">
+							<struct name="ApiVmNic">
+								<parameter name="nic_index" type="int" lang_cn="网卡序号.虚拟机内必须唯一，有效范围>=1. 为0时,TECS前台自动重新生成。" lang_en="index of network card, must different from each other in one VM,>=1, Tecs will allocate it when is 0."/>
+								<parameter name="sriov" type="bool" lang_cn="是否为SR-IOV网卡:" lang_en="Is network card with SR-IOV:"/>
+								<parameter name="loop" type="bool" lang_cn="是否为环回网卡" lang_en="Is loop-back network card."/>
+								<parameter name="logic_network_id" type="string" lang_cn="逻辑网络号" lang_en="Id of logical network"/>
+								<parameter name="model" type="string" lang_cn='虚拟网卡的网卡类型:
+1. SR-IOV网卡暂不支持网卡型号选择；
+2. 虚拟机为PVM时，非SR-IOV网卡不允许选择网卡型号，model为空；
+3. 虚拟机为HVM时，非SR-IOV网卡允许选择网卡型号
+  a) 网卡要么全为"netfront"；
+  b)要么全为非"netfront"，即"e1000"、"rtl8139"、"ne2k_pci"和"pcnet"中的一种或组合。' lang_en='VM network card types:
+1. SR-IOV network card do not support to select network card now;
+2. When VM is PVM model, and the network card is not SR-IOV, model is empty;
+3. When VM is HVM model, and the network card is not SR-IOV, select network card as:
+   a) all network cards are "netfront";
+   b) all network cards are not "netfront", it means that the network cards are part of "e1000","rtl8139","ne2k_pci" and "pcnet" .'>
+									<enum name="netfront" lang_cn="netfront网卡" lang_en="netfront network card"/>
+									<enum name="e1000" lang_cn="e1000网卡" lang_en="e1000 network card"/>
+									<enum name="rtl8139" lang_cn="rt18139网卡" lang_en="rt18139 network card"/>
+									<enum name="net2k_pci" lang_cn="ne2k_pci网卡" lang_en="ne2k_pci network card"/>
+									<enum name="pcnet" lang_cn="pcnet网卡" lang_en="pcnet network card"/>
+								</parameter>
+								<parameter name="vsi_profile_id" type="string" lang_cn="系统为网卡分配的vsi号:" lang_en="vsi id of the network card:"/>
+								<parameter name="pci_order" type="bool" lang_cn="系统为虚拟网卡分配的pci总线号" lang_en="Pci order:"/>
+								<parameter name="bridge_name" type="string" lang_cn="系统网桥名" lang_en="network bridge name ."/>
+								<parameter name="ip" type="string" lang_cn="系统为虚拟网卡分配的IP地址" lang_en="ip addr ."/>
+								<parameter name="netmask" type="string" lang_cn="系统为虚拟网卡分配的mask地址。" lang_en="netmask addr ."/>
+								<parameter name="gateway" type="string" lang_cn="系统为虚拟网卡分配的网关地址。" lang_en="gateway addr ."/>
+								<parameter name="mac" type="string" lang_cn="系统为虚拟网卡分配的MAC地址。" lang_en="mac addr."/>
+								<parameter name="c_vlan" type="string" lang_cn="系统为虚拟网卡分配的vlan号" lang_en="vlan."/>
+							</struct>
+						</array>
+					</struct>
+				</struct> 
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="7007" lang_cn="失败,无效查询类型" lang_en="Failed, invalid query type"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.staticinfo.query" href="tecs_vmcfg_staticinfo_query.xml"/>
+		<xref name="tecs.vmcfg.allocate" href="tecs_vmcfg_allocate.xml"/>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.set" href="tecs_vmcfg_set.xml"/>
+		<xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+	</reference>
+</method>

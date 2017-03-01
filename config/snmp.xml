@@ -1,0 +1,30 @@
+﻿<SNMP>
+    <oid property="scalar" value="1.3.6.1.4.1.3902.6051.19.1.1.1" snmp_name="snmpconfiguration" get="yes" modify="yes" add_del="no">
+        <member snmp_name="community" property="read_write" snmp_key="no" snmp_type="char" snmp_length="20" max_value="" min_value="" rowstate="no">1</member>
+        <member snmp_name="trap_community" property="read_write" snmp_key="no" snmp_type="char" snmp_length="20" max_value="" min_value="" rowstate="no">2</member>
+        <member snmp_name="trap_version" property="read_write" snmp_key="no" snmp_type="int" snmp_length="1" max_value="1" min_value="0" rowstate="no">3</member>
+    </oid>
+    <oid property="table" value="1.3.6.1.4.1.3902.6051.19.1.1.2" snmp_name="trapaddress" get="yes" modify="yes" add_del="yes">
+        <member snmp_name="ip_address" property="read_write" snmp_key="yes" snmp_type="T_IPADDR" snmp_length="1" max_value="" min_value="" rowstate="no">1</member>
+        <member snmp_name="port" property="read_write" snmp_key="yes" snmp_type="int" snmp_length="1" max_value="65535" min_value="0" rowstate="no">2</member>
+        <member snmp_name="rowstate" property="read_write" snmp_key="no" snmp_type="int" snmp_length="1" max_value="6" min_value="1" rowstate="yes">3</member>
+    </oid>
+    <oid property="scalar" value="1.3.6.1.4.1.3902.6051.19.1.1.3" snmp_name="snmpuser" get="yes" modify="yes" add_del="no">
+        <member snmp_name="user_name" property="read_write" snmp_key="no" snmp_type="char" snmp_length="20" max_value="" min_value="" rowstate="no">1</member>
+    </oid>
+    <oid property="table" value="1.3.6.1.4.1.3902.6051.19.1.2.2.1" snmp_name="currentalarm" get="yes" modify="no" add_del="no">
+        <member snmp_name="alarmid" property="read_write" snmp_key="yes" snmp_type="int" snmp_length="1" max_value="" min_value="" rowstate="no">1</member>
+        <member snmp_name="alarmcode" property="read_write" snmp_key="no" snmp_type="int" snmp_length="1" max_value="" min_value="" rowstate="no">2</member>
+        <member snmp_name="alarmtime" property="read_write" snmp_key="no" snmp_type="char" snmp_length="32" max_value="" min_value="" rowstate="no">3</member>
+        <member snmp_name="alarmaddr" property="read_write" snmp_key="no" snmp_type="char" snmp_length="120" max_value="" min_value="" rowstate="no">4</member>
+        <member snmp_name="tcname" property="read_write" snmp_key="no" snmp_type="char" snmp_length="64" max_value="" min_value="" rowstate="no">5</member>
+        <member snmp_name="ccname" property="read_write" snmp_key="no" snmp_type="char" snmp_length="64" max_value="" min_value="" rowstate="no">6</member>
+        <member snmp_name="hcname" property="read_write" snmp_key="no" snmp_type="char" snmp_length="256" max_value="" min_value="" rowstate="no">7</member>
+        <member snmp_name="location" property="read_write" snmp_key="no" snmp_type="char" snmp_length="64" max_value="" min_value="" rowstate="no">8</member>
+        <member snmp_name="alarmaddinfo" property="read_write" snmp_key="no" snmp_type="char" snmp_length="256" max_value="" min_value="" rowstate="no">9</member>
+        <member snmp_name="crccode0" property="read_write" snmp_key="no" snmp_type="uint32" snmp_length="1" max_value="" min_value="" rowstate="no">10</member>
+        <member snmp_name="crccode1" property="read_write" snmp_key="no" snmp_type="uint32" snmp_length="1" max_value="" min_value="" rowstate="no">11</member>
+        <member snmp_name="crccode2" property="read_write" snmp_key="no" snmp_type="uint32" snmp_length="1" max_value="" min_value="" rowstate="no">12</member>
+        <member snmp_name="crccode3" property="read_write" snmp_key="no" snmp_type="uint32" snmp_length="1" max_value="" min_value="" rowstate="no">13</member>
+    </oid>
+</SNMP>

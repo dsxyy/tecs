@@ -1,0 +1,8 @@
+/var/log/tecs/LocalExcLog/*.txt
+{
+    missingok
+    size 10M
+    rotate 1
+    create
+    compress
+}

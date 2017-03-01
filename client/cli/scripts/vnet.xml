@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="0" verno="85">
+	<Modes>
+		<Mode ID="82" Class="28" HasNo="YES" Prompt="(vnet)#" mode-help-chs="" mode-help-en="" Name="VNET配置模式" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode CmdGroup="dhcp" IdInGroup="3" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0xDE010004" Name="dhcp" treenode-comment-chs="配置DHCP Server" treenode-comment-en="Configure DHCP Server">
+				<TreeNode Name="start" treenode-comment-chs="启动DHCP" treenode-comment-en="Start DHCP server">
+					<Command CmdGroup="dhcp" IdInGroup="6" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xDE010006">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/></ParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="stop" treenode-comment-chs="停止DHCP" treenode-comment-en="Stop DHCP server">
+					<Command CanStop="YesAndNotNeedAck" CmdGroup="dhcp" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="7" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="SET" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xDE010007">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/></ParamNode></Command>
+				</TreeNode>
+				<TreeNode Name="subnet" treenode-comment-chs="配置subnet" treenode-comment-en="Configure subnet">
+					<Command CmdGroup="dhcp" IdInGroup="3" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xDE010004">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="vlan" paracomment-chs="网络" paracomment-en="Network" DataType="DATA_TYPE_MAP" Min="0" Max="4096" Length="1103" _Type="Param" _Index="1"/><Param Name="subnet" paracomment-chs="A.B.C.D网段" paracomment-en="A.B.C.D subnet ip" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="2" Max="" Min=""/><Param Name="mask" paracomment-chs="A.B.C.D掩码" paracomment-en="A.B.C.D subnet mask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="3" Max="" Min=""/><Param Name="gateway" paracomment-chs="A.B.C.D 网关IP" paracomment-en="A.B.C.D gateway ip" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="4" Max="" Min=""/><Param Name="mask" paracomment-chs="A.B.C.D 客户端掩码" paracomment-en="A.B.C.D client mask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="5" Max="" Min=""/></ParamNode>
+						<NoParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="vlan" paracomment-chs="网络" paracomment-en="Network" DataType="DATA_TYPE_MAP" Min="0" Max="4096" Length="1103" _Type="Param" _Index="1"/><Param Name="subnet" paracomment-chs="A.B.C.D网段" paracomment-en="A.B.C.D subnet ip" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="2" Max="" Min=""/><Param Name="mask" paracomment-chs="A.B.C.D掩码" paracomment-en="A.B.C.D subnet mask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="3" Max="" Min=""/></NoParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="pxe" treenode-comment-chs="设置DHCP PXE" treenode-comment-en="Configure DHCP PXE">
+					<Command CmdGroup="dhcp" IdInGroup="8" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xDE010008">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="file_name" paracomment-chs="文件名称" paracomment-en="File name" DataType="DATA_TYPE_STRING" Min="1" Max="128" Length="" _Type="Param" _Index="1"/>
+							<Param Name="server_address" paracomment-chs="服务器IP地址" paracomment-en="Server IP address" DataType="DATA_TYPE_IPADDR" Min="" Max="" Length="" _Type="Param" _Index="2"/>
+						</ParamNode>
+					</Command>
+				</TreeNode><TreeNode Name="range" treenode-comment-chs="配置range" treenode-comment-en="Configure range">
+					<Command CmdGroup="dhcp" IdInGroup="4" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xDE010004">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="vlan" paracomment-chs="网络" paracomment-en="Network" DataType="DATA_TYPE_MAP" Min="0" Max="4096" Length="1103" _Type="Param" _Index="1"/><Param Name="subnet" paracomment-chs="A.B.C.D网段" paracomment-en="A.B.C.D subnet ip" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="2" Max="" Min=""/><Param Name="mask" paracomment-chs="A.B.C.D掩码" paracomment-en="A.B.C.D subnet mask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="3" Max="" Min=""/><Param Name="ip_start" paracomment-chs="IP范围起始地址" paracomment-en="IP start address" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="4" Max="" Min=""/><Param Name="ip_end" paracomment-chs="IP范围结束地址" paracomment-en="IP end address" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="5" Max="" Min=""/></ParamNode>
+					</Command>
+				</TreeNode></TreeNode>
+			<TreeNode Name="exit" treenode-comment-chs="退出VNET配置模式" treenode-comment-en="Exit to super user mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="解释端执行" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="YES" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="netplane_map" treenode-comment-chs="配置网络平面和物理网卡映射关系" treenode-comment-en="Configure netplane and physical NIC map">
+				<Command CanStop="YesAndNotNeedAck" CmdGroup="net_plane" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="YES" IdInGroup="11" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="SET" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xDD01000B">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="hostname" paracomment-chs="HC主机名" paracomment-en="HC hostname" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+						<Param Name="nic_name" paracomment-chs="网卡名称" paracomment-en="NIC name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/><Param Name="netplane_name" paracomment-chs="网络平面名" paracomment-en="Netplane name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="3"/><Param Name="evb_mod" paracomment-chs="网卡支持的模式" paracomment-en="EVB mod(VEB-0 or VEPA-1)" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="1101" _Type="Param" _Index="4"/></ParamNode>
+					<NoParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="hostname" paracomment-chs="HC主机名" paracomment-en="HC hostname" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="Show netplane_map by hostname" _Type="Prammar" _Index="0" Flag=""><Param Name="nic_name" paracomment-chs="虚拟网卡名称" paracomment-en="NIC name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/></Param></NoParamNode>
+				</Command></TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="显示虚拟网络相关配置" treenode-comment-en="Show vnet configure">
+				<TreeNode Name="netplane" treenode-comment-chs="查询网络平面配置信息" treenode-comment-en="Show netplane configure">
+					<Command CmdGroup="维护" IdInGroup="2" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2%hc2:error:%v1%b&#xA;%hc0:netplane_id   netplane_name&#xA;----------------------------&#xA;%rs3:%v%-13d %v%s&#xA;%re%hc1:%rs:%v%-13d %v%s&#xA;%re%he" formatstring-en="%hs2%hc2:error:%v1%b&#xA;%hc0:netplane_id   netplane_name&#xA;----------------------------&#xA;%rs3:%v%-13d %v%s&#xA;%re%hc1:%rs:%v%-13d %v%s&#xA;%re%he" _ID="0xE6000002">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/></ParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="netplane_map" treenode-comment-chs="显示网络平面和物理网卡映射信息" treenode-comment-en="Show configure netplane map"><Command CmdGroup="维护" IdInGroup="3" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2%hc2:error:%v%b&#xA;%hc0:%rs3:&#xA;hostname: %v%s&#xA;NIC       NP_ID         NP_NAME   EVB&#xA;-----------------------------------------&#xA;%rs:%v%-10s%v%-13d %v%-10s%v%-15b&#xA;%re=========================================&#xA;%re%hc1:%rs:&#xA;hostname: %v%s&#xA;NIC       NP_ID         NP_NAME   EVB&#xA;-----------------------------------------&#xA;%rs:%v%-10s%v%-13d %v%-10s%v%-15b&#xA;%re=========================================&#xA;%re%he" formatstring-en="%hs2%hc2:error:%v%b&#xA;%hc0:%rs3:&#xA;hostname: %v%s&#xA;NIC       NP_ID         NP_NAME   EVB&#xA;-----------------------------------------&#xA;%rs:%v%-10s%v%-13d %v%-10s%v%-15b&#xA;%re=========================================&#xA;%re%hc1:%rs:&#xA;hostname: %v%s&#xA;NIC       NP_ID         NP_NAME   EVB&#xA;-----------------------------------------&#xA;%rs:%v%-10s%v%-13d %v%-10s%v%-15b&#xA;%re=========================================&#xA;%re%he" _ID="0xE6000003">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="Show netplane_map by hostname" _Type="Prammar" _Index="0" Flag=""><Param Name="hostname" paracomment-chs="HC主机名" paracomment-en="HC hostname" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/></Param>
+						</ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="vlan" treenode-comment-chs="显示VLAN信息" treenode-comment-en="Show VLAN information"><Command CmdGroup="维护" IdInGroup="4" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2%hc2:error:%v%b&#xA;%hc0:%v3%s_vlan_table&#xA;PRJ_ID        USER_VLAN      C_VLAN      S_VLAN&#xA;-----------------------------------------------&#xA;%rs:%v%-13w%v%-13d %v%-13d %v%-13d &#xA;%re%hc1:%rs4:%v%-13w%v%-13d %v%-13d %v%-13d &#xA;%re%he&#xA;" formatstring-en="%hs2%hc2:error:%v%b&#xA;%hc0:%v3%s_vlan_table&#xA;PRJ_ID        USER_VLAN      C_VLAN      S_VLAN&#xA;-----------------------------------------------&#xA;%rs:%v%-13w%v%-13d %v%-13d %v%-13d &#xA;%re%hc1:%rs4:%v%-13w%v%-13d %v%-13d %v%-13d &#xA;%re%he&#xA;" _ID="0xE6000004">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="netplane_name" paracomment-chs="网络平面名" paracomment-en="Input netplane name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/></ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="dhcp" treenode-comment-chs="显示DHCP信息" treenode-comment-en="Show DHCP information">
+					<TreeNode Name="configure" treenode-comment-chs="显示DHCP的配置信息" treenode-comment-en="Show DHCP configure information"><Command IdInGroup="1" OprMode="GET" CmdGroup="维护" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" _ID="0xE6000001" formatstring-chs="%hs%hc2:error:%v%b&#xA;%hc0:&#xA;dhcp global %v%s&#xA;pxe file: %v%s&#xA;pxe server address: %v%a&#xA;{&#xA;    %rs:network: %v%b&#xA;    {&#xA;        %rs:subnet&#xA;        {&#xA;            subnet:       %v%a&#xA;            subnet_mask:  %v%a&#xA;            gateway:      %v%a&#xA;            client_mask:  %v%a&#xA;&#xA;            %rs:range&#xA;            {&#xA;                ip_start: %v%a&#xA;                ip_end  : %v%a&#xA;            }&#xA;            %re&#xA;        }&#xA;        %re&#xA;        %rs:host&#xA;        {&#xA;            ip:           %v%a&#xA;            mac:          %v%s&#xA;            gateway:      %v%a&#xA;            gateway_mask: %v%a&#xA;        }&#xA;        %re&#xA;    }&#xA;    %re&#xA;}%he&#xA;" formatstring-en="%hs%hc2:error:%v%b&#xA;%hc0:&#xA;dhcp global %v%s &#xA;pxe file: %v%s&#xA;pxe server address: %v%a&#xA;{&#xA;    %rs:network: %v%b&#xA;    {&#xA;        %rs:subnet&#xA;        {&#xA;            subnet:       %v%a&#xA;            subnet_mask:  %v%a&#xA;            gateway:      %v%a&#xA;            client_mask:  %v%a&#xA;&#xA;            %rs:range&#xA;            {&#xA;                ip_start: %v%a&#xA;                ip_end  : %v%a&#xA;            }&#xA;            %re&#xA;        }&#xA;        %re&#xA;        %rs:host&#xA;        {&#xA;            ip:           %v%a&#xA;            mac:          %v%s&#xA;            gateway:      %v%a&#xA;            gateway_mask: %v%a&#xA;        }&#xA;        %re&#xA;    }&#xA;    %re&#xA;}%he&#xA;" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="YES">
+							<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+							<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+								<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="Show netplane_map by hostname" _Type="Prammar" _Index="0" Flag=""><Param Name="vlan" paracomment-chs="网络" paracomment-en="Network" DataType="DATA_TYPE_MAP" Min="0" Max="4096" Length="1103" _Type="Param" _Index="1"/></Param>
+							</ParamNode></Command></TreeNode>
+					<TreeNode Name="state" treenode-comment-chs="查询DHCP的运行状态" treenode-comment-en="Show DHCP service state"><Command CmdGroup="维护" IdInGroup="6" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs%hc2:error:%v%b&#xA;%hc0:DHCP Service State is %v%b.&#xA;%he" formatstring-en="%hs%hc2:error:%v%b&#xA;%hc0:DHCP Service State is %v%b.&#xA;%he" _ID="0xE6000006">
+							<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+							<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/></ParamNode>
+						</Command></TreeNode>
+				</TreeNode><TreeNode Name="ip" treenode-comment-chs="查询IP地址" treenode-comment-en="Show IP address"><Command CmdGroup="维护" IdInGroup="5" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2%hc2:error:%v%b&#xA;%hc0:IP                  MAC/Interface/Network Gateway&#xA;-----------------------------------------------&#xA;%rs3:%v%-20a%v%-13s&#xA;%re%hc1:%rs3:%v%-20a%v%-13s&#xA;%re%he" formatstring-en="%hs2%hc2:error:%v%b&#xA;%hc0:IP                  MAC/Interface/Network Gateway&#xA;-----------------------------------------------&#xA;%rs3:%v%-20a%v%-13s&#xA;%re%hc1:%rs3:%v%-20a%v%-13s&#xA;%re%he" _ID="0xE6000005">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="CC名字" paracomment-en="Cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="Show netplane_map by hostname" _Type="Prammar" _Index="0" Flag=""><Param Name="type" paracomment-chs="地址类型" paracomment-en="Input address type" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="1104" _Type="Param" _Index="1"/></Param></ParamNode>
+					</Command></TreeNode></TreeNode>
+		</Mode>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="vnet" treenode-comment-chs="进入虚拟网络配置模式" treenode-comment-en="Enter virtual network configure mode">
+				<Command CmdGroup="解释" IdInGroup="221" OprMode="SET" ExecMode="其他" NextMode="VNET配置模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0x000100DD">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode>
+	</Modes>
+	<Maps>
+		<Map Type="1101">
+			<MapItem Value="1" Name-en="VEB" Comment="Virtual edge bridge" Name-chs="VEB" Comment-chs="虚拟边界网桥"/>
+			<MapItem Value="2" Name-en="VEPA" Comment="Virtual edge port aggregator" Name-chs="VEPA" Comment-chs="虚拟边界端口聚合"/>
+		</Map>
+		<Map Type="1102">
+			<MapItem Value="0" Name-en="INIT" Comment="DHCP Service State is INIT." Name-chs="初始态" Comment-chs="DHCP服务器处于初始态"/>
+			<MapItem Value="1" Name-en="STOP" Comment="DHCP Service State is STOP" Name-chs="停止" Comment-chs="DHCP服务停止"/>
+			<MapItem Value="2" Name-en="RUNNING" Comment="DHCP Service State is RUNNING" Name-chs="运行" Comment-chs="DHCP处于运行态"/>
+		</Map>
+		<Map Type="1103">
+			<MapItem Value="0" Name-en="TECS_NETWORK" Comment="Tecs system management network plane." Name-chs="TECS_NETWORK" Comment-chs="TECS系统网络管理平面"/>
+			<MapItem Value="4096" Name-en="VM_NETWORK" Comment="VM management network plane." Name-chs="VM_NETWORK" Comment-chs="VM虚拟机网络管理平面"/>
+		</Map>
+		<Map Type="1104">
+			<MapItem Value="0" Name-chs="ALL" Comment-chs="所有地址" Name-en="ALL" Comment="All address"/>
+			<MapItem Value="1" Name-chs="DHCP" Comment-chs="通过DHCP服务分配的IP地址" Name-en="DHCP" Comment="DHCP allocate address"/>
+			<MapItem Value="2" Name-chs="GATEWAY" Comment-chs="默认网关地址" Name-en="GATEWAY" Comment="Default gateway address"/>
+			<MapItem Value="3" Name-chs="INTERFACE" Comment-chs="本地接口地址" Name-en="INTERFACE" Comment="Local interface address"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="221" groupname="net_plane"/>
+		<CmdGroup groupid="222" groupname="dhcp"/>
+		<CmdGroup groupid="230" groupname="维护"/>
+	</CmdGroups>
+	<Logs>
+		<Log Staff="gongxf" Date="2012-03-20" Modify="将dhcp global 删除" EcNo="611002759312" Name="2012-03-20 by gongxf">
+			<Links>http://10.44.19.227/svn/3gplatdoc/trunk/3GPLATDOC/3GPLAT/04 平台研发项目/04 统一支撑项目/ZXTULIP(TECS)_V01.01.10</Links>
+		</Log>
+		<Log Staff="龚协丰" Date="2012-04-16" Modify="dhcp pxe ,dhcp range,show ip " EcNo="611002825627" Name="2012-04-16 by 龚协丰">
+			<Links><Map Type="1104">
+					<MapItem Value="0" Name-chs="ALL" Comment-chs="所有地址" Name-en="ALL" Comment="All address"/>
+					<MapItem Value="1" Name-chs="DHCP" Comment-chs="通过DHCP服务分配的IP地址" Name-en="DHCP" Comment="DHCP allocate address"/>
+					<MapItem Value="2" Name-chs="GATEWAY" Comment-chs="默认网关地址" Name-en="GATEWAY" Comment="Default gateway address"/>
+					<MapItem Value="3" Name-chs="INTERFACE" Comment-chs="本地接口地址" Name-en="INTERFACE" Comment="Local interface address"/>
+				</Map></Links>
+		</Log>
+	</Logs>
+</Script>

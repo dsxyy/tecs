@@ -1,0 +1,22 @@
+
+
+CREATE OR REPLACE VIEW v_net_wildcast_task_loopback AS    
+SELECT 
+  wildcast_task_loopback.uuid AS task_uuid, 
+  wildcast_task_loopback.state AS task_state, 
+  wildcast_task_loopback.send_num AS task_send_num, 
+  wildcast_cfg_loopback_port.uuid AS loopback_uuid, 
+  wildcast_cfg_loopback_port.port_name, 
+  wildcast_cfg_loopback_port.is_loop, 
+  vna.vna_uuid, 
+  vna.is_online AS vna_is_online
+FROM 
+  public.wildcast_cfg_loopback_port, 
+  public.wildcast_task_loopback, 
+  public.vna
+WHERE 
+  wildcast_task_loopback.wildcast_cfg_loopback_port_id = wildcast_cfg_loopback_port.id AND
+  vna.id = wildcast_task_loopback.vna_id;
+
+  
+  

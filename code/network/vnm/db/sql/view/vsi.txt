@@ -1,0 +1,107 @@
+
+
+CREATE OR REPLACE VIEW v_net_vsi_vnic AS   
+SELECT 
+  vnic.vm_id AS vnic_vm_id, 
+  vnic.nic_index AS vnic_nic_index, 
+  vnic.is_sriov AS vnic_is_sriov, 
+  vm.project_id AS vnic_project_id, 
+  vnic.is_loop AS vnic_is_loop, 
+  vnic.logic_network_uuid AS vnic_logic_network_uuid, 
+  vnic.port_type AS vnic_port_type, 
+  vm.host_name AS vnic_host_name, 
+  vm.cluster_name AS vnic_cluster_name, 
+  vnic.id AS vnic_id, 
+  vsi_profile.id AS vsi_profile_id,
+  vsi_profile.vsi_id_value AS vsi_id_value, 
+  vsi_profile.vsi_id_format AS vsi_id_format, 
+  vsi_profile.vm_pg_id AS vsi_vm_pg_id, 
+  vsi_profile.mac_id AS vsi_mac_id, 
+  vsi_profile.logic_network_ip_id AS vsi_logic_network_ip_id, 
+  vsi_profile.virtual_switch_id AS vsi_virtual_switch_id 
+FROM 
+  vm,
+  vnic, 
+  vsi_profile
+WHERE 
+  vm.vm_id = vnic.vm_id AND 
+  vnic.vsi_profile_id = vsi_profile.id ;
+  
+
+  
+  
+
+
+
+
+CREATE OR REPLACE VIEW v_net_vsi_deploy_vna_switch_port AS   
+SELECT 
+  distinct 
+  c.cluster_name,
+  a.vna_uuid,
+  a.is_online AS vna_is_online, 
+  b.module_name ,
+  b.is_online AS    hc_is_online, 
+  i.uuid AS switch_uuid,
+  e.is_consistency AS switch_map_is_consistency,
+    
+  f.uuid AS port_uuid, 
+  f.port_type AS port_type,
+  f.is_consistency AS port_is_consistency ,
+  
+  o.project_id, 
+  p.logic_network_uuid,
+  p.is_sriov,
+  p.is_loop
+
+FROM 
+  vna a,
+  regist_module b,
+  hc_info c,  
+  virtual_switch d,
+  virtual_switch_map e,  
+  port f,       
+/* regist_module g,*/
+  switch i,
+  
+  vm o, 
+  vnic p,
+  vsi_profile q
+  
+WHERE
+  a.is_online = 1 AND 
+  b.is_online = 1 AND
+  b.role = 1 AND 
+  a.id = b.vna_id AND 
+  b.id = c.regist_module_id AND 
+/*
+  g.is_online = 1 AND
+  g.role = 5 AND 
+  a.id = g.vna_id AND 
+*/  
+  i.id = d.switch_id AND 
+  e.virtual_switch_id = d.switch_id AND 
+  
+  f.vna_id = a.id AND 
+  f.is_consistency = 1 AND 
+  e.is_consistency = 1 AND 
+  e.port_id = f.id  AND 
+  
+  o.vm_id = p.vm_id AND 
+  p.vsi_profile_id = q.id AND 
+  q.virtual_switch_id = d.switch_id AND 
+  b.module_name = o.host_name 
+order by 
+   vna_uuid  ;
+
+  
+
+  
+  
+
+
+
+
+
+   
+ 

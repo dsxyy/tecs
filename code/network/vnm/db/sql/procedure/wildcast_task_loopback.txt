@@ -1,0 +1,392 @@
+
+
+
+
+
+CREATE OR REPLACE FUNCTION pf_net_check_add_wildcast_task_loopback( in_vna_uuid character varying, in_wc_loopback_uuid character varying, in_state integer,
+                  in_send_num integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  uplinkpgid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+			  
+  -- create vport uuid 
+  SELECT count(*) INTO is_exist FROM wildcast_cfg_loopback_port WHERE uuid = in_wc_loopback_uuid;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN  
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+   -- create vport vna 
+  SELECT count(*) INTO is_exist FROM v_net_wildcast_task_loopback WHERE loopback_uuid = in_wc_loopback_uuid AND vna_uuid = in_vna_uuid;
+  IF is_exist > 0 THEN  
+      result := RTN_ITEM_CONFLICT;
+      return result;
+  END IF;
+                
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_wildcast_task_loopback( in_vna_uuid character varying, in_wc_loopback_uuid character varying, in_state integer,
+                  in_send_num integer) OWNER TO tecs;
+				 
+-- 逻辑 wildcast task add 添加 
+CREATE OR REPLACE FUNCTION pf_net_add_wildcast_task_loopback( in_uuid character varying, in_vna_uuid character varying, in_wc_loopback_uuid character varying, 
+        in_state integer,in_send_num integer) 
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  vnaid numeric(19,0);
+  loopbackid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  result.ret := pf_net_check_add_wildcast_task_loopback(in_vna_uuid,in_wc_loopback_uuid,in_state,in_send_num);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- create vport uuid 
+  SELECT count(*) INTO is_exist FROM wildcast_cfg_loopback_port WHERE uuid = in_wc_loopback_uuid;
+  SELECT id INTO loopbackid FROM wildcast_cfg_loopback_port WHERE uuid = in_wc_loopback_uuid;
+  IF is_exist <= 0 THEN 
+      result.ret := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  -- vna uuid 
+  SELECT count(*) INTO is_exist FROM vna WHERE vna_uuid = in_vna_uuid;
+  SELECT id INTO vnaid FROM vna WHERE vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN  
+      result.ret := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  -- 不能冲突 
+  SELECT count(*) INTO is_exist FROM wildcast_task_loopback WHERE uuid = in_uuid;
+  IF is_exist > 0 THEN  
+      result.ret := RTN_ITEM_CONFLICT;
+      return result;
+  END IF;
+    
+  -- 不支持重复添加 
+  -- insert item 
+  result.id := nextval('serial_wildcast_task_loopback');
+  --uplinkportid ：= nextval('serial_kernel_cfg_report_bond');
+  result.uuid := in_uuid;
+  BEGIN 
+      INSERT INTO wildcast_task_loopback(id,uuid,vna_id,wildcast_cfg_loopback_port_id,state, send_num) 
+          values(result.id,in_uuid,vnaid,loopbackid,in_state,in_send_num );
+            
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_wildcast_task_loopback( in_uuid character varying, in_vna_uuid character varying, in_wc_loopback_uuid character varying, 
+        in_state integer,in_send_num integer)   OWNER TO tecs;
+
+                 
+
+-- check modify        
+CREATE OR REPLACE FUNCTION pf_net_check_modify_wildcast_task_loopback( in_uuid character varying, in_vna_uuid character varying, in_wc_loopback_uuid character varying, 
+        in_state integer,in_send_num integer) 
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+  
+  -- uuid 
+  -- switch_uuid, vna_uuid 不提供修改功能 
+  SELECT count(*) INTO is_exist FROM v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;	
+  
+  SELECT count(*) INTO is_exist FROM v_net_wildcast_task_loopback WHERE task_uuid = in_uuid 
+       AND loopback_uuid = in_wc_loopback_uuid AND vna_uuid = in_vna_uuid;
+  IF is_exist <= 0 THEN 
+      result := RTN_PARAM_INVALID;
+      return result;
+  END IF;
+    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_modify_wildcast_task_loopback( in_uuid character varying, in_vna_uuid character varying, in_wc_loopback_uuid character varying, 
+        in_state integer,in_send_num integer)   OWNER TO tecs;
+                         
+
+
+CREATE OR REPLACE FUNCTION pf_net_modify_wildcast_task_loopback( in_uuid character varying, in_vna_uuid character varying, in_wc_loopback_uuid character varying, 
+        in_state integer,in_send_num integer) 
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  taskid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG  integer := 5;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  
+  result.ret := pf_net_check_modify_wildcast_task_loopback(in_uuid,in_vna_uuid,in_wc_loopback_uuid,in_state,in_send_num);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+    
+  SELECT id INTO taskid FROM wildcast_task_loopback WHERE uuid = in_uuid;
+  
+  -- modify item
+  result.id  := taskid;
+  result.uuid := in_uuid;
+  BEGIN   
+     UPDATE wildcast_task_loopback SET  state = in_state , send_num = in_send_num WHERE uuid = in_uuid;
+    
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_wildcast_task_loopback( in_uuid character varying, in_vna_uuid character varying, in_wc_loopback_uuid character varying, 
+        in_state integer,in_send_num integer)      OWNER TO tecs;
+
+                                 
+-- check switch_cfg_report del
+CREATE OR REPLACE FUNCTION pf_net_check_del_wildcast_task_loopback(in_uuid character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  taskstate integer;
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+          
+  --查询是否存在
+  SELECT count(*) INTO is_exist FROM wildcast_task_loopback WHERE uuid = in_uuid;
+  SELECT state INTO taskstate FROM wildcast_task_loopback WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST; 
+      return result;
+  END IF;
+  
+  IF ((taskstate = 0 ) OR (taskstate = 2 ) ) THEN
+      result := 0; 
+  ELSE 
+      result := RTN_RESOURCE_USING; 
+  END IF;
+
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_wildcast_task_loopback(in_uuid character varying ) OWNER TO tecs;
+
+
+
+CREATE OR REPLACE FUNCTION pf_net_del_wildcast_task_loopback(in_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  vnaid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  --result.ret := pf_net_check_del_wildcast_task_loopback(in_uuid);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+      
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM wildcast_task_loopback WHERE uuid = in_uuid;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_wildcast_task_loopback(in_uuid character varying ) OWNER TO tecs;
+
+
+-- 查询wildcast switch (通过uuid)
+
+
+CREATE OR REPLACE FUNCTION pf_net_query_wildcast_task_loopback(in_uuid character varying)
+  RETURNS t_wildcast_task_loopback_query AS
+$BODY$
+DECLARE
+    result t_wildcast_task_loopback_query;
+    is_exist integer; 
+    taskid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    result.ret := 0;
+    
+    -- vna uuid 
+    SELECT count(*) INTO is_exist FROM wildcast_task_loopback WHERE uuid = in_uuid;
+    SELECT id INTO taskid FROM wildcast_task_loopback WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+       result.ret := RTN_ITEM_NO_EXIST; 
+       return result;
+    END IF;  
+      
+    SELECT task_uuid INTO result.task_uuid FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+    SELECT task_state INTO result.task_state FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+    SELECT task_send_num INTO result.task_send_num FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+    SELECT loopback_uuid INTO result.loopback_uuid FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+    SELECT port_name INTO result.port_name FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+    SELECT is_loop INTO result.is_loop FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+	SELECT vna_uuid INTO result.vna_uuid FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+	SELECT vna_is_online INTO result.vna_is_online FROM  v_net_wildcast_task_loopback WHERE task_uuid = in_uuid;
+	
+    return result;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_wildcast_task_loopback(in_uuid character varying) OWNER TO tecs;
+
+
+
+-- 查询wildcast task switch
+CREATE OR REPLACE FUNCTION pf_net_query_wildcast_task_loopback_summary()
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    
+	OPEN ref FOR 
+	SELECT 
+	    task_uuid,task_state,task_send_num,loopback_uuid,port_name,is_loop,
+		vna_uuid,vna_is_online
+	FROM v_net_wildcast_task_loopback ;
+        
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_wildcast_task_loopback_summary() OWNER TO tecs;
+
+
+-- 查询wildcast task switch by vna 
+CREATE OR REPLACE FUNCTION pf_net_query_wildcast_task_loopback_summary_by_vna(in_vna_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    vnaid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    
+	OPEN ref FOR 
+	SELECT 
+	    task_uuid,task_state,task_send_num,loopback_uuid,port_name,is_loop,
+		vna_uuid,vna_is_online
+	FROM v_net_wildcast_task_loopback 
+	WHERE 
+	    vna_uuid = in_vna_uuid;
+        
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_wildcast_task_loopback_summary_by_vna(in_uuid character varying) OWNER TO tecs;

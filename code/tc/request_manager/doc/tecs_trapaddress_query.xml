@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_trapaddress_query.xml">
+	<interface>tecs.trapaddress.query</interface>
+	<shortdesc lang_cn="查询SNMP Trap上报地址信息" lang_en="Query SNMP Trap address information."/>
+	<description lang_cn="查询SNMP Trap上报地址信息。如果查询结果返回失败，则返回失败原因。如果查询成功，则返回SNMP Trap上报地址信息。" lang_en="Query SNMP Trap address information. If the query fail, it will return the fault reason. If the query succeed, it will return SNMP Trap address information."/>
+	<parameters>
+		    <parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+            <parameter name="start_index" type="int64" lang_cn="查询起始位置。" lang_en="query start index."/>
+            <parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-200。" lang_en="num once query,range 1-200."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<parameter name="configuration_number" type="int" lang_cn="配置记录条数。" lang_en="The number of the configuration record."/>
+			<array repeat="yes">
+				<struct>
+					<parameter name="ipaddress" type="unsigned int" lang_cn="TRAP上报IP地址" lang_en="IP address of trap report."/>
+					<parameter name="port" type="unsigned int" lang_cn="TRAP上报端口" lang_en="Port of trap report."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码:" lang_en="Error code:">
+				<enum name="11000" lang_cn="当前SNMP配置表不存在" lang_en="The SNMP configuration database do not exist"/>
+				<enum name="11001" lang_cn="查询数据库失败" lang_en="Failed to query database"/>
+				<enum name="11002" lang_cn="SNMP配置表新增失败" lang_en="Failed to add a record to the SNMP configuration database"/>
+				<enum name="11003" lang_cn="SNMP配置表更新失败" lang_en="Failed to modify the SNMP configuration database"/>
+				<enum name="11004" lang_cn="配置数据错误" lang_en="Configuration value is wrong"/>
+				<enum name="11020" lang_cn="此记录已经存在" lang_en="The record already exist"/>
+				<enum name="11021" lang_cn="记录不存在" lang_en="The record do not exist"/>
+				<enum name="11022" lang_cn="记录删除失败" lang_en="Delete the record failed"/>
+			</parameter>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.trapaddress.set" href="tecs_trapaddress_set.xml"/>
+		<xref name="tecs.trapaddress.delete" href="tecs_trapaddress_delete.xml"/>
+	</reference>
+</method>

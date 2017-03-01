@@ -1,0 +1,1080 @@
+-- 触发器 内部错误码，统一加上100，便于定位
+-- pf_net_tr_calc_bond_sriovport_num 此函数特殊，在触发器内部被调用，错误码+200
+
+--- bond 的 total_sriov_port, valid sriov port 时,计算
+CREATE OR REPLACE FUNCTION pf_net_tr_calc_bond_sriovport_num(in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalsriovnum integer := 0;
+  oldvalidsriovnum integer := 0;
+  totalsriovnum integer := 0;
+  validsriovnum integer := 0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+200;
+  RTN_HAS_SAME_ITEM integer := 2+200;
+  RTN_ITEM_CONFLICT integer := 3+200;
+  RTN_ITEM_NO_EXIST integer := 4+200;
+BEGIN
+  result := 0; 
+    
+    SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = b.port_id AND a.id = in_port_id ;     
+    SELECT b.total_sriovport_num INTO oldtotalsriovnum FROM port a, bond b WHERE a.id = b.port_id AND a.id = in_port_id ; 
+    SELECT b.valid_sriovport_num INTO oldvalidsriovnum FROM port a, bond b WHERE a.id = b.port_id AND a.id = in_port_id ;     
+    IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+    
+    SELECT count(*) INTO totalsriovnum FROM bond_map a, port b, sriov_port c
+    WHERE a.bond_id = in_port_id AND
+          a.physical_port_id = b.id  AND b.id = c.physical_port_id ;
+          
+    SELECT count(*) INTO validsriovnum FROM bond_map a, port b, sriov_port c
+    WHERE a.bond_id = in_port_id AND
+          a.physical_port_id = b.id  AND b.id = c.physical_port_id AND
+          b.is_consistency = 1 AND 
+          b.free_sriovvf_num > 0;           
+          
+    -- 没有变化 
+    IF (oldtotalsriovnum = totalsriovnum AND oldvalidsriovnum = validsriovnum ) THEN
+        return result;
+    END IF;
+          
+  BEGIN 
+      UPDATE bond SET total_sriovport_num = totalsriovnum, valid_sriovport_num = validsriovnum WHERE port_id = in_port_id ;
+      
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION  pf_net_tr_calc_bond_sriovport_num(in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+
+
+
+
+
+
+--添加SRIOV VF 时触发 流程 
+CREATE OR REPLACE FUNCTION pf_net_tr_add_sriovvfport(in_sriovvfport_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+  SELECT count(*) INTO is_exist FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  SELECT a.total_sriovvf_num INTO oldtotalnum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  SELECT a.free_sriovvf_num INTO oldfreenum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  -- update port total_num / free_num 
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  BEGIN 
+        UPDATE port SET total_sriovvf_num = (oldtotalnum +1), free_sriovvf_num = (oldfreenum + 1) WHERE id = in_port_id;
+        
+        
+        -- 判断该SRIOV 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + 1) WHERE switch_id = edvsid;
+        END IF;
+
+        -- 判断该SRIOV 网口是否加入了BOND
+        SELECT count(*) INTO is_exist FROM bond_map WHERE physical_port_id = in_port_id;
+        SELECT bond_id INTO bondid FROM bond_map WHERE physical_port_id = in_port_id;
+        IF is_exist > 0 THEN 
+        
+            SELECT total_sriovvf_num INTO oldtotalnum FROM port WHERE id = bondid ;
+            SELECT free_sriovvf_num INTO oldfreenum FROM port WHERE id = bondid ;
+            UPDATE port SET total_sriovvf_num = (oldtotalnum +1), free_sriovvf_num = (oldfreenum + 1) WHERE id = bondid;
+            
+            -- bond 口的total_sriov_num, valid_sriov_num 
+            result := pf_net_tr_calc_bond_sriovport_num(bondid);
+            IF result > 0 THEN 
+            
+            END IF;
+            
+            -- 判断该BOND口是否加入了EDVS ， 如时，需更新EDVS nic_max_num_cfg
+            SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid AND a.is_consistency = 1;
+            SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            IF is_exist > 0 THEN 
+                UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + 1) WHERE switch_id = edvsid;
+            END IF;            
+            
+        END IF;
+                
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_add_sriovvfport(in_sriovvfport_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+-- SRIOV VF 修改时触发 流程 (online -> offline or offline -> online ) 主要考虑换后插卡 
+CREATE OR REPLACE FUNCTION pf_net_tr_modify_sriovvfport(in_sriovvfport_id numeric(19,0), in_port_id numeric(19,0), in_status integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  oldsriovvfisconsistency integer :=0;
+  ADJUSTVALUE integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0;
+  
+  SELECT count(*) INTO is_exist FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  SELECT a.total_sriovvf_num INTO oldtotalnum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  SELECT a.free_sriovvf_num INTO oldfreenum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  -- update port total_num / free_num 
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;
+    return result;
+  END IF; 
+  
+  SELECT count(*)INTO is_exist FROM port a, sriov_vf_port b WHERE a.id = b.port_id AND a.id = in_sriovvfport_id;
+  SELECT a.is_consistency INTO oldsriovvfisconsistency FROM port a, sriov_vf_port b WHERE a.id = b.port_id AND a.id = in_sriovvfport_id;
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;
+    return result;
+  END IF;
+/*  由上层来保证 确保变化后调用此函数  (因为需考虑事物操作)
+  -- 没有变化，无需操作 
+  IF oldsriovvfisconsistency = in_status THEN 
+      result := 0;
+      return result;
+  END IF;
+*/  
+  IF in_status <= 0 THEN 
+      ADJUSTVALUE = -1;
+  ELSE
+      ADJUSTVALUE = 1;
+  END IF;
+  
+  BEGIN     
+        UPDATE port SET free_sriovvf_num = (oldfreenum + ADJUSTVALUE) WHERE id = in_port_id;
+        
+        -- 判断该SRIOV 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + ADJUSTVALUE) WHERE switch_id = edvsid;
+        END IF;
+        
+        -- 判断该SRIOV 网口是否加入了BOND
+        SELECT count(*) INTO is_exist FROM bond_map WHERE physical_port_id = in_port_id;
+        SELECT bond_id INTO bondid FROM bond_map WHERE physical_port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            SELECT total_sriovvf_num INTO oldtotalnum FROM port WHERE id = bondid ;
+            SELECT free_sriovvf_num INTO oldfreenum FROM port WHERE id = bondid ;
+            UPDATE port SET free_sriovvf_num = (oldfreenum + ADJUSTVALUE) WHERE id = bondid;
+            
+            -- bond 口的total_sriov_num, valid_sriov_num 
+            result := pf_net_tr_calc_bond_sriovport_num(bondid);
+            IF result > 0 THEN 
+            
+            END IF;
+            
+            -- 判断该BOND口是否加入了EDVS ， 如时，需更新EDVS nic_max_num_cfg
+            SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid AND a.is_consistency = 1;
+            SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            IF is_exist > 0 THEN 
+                UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + ADJUSTVALUE) WHERE switch_id = edvsid;
+            END IF;    
+
+        END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_modify_sriovvfport(in_sriovvfport_id numeric(19,0), in_port_id numeric(19,0), in_status integer) OWNER TO tecs;
+
+
+
+
+--修改SRIOV网口时 时触发 流程 
+-- 流程 (online -> offline or offline -> online ) 
+CREATE OR REPLACE FUNCTION pf_net_tr_modify_sriovport( in_port_id numeric(19,0), in_status integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldPortTotalnum integer := 0;
+  oldPortFreenum integer := 0;
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  oldsriovvfisconsistency integer :=0;
+  ADJUSTVALUE integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0;
+  
+  SELECT count(*) INTO is_exist FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  SELECT a.total_sriovvf_num INTO oldPortTotalnum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  SELECT a.free_sriovvf_num INTO oldPortFreenum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+  -- update port total_num / free_num 
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;
+    return result;
+  END IF; 
+  
+/*  由上层来保证 确保变化后调用此函数  (因为需考虑事物操作), 不能重复调用 
+  -- 没有变化，无需操作 
+  IF oldsriovvfisconsistency = in_status THEN 
+      result := 0;
+      return result;
+  END IF;
+*/  
+  IF in_status <= 0 THEN 
+      ADJUSTVALUE = -1;
+  ELSE
+      ADJUSTVALUE = 1;
+  END IF;
+  
+  BEGIN     
+        -- UPDATE port SET free_sriovvf_num = (oldfreenum + ADJUSTVALUE) WHERE id = in_port_id;
+        
+        -- 判断该SRIOV 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            IF in_status > 0 THEN 
+                 UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + oldPortFreenum) WHERE switch_id = edvsid;
+            ELSE 
+                 UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - oldPortFreenum) WHERE switch_id = edvsid;
+            END IF;
+        END IF;
+        
+        -- 判断该SRIOV 网口是否加入了BOND
+        SELECT count(*) INTO is_exist FROM bond_map WHERE physical_port_id = in_port_id;
+        SELECT bond_id INTO bondid FROM bond_map WHERE physical_port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            SELECT total_sriovvf_num INTO oldtotalnum FROM port WHERE id = bondid ;
+            SELECT free_sriovvf_num INTO oldfreenum FROM port WHERE id = bondid ;
+            IF in_status > 0 THEN 
+                UPDATE port SET free_sriovvf_num = (oldfreenum + oldPortFreenum), total_sriovvf_num = (oldtotalnum + oldPortTotalnum) WHERE id = bondid;
+            ELSE 
+                UPDATE port SET free_sriovvf_num = (oldfreenum - oldPortFreenum), total_sriovvf_num = (oldtotalnum - oldPortTotalnum) WHERE id = bondid;
+            END IF;
+            
+            -- bond 口的total_sriov_num, valid_sriov_num 
+            result := pf_net_tr_calc_bond_sriovport_num(bondid);
+            IF result > 0 THEN 
+            
+            END IF;
+            
+            -- 判断该BOND口是否加入了EDVS ， 如时，需更新EDVS nic_max_num_cfg
+            SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid AND a.is_consistency = 1;
+            SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            IF is_exist > 0 THEN 
+                IF in_status > 0 THEN 
+                    UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + oldPortFreenum) WHERE switch_id = edvsid;
+                ELSE 
+                     UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - oldPortFreenum) WHERE switch_id = edvsid;
+                END IF;    
+            END IF;    
+
+        END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_modify_sriovport( in_port_id numeric(19,0), in_status integer) OWNER TO tecs;
+
+
+
+--删除SRIOV网口时 时触发 流程 
+-- 流程 ( 网口从sriov-->非sriov) 
+-- 流程 ( 网口从非sriov-->sriov)  
+CREATE OR REPLACE FUNCTION pf_net_tr_sriovport_change_phyport( in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldPortTotalnum integer := 0;
+  oldPortFreenum integer := 0;
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  oldsriovvfisconsistency integer :=0;
+  ADJUSTVALUE integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0;
+  
+  SELECT count(*) INTO is_exist FROM port  WHERE id = in_port_id;
+  SELECT total_sriovvf_num INTO oldPortTotalnum FROM port  WHERE id = in_port_id ;
+  SELECT free_sriovvf_num INTO oldPortFreenum FROM port  WHERE id = in_port_id ;
+  -- update port total_num / free_num 
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;
+    return result;
+  END IF; 
+  
+/*  由上层来保证 确保变化后调用此函数  (因为需考虑事物操作), 不能重复调用 
+  -- 没有变化，无需操作 
+  IF oldsriovvfisconsistency = in_status THEN 
+      result := 0;
+      return result;
+  END IF;
+*/  
+  IF (oldPortTotalnum =0 AND oldPortFreenum = 0 ) THEN 
+      result := 0;
+      return result;
+  END IF;
+  
+  BEGIN     
+        -- UPDATE port SET free_sriovvf_num = (oldfreenum + ADJUSTVALUE) WHERE id = in_port_id;
+        
+        -- 判断该SRIOV 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        IF is_exist > 0 THEN             
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - oldPortFreenum) WHERE switch_id = edvsid;            
+        END IF;
+        
+        -- 判断该SRIOV 网口是否加入了BOND
+        SELECT count(*) INTO is_exist FROM bond_map WHERE physical_port_id = in_port_id;
+        SELECT bond_id INTO bondid FROM bond_map WHERE physical_port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            SELECT total_sriovvf_num INTO oldtotalnum FROM port WHERE id = bondid ;
+            SELECT free_sriovvf_num INTO oldfreenum FROM port WHERE id = bondid ;
+            
+            UPDATE port SET free_sriovvf_num = (oldfreenum - oldPortFreenum), total_sriovvf_num = (oldtotalnum - oldPortTotalnum) WHERE id = bondid;
+            
+            -- bond 口的total_sriov_num, valid_sriov_num 
+            result := pf_net_tr_calc_bond_sriovport_num(bondid);
+            IF result > 0 THEN 
+            
+            END IF;
+                        
+            -- 判断该BOND口是否加入了EDVS ， 如时，需更新EDVS nic_max_num_cfg
+            SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid AND a.is_consistency = 1;
+            SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            IF is_exist > 0 THEN                 
+                UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - oldPortFreenum) WHERE switch_id = edvsid;                
+            END IF;    
+
+        END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_sriovport_change_phyport( in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+--修改BOND网口时 时触发 流程 
+-- 流程 (online -> offline or offline -> online ) 
+CREATE OR REPLACE FUNCTION pf_net_tr_modify_bondport( in_port_id numeric(19,0), in_status integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldPortTotalnum integer := 0;
+  oldPortFreenum integer := 0;
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  oldsriovvfisconsistency integer :=0;
+  ADJUSTVALUE integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0;
+  
+  SELECT count(*) INTO is_exist FROM port a, bond b WHERE a.id = in_port_id AND a.id = b.port_id ;
+  SELECT a.total_sriovvf_num INTO oldPortTotalnum FROM port a, bond b WHERE a.id = in_port_id AND a.id = b.port_id ;
+  SELECT a.free_sriovvf_num INTO oldPortFreenum FROM port a, bond b WHERE a.id = in_port_id AND a.id = b.port_id ;
+  -- update port total_num / free_num 
+  IF is_exist <= 0 THEN 
+    result := RTN_ITEM_NO_EXIST;
+    return result;
+  END IF; 
+  
+  -- 该BOND为非SRIOV 口bond，无需更新EDVS 
+  IF (oldPortTotalnum = 0 AND oldPortFreenum = 0) THEN 
+      result := 0;
+      return result;
+  END IF;
+  
+/*  由上层来保证 确保变化后调用此函数  (因为需考虑事物操作), 不能重复调用 
+  -- 没有变化，无需操作 
+  IF oldsriovvfisconsistency = in_status THEN 
+      result := 0;
+      return result;
+  END IF;
+*/  
+  IF in_status <= 0 THEN 
+      ADJUSTVALUE = -1;
+  ELSE
+      ADJUSTVALUE = 1;
+  END IF;
+  
+  BEGIN     
+        -- UPDATE port SET free_sriovvf_num = (oldfreenum + ADJUSTVALUE) WHERE id = in_port_id;
+        
+        -- 判断该bond 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_port_id;
+        IF is_exist > 0 THEN 
+            IF in_status > 0 THEN 
+                 UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + oldPortFreenum) WHERE switch_id = edvsid;
+            ELSE 
+                 UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - oldPortFreenum) WHERE switch_id = edvsid;
+            END IF;
+        END IF;
+        
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_modify_bondport( in_port_id numeric(19,0), in_status integer) OWNER TO tecs;
+
+
+-- 添加 bond_map 时触发
+CREATE OR REPLACE FUNCTION pf_net_tr_add_bondmap(in_bond_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+    SELECT count(*) INTO is_exist FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+    SELECT a.total_sriovvf_num INTO porttotalnum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+    SELECT a.free_sriovvf_num INTO portfreenum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+    -- update port total_num / free_num 
+    IF is_exist <= 0 THEN 
+      --result := RTN_ITEM_NO_EXIST;  -- 存在非SRIOV也能触发此流程
+      return result;
+    END IF;
+    
+    SELECT count(*) INTO is_exist FROM port  WHERE id = in_bond_id ;
+    SELECT total_sriovvf_num INTO oldtotalnum FROM port  WHERE id = in_bond_id ;
+    SELECT free_sriovvf_num INTO oldfreenum FROM port  WHERE id = in_bond_id ;
+    IF is_exist <= 0 THEN 
+      --result := RTN_ITEM_NO_EXIST; -- 存在非SRIOV也能触发此流程
+      return result;
+    END IF;
+    
+  BEGIN 
+        UPDATE port SET total_sriovvf_num = (oldtotalnum +porttotalnum), free_sriovvf_num = (oldfreenum + portfreenum) WHERE id = in_bond_id;
+        
+        -- bond 口的total_sriov_num, valid_sriov_num 
+        result := pf_net_tr_calc_bond_sriovport_num(in_bond_id);
+        IF result > 0 THEN 
+            
+        END IF;
+        
+        -- 判断该BOND 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_bond_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_bond_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_bond_id;
+        IF is_exist > 0 THEN 
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + portfreenum) WHERE switch_id = edvsid;
+        END IF;
+
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_add_bondmap(in_bond_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+-- 删除 bond_map 时触发
+CREATE OR REPLACE FUNCTION pf_net_tr_del_bondmap(in_bond_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+    SELECT count(*) INTO is_exist FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+    SELECT a.total_sriovvf_num INTO porttotalnum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+    SELECT a.free_sriovvf_num INTO portfreenum FROM port a, sriov_port b WHERE a.id = in_port_id AND a.id = b.physical_port_id ;
+    -- update port total_num / free_num 
+    IF is_exist <= 0 THEN 
+      --result := RTN_ITEM_NO_EXIST;  -- 存在非SRIOV也能触发此流程
+      return result;
+    END IF;
+    
+    SELECT count(*) INTO is_exist FROM port  WHERE id = in_bond_id ;
+    SELECT total_sriovvf_num INTO oldtotalnum FROM port  WHERE id = in_bond_id ;
+    SELECT free_sriovvf_num INTO oldfreenum FROM port  WHERE id = in_bond_id ;
+    IF is_exist <= 0 THEN 
+      --result := RTN_ITEM_NO_EXIST;  -- 存在非SRIOV也能触发此流程
+      return result;
+    END IF;
+    
+  BEGIN 
+        UPDATE port SET total_sriovvf_num = (oldtotalnum - porttotalnum), free_sriovvf_num = (oldfreenum - portfreenum) WHERE id = in_bond_id;
+        
+        -- bond 口的total_sriov_num, valid_sriov_num 
+        result := pf_net_tr_calc_bond_sriovport_num(in_bond_id);
+        IF result > 0 THEN 
+            
+        END IF;
+        
+        -- 判断网口是否加入了SWITCH
+        -- 判断该BOND 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_bond_id AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_bond_id;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = in_bond_id;
+        IF is_exist > 0 THEN 
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - portfreenum) WHERE switch_id = edvsid;
+        END IF;
+        
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_del_bondmap(in_bond_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+
+-- 添加 edvs_map 时触发
+CREATE OR REPLACE FUNCTION pf_net_tr_add_edvsmap(in_evds_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+    SELECT count(*) INTO is_exist FROM virtual_switch WHERE switch_id = in_evds_id AND switch_type = 2;
+    SELECT nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch WHERE switch_id = in_evds_id AND switch_type = 2;
+    IF is_exist <= 0 THEN 
+      --sdvs 也会调用 
+      --result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+  
+    SELECT count(*) INTO is_exist FROM port WHERE id = in_port_id ;
+    SELECT total_sriovvf_num INTO porttotalnum FROM port WHERE id = in_port_id ;
+    SELECT free_sriovvf_num INTO portfreenum FROM port WHERE id = in_port_id ;
+    -- update port total_num / free_num 
+    IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+        
+  BEGIN 
+      UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum +portfreenum)  WHERE switch_id = in_evds_id;    
+        
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_add_edvsmap(in_evds_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+
+-- 删除 edvs_map 时触发
+CREATE OR REPLACE FUNCTION pf_net_tr_del_edvsmap(in_evds_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+  result := 0; 
+  
+    SELECT count(*) INTO is_exist FROM virtual_switch WHERE switch_id = in_evds_id AND switch_type = 2;
+    SELECT nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch WHERE switch_id = in_evds_id AND switch_type = 2;
+    IF is_exist <= 0 THEN 
+      --sdvs 也会调用 
+      --result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+  
+    SELECT count(*) INTO is_exist FROM port WHERE id = in_port_id ;
+    SELECT total_sriovvf_num INTO porttotalnum FROM port WHERE id = in_port_id ;
+    SELECT free_sriovvf_num INTO portfreenum FROM port WHERE id = in_port_id ;
+    -- update port total_num / free_num 
+    IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+        
+  BEGIN 
+      UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - portfreenum)  WHERE switch_id = in_evds_id;            
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_del_edvsmap(in_evds_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+-- 修改 edvs_map 时触发 
+-- in_status = 1, is_consistency 0-->1
+-- in_status = 0, is_consistency 1-->0
+CREATE OR REPLACE FUNCTION pf_net_tr_modify_edvsmap(in_evds_id numeric(19,0), in_port_id numeric(19,0), in_status integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+    SELECT count(*) INTO is_exist FROM virtual_switch WHERE switch_id = in_evds_id AND switch_type = 2;
+    SELECT nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch WHERE switch_id = in_evds_id AND switch_type = 2;
+    IF is_exist <= 0 THEN 
+      --sdvs 也会调用 
+      --result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+  
+    SELECT count(*) INTO is_exist FROM port WHERE id = in_port_id ;
+    SELECT total_sriovvf_num INTO porttotalnum FROM port WHERE id = in_port_id ;
+    SELECT free_sriovvf_num INTO portfreenum FROM port WHERE id = in_port_id ;
+    -- update port total_num / free_num 
+    IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+        
+  BEGIN 
+      IF in_status > 0 THEN 
+          UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + portfreenum)  WHERE switch_id = in_evds_id;            
+      ELSE
+          UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - portfreenum)  WHERE switch_id = in_evds_id;            
+      END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_modify_edvsmap(in_evds_id numeric(19,0), in_port_id numeric(19,0), in_status integer) OWNER TO tecs;
+
+
+
+-- 添加 vsi_sriov 时触发
+CREATE OR REPLACE FUNCTION pf_net_tr_add_vsisriov(in_vsi_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  sriovportid numeric(19,0);
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+    
+    SELECT count(*) INTO is_exist FROM port a, sriov_vf_port b WHERE a.id = b.port_id AND a.id = in_port_id ;    
+    SELECT b.sriov_port_id INTO sriovportid FROM port a, sriov_vf_port b WHERE a.id = b.port_id AND a.id = in_port_id ;   
+    IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+    
+    SELECT total_sriovvf_num INTO porttotalnum FROM port WHERE id = sriovportid ;
+    SELECT free_sriovvf_num INTO portfreenum FROM port WHERE id = sriovportid ;
+    -- update port total_num / free_num 
+        
+  BEGIN 
+      UPDATE port SET free_sriovvf_num = (portfreenum - 1) WHERE id = sriovportid ;
+      
+      -- 判断该SRIOV 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = sriovportid AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = sriovportid;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = sriovportid;
+        IF is_exist > 0 THEN 
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - 1) WHERE switch_id = edvsid;
+        END IF;
+        
+        -- 判断该SRIOV 网口是否加入了BOND
+        SELECT count(*) INTO is_exist FROM bond_map WHERE physical_port_id = sriovportid;
+        SELECT bond_id INTO bondid FROM bond_map WHERE physical_port_id = sriovportid;
+        IF is_exist > 0 THEN 
+            SELECT free_sriovvf_num INTO oldfreenum FROM port WHERE id = bondid ;
+            UPDATE port SET free_sriovvf_num = (oldfreenum - 1) WHERE id = bondid;
+            
+            -- bond 口的total_sriov_num, valid_sriov_num 
+            result := pf_net_tr_calc_bond_sriovport_num(bondid);
+            IF result > 0 THEN 
+            
+            END IF;
+            
+            -- 判断该BOND口是否加入了EDVS ， 如时，需更新EDVS nic_max_num_cfg
+            SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid AND a.is_consistency = 1;
+            SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            IF is_exist > 0 THEN 
+                UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum - 1) WHERE switch_id = edvsid;
+            END IF;            
+        END IF;
+        
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_add_vsisriov(in_vsi_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+-- 删除 vsi_sriov 时触发
+CREATE OR REPLACE FUNCTION pf_net_tr_del_vsisriov(in_vsi_id numeric(19,0), in_port_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  oldtotalnum integer := 0;
+  oldfreenum integer := 0;
+  porttotalnum integer := 0;
+  portfreenum integer := 0;
+  sriovportid numeric(19,0);
+  bondid numeric(19,0);
+  edvsid numeric(19,0);
+  oldedvsnicmaxnum integer :=0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+    
+    SELECT count(*) INTO is_exist FROM port a, sriov_vf_port b WHERE a.id = b.port_id AND a.id = in_port_id ;    
+    SELECT b.sriov_port_id INTO sriovportid FROM port a, sriov_vf_port b WHERE a.id = b.port_id AND a.id = in_port_id ;   
+    IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+    END IF;
+    
+    SELECT total_sriovvf_num INTO porttotalnum FROM port WHERE id = sriovportid ;
+    SELECT free_sriovvf_num INTO portfreenum FROM port WHERE id = sriovportid ;
+    -- update port total_num / free_num 
+        
+        
+  BEGIN 
+      UPDATE port SET free_sriovvf_num = (portfreenum + 1) WHERE id = sriovportid ;
+      
+      -- 判断该SRIOV 网口是否加入了EDVS， 如时，需更新EDVS nic_max_num_cfg
+        SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = sriovportid AND a.is_consistency = 1;
+        SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = sriovportid;
+        SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+            WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = sriovportid;
+        IF is_exist > 0 THEN 
+            UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + 1) WHERE switch_id = edvsid;
+        END IF;
+        
+        -- 判断该SRIOV 网口是否加入了BOND
+        SELECT count(*) INTO is_exist FROM bond_map WHERE physical_port_id = sriovportid;
+        SELECT bond_id INTO bondid FROM bond_map WHERE physical_port_id = sriovportid;
+        IF is_exist > 0 THEN 
+            SELECT free_sriovvf_num INTO oldfreenum FROM port WHERE id = bondid ;
+            UPDATE port SET free_sriovvf_num = (oldfreenum + 1) WHERE id = bondid;
+            
+            -- bond 口的total_sriov_num, valid_sriov_num 
+            result := pf_net_tr_calc_bond_sriovport_num(bondid);
+            IF result > 0 THEN 
+            
+            END IF;
+            
+            -- 判断该BOND口是否加入了EDVS ， 如时，需更新EDVS nic_max_num_cfg
+            SELECT count(*) INTO is_exist FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid AND a.is_consistency = 1;
+            SELECT b.switch_id INTO edvsid FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            SELECT b.nic_max_num_cfg INTO oldedvsnicmaxnum FROM virtual_switch_map a, virtual_switch b 
+                WHERE a.virtual_switch_id = b.switch_id AND b.switch_type = 2 AND a.port_id = bondid;
+            IF is_exist > 0 THEN 
+                UPDATE virtual_switch SET nic_max_num_cfg = (oldedvsnicmaxnum + 1) WHERE switch_id = edvsid;
+            END IF;            
+        END IF;
+        
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_del_vsisriov(in_vsi_id numeric(19,0), in_port_id numeric(19,0)) OWNER TO tecs;
+
+
+

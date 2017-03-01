@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_version_set_repository_address.xml">
+	<interface>tecs.version.set_repo_addr</interface>
+	<shortdesc lang_cn="设置包的仓库地址" lang_en="set rpm repository address"/>
+	<description lang_cn="设置rpm包的yum仓库地址" lang_en="set rpm package yum repository address"/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="repo_addr" type="string" lang_cn="rpm包的仓库地址。"  lang_en="rpm repository address"/>	
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。"  lang_en="Wether the operation successfully sent to to requested hosts, 0 represents all right, -1 represents error"/>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息,成功为空" lang_en="Appending error information，is null"/>			
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1" lang_cn="失败" lang_en="Failed, unknown error "/>
+				<enum name="3" lang_cn="失败，应答超时" lang_en="Failed, acked timeout"/>
+				<enum name="6" lang_cn="授权失败" lang_en="Failed to authorize usr's operation"/>
+				<enum name="18" lang_cn="失败，无效的参数" lang_en="Failed, invalid argument"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息" lang_en="Appending error information"/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS"/>
+	</privilege>
+	<reference>
+		<xref name="tecs.version.set_repo_addr" href="tecs_version_set_repository_address.xml"/>
+		<xref name="tecs.version.query" href="tecs_version_query.xml"/>
+		<xref name="tecs.version.update" href="tecs_version_update.xml"/>
+		<xref name="tecs.version.cancel" href="tecs_version_cancel.xml"/>
+	</reference>
+</method>

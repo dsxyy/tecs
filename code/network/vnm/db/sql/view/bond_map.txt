@@ -1,0 +1,88 @@
+
+
+CREATE OR REPLACE VIEW v_net_bondmap_bond_phy AS 
+SELECT 
+  v_net_bond_vna.bond_name, 
+  v_net_bond_vna.bond_uuid, 
+  v_net_bond_vna.bond_mode, 
+  v_net_bond_vna.vna_uuid, 
+  v_net_bond_vna.vna_is_online,  
+  v_net_physical_port_vna.phy_name, 
+  v_net_physical_port_vna.phy_uuid, 
+  v_net_physical_port_vna.phy_is_online,
+  v_net_physical_port_vna.phy_is_consistency,
+  v_net_physical_port_vna.phy_admin_state,
+  bond_map.is_cfg, 
+  bond_map.is_selected, 
+  bond_map.id AS bond_map_id,
+  bond_map.lacp_is_success,
+  bond_map.backup_is_active,
+  v_net_physical_port_vna.is_linked
+FROM 
+  public.bond_map, 
+  public.v_net_bond_vna, 
+  public.v_net_physical_port_vna
+WHERE 
+  bond_map.physical_port_id = v_net_physical_port_vna.phy_id AND
+  bond_map.vna_id = v_net_physical_port_vna.vna_id AND
+  v_net_bond_vna.bond_id = bond_map.bond_id AND
+  v_net_bond_vna.vna_id = bond_map.vna_id;
+  
+  
+
+-- bond sriov vf port view 
+CREATE OR REPLACE VIEW v_net_bond_phy_free_sriov_vf_port_vna AS 
+SELECT 
+  v_net_bondmap_bond_phy.bond_name, 
+  v_net_bondmap_bond_phy.bond_uuid, 
+  v_net_bondmap_bond_phy.vna_uuid, 
+  v_net_bondmap_bond_phy.vna_is_online, 
+  v_net_bondmap_bond_phy.phy_uuid, 
+  v_net_bondmap_bond_phy.phy_name, 
+  v_net_bondmap_bond_phy.phy_is_online,
+  v_net_bondmap_bond_phy.phy_is_consistency,
+  v_net_bondmap_bond_phy.phy_admin_state,
+  v_net_free_sriov_vf_port_vna.vf_uuid, 
+  v_net_free_sriov_vf_port_vna.pci, 
+  v_net_free_sriov_vf_port_vna.vlan_num, 
+  v_net_free_sriov_vf_port_vna.vf_name,
+  v_net_free_sriov_vf_port_vna.vf_is_online,
+  v_net_free_sriov_vf_port_vna.vf_is_consistency,
+  v_net_free_sriov_vf_port_vna.vf_is_cfg,
+  v_net_free_sriov_vf_port_vna.vf_admin_state 
+    
+FROM 
+  public.v_net_bondmap_bond_phy, 
+  public.v_net_free_sriov_vf_port_vna
+WHERE 
+  v_net_free_sriov_vf_port_vna.sriov_uuid = v_net_bondmap_bond_phy.phy_uuid;  
+  
+  
+-- 查看bond phy 成员口的sriov空闲情况  
+CREATE OR REPLACE VIEW v_net_schedule_edvs_bond_phy_free_sriov_vf_statistic AS   
+SELECT 
+  a.bond_name, 
+  a.bond_uuid, 
+  a.bond_mode, 
+  a.vna_uuid, 
+  a.vna_is_online,  
+  a.phy_name, 
+  a.phy_uuid, 
+  a.phy_is_online,
+  a.phy_is_consistency,
+  a.phy_admin_state,
+  (SELECT count(*) FROM v_net_bond_phy_free_sriov_vf_port_vna b 
+   WHERE  
+     a.bond_uuid = b.bond_uuid AND a.phy_uuid = b.phy_uuid AND 
+	 b.vf_is_consistency = 1 ) AS port_free_sriov_num 
+FROM 
+  v_net_bondmap_bond_phy a
+WHERE 
+  a.vna_is_online = 1 AND a.phy_is_consistency = 1;
+ 
+  
+  
+  
+  
+  
+  

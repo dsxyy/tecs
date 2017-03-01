@@ -1,0 +1,27 @@
+CREATE OR REPLACE VIEW web_view_vna AS   
+SELECT 
+  vna.id AS vna_id,
+  vna.vna_uuid, 
+  vna.vna_application, 
+  vna.is_online AS vna_is_online, 
+  CASE 
+      WHEN( SELECT b.is_online is not null FROM regist_module b WHERE b.vna_id 
+      = vna.id AND b.role = 1 ) 
+      THEN ( SELECT b.is_online FROM regist_module b WHERE b.vna_id 
+      = vna.id AND b.role = 1 ) 
+      ELSE (0)
+  END AS hc_is_online,
+
+  CASE 
+      WHEN( SELECT b.is_online is not null FROM regist_module b WHERE b.vna_id 
+      = vna.id AND b.role = 1 ) 
+      THEN ( SELECT b.module_name FROM regist_module b WHERE b.vna_id 
+      = vna.id AND b.role = 1 ) 
+  END AS hc_application,
+  
+  (SELECT count(*) FROM port WHERE port.vna_id = vna.id AND port.port_type <> 3 ) AS port_total_num
+FROM 
+  vna; 
+  
+  
+  

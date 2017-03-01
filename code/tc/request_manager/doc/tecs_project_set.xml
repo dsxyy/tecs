@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_project_set.xml">
+	<interface>tecs.project.set</interface>
+	<shortdesc lang_cn="修改虚拟机工程" lang_en="modify vm project"/>
+	<description lang_cn="修改虚拟机工程。" lang_en="modify vm project."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="name" type="string" lang_cn="工程名称,长度范围1-32。" lang_en="project name,length range 1-32."/>
+		<parameter name="description" type="string" lang_cn="描述信息,长度范围0-512。" lang_en="project description info,length range 0-512"/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.project.allocate" href="tecs_project_allocate.xml"/>
+		<xref name="tecs.project.delete" href="tecs_project_delete.xml"/>
+		<xref name="tecs.project.query" href="tecs_project_query.xml"/>
+		<xref name="tecs.project.query_vm_by_project" href="tecs_project_query_vm_by_project.xml"/>
+	</reference>
+</method>

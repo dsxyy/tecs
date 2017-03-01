@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="0" verno="109">
+	<Modes Class="28" HasNo="YES" ID="61" IsPublic="NO" Name="vmtemplate" NeedPublish="YES" Prompt="#" ShowPublicCmd="YES" mode-Comment-chs="" mode-Comment-en="" mode-help-chs="" mode-help-en="">
+		<Mode CmdGroup="虚拟机模板配置管理" IdInGroup="1" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs1&#xA;%hc0:&#xA;Success:&#xA;%hc1:&#xA;Fail:&#xA;%v%s&#xA;%hc2:&#xA;TimeOut:&#xA;%v%s&#xA;%he&#xA;&#xA;" formatstring-en="%hs1&#xA;%hc0:&#xA;Success:&#xA;%hc1:&#xA;Fail:&#xA;%v%s&#xA;%hc2:&#xA;TimeOut:&#xA;%v%s&#xA;%he&#xA;&#xA;" _ID="0xD3010001" Class="28" HasNo="YES" ID="61" IsPublic="NO" Name="vmtemplate" Prompt="(vmtemplate)#" ShowPublicCmd="YES" mode-Comment-chs="" mode-Comment-en="" mode-help-chs="" mode-help-en="">
+			<TreeNode Name="create" treenode-comment-chs="创建虚拟机模板" treenode-comment-en="create vmtemplate">
+				<Command CmdGroup="虚拟机模板配置管理" IdInGroup="1" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xC9010001">
+					<cmd-postscript>注册映像</cmd-postscript>
+					<ParamNode name="">
+						<Param Name="vt_name" paracomment-chs="虚拟机模板名称" paracomment-en="vmtemplate name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+						<Param Name="public" paracomment-chs="是否是公开" paracomment-en="is public?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="1"/><Param Name="vcpu" paracomment-chs="虚拟CPU数量" paracomment-en="vcpu num" DataType="DATA_TYPE_INT" Min="1" Max="32" Length="" _Type="Param" _Index="2"/>
+						<Param Name="tcu" paracomment-chs="单核的计算能力" paracomment-en="one core ability" DataType="DATA_TYPE_INT" Min="1" Max="128" Length="" _Type="Param" _Index="3"/><Param Name="memory" paracomment-chs="内存数量(单位M)" paracomment-en="memory size(unit:M)" DataType="DATA_TYPE_WORD64" Min="1" Max="17592186044416" Length="" _Type="Param" _Index="4"/>
+						<Param Name="WHOLE" prammarcomment-chs="machine" prammarcomment-en="machine" _Type="Prammar" _Index="0" Flag="machine"><Param Name="id" paracomment-chs="machine类型的映像ID" paracomment-en="image id of machine type" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="5"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus"><Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="255" Length="905" _Type="Param" _Index="6"/></Param></Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="root_device"><Param Name="root_device" paracomment-chs="根设备名称（如hda,高级功能，默认不需要输入）" paracomment-en="root devic name (eg:hda, advace function, default did't input)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="7"/></Param>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="kernel_command">
+							<Param Name="kernel_command" paracomment-chs="内核命令（高级功能，默认不需要输入）" paracomment-en="kernel command (advance function, default did't input)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="8"/></Param>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="boot_loader"><Param Name="boot_loader" paracomment-chs="boot 加载器（高级功能，默认不需要输入）" paracomment-en="boot loader (advance function, default did't input)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="9"/></Param>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="virt_type"><Param Name="virt_type" paracomment-chs="虚拟化类型 hvm-全虚拟化，pvm-半虚拟化" paracomment-en="virt type (hvm or pvm)" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="901" _Type="Param" _Index="10"/></Param>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="rawdata"><Param Name="rawdata" paracomment-chs="传给hypervisor的原始配置项(高级功能，默认不输入)" paracomment-en="input hypervisor config(advance function, default did't input)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="11"/></Param>
+					</ParamNode>
+				</Command></TreeNode>
+			<TreeNode Name="delete" treenode-comment-chs="删除虚拟机模板" treenode-comment-en="delete vmtemmplate"><Command CmdGroup="虚拟机模板配置管理" IdInGroup="5" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xC9010005">
+					<cmd-postscript>注册映像</cmd-postscript>
+					<ParamNode name="">
+						<Param Name="name" paracomment-chs="虚拟机模板名称" paracomment-en="name of vm template" DataType="DATA_TYPE_STRING" Length="" _Type="Param" _Index="0" Max="32" Min="1"/></ParamNode>
+				</Command></TreeNode>
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="set" treenode-comment-chs="修改虚拟机配置" treenode-comment-en="set virtual machine config">
+				<TreeNode Name="disk" treenode-comment-chs="设置虚拟磁盘" treenode-comment-en="set virtual disk"><Command CmdGroup="虚拟机模板配置管理" IdInGroup="2" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xC9010002">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="name" paracomment-chs="虚拟机模板名称" paracomment-en="vmtemplate name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+							<Param Name="{}MORE_ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" MoreFlags="NO">
+								<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="disk">
+									<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="1"/>
+									<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+										<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="2"/>
+									</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+										<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="3"/>
+										<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+											<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="4"/>
+										</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+											<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="5"/>
+											<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+												<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="6"/>
+											</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+												<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="7"/>
+												<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+													<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="8"/>
+												</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+													<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="9"/>
+													<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+														<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="10"/>
+													</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+														<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="11"/>
+														<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+															<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="12"/>
+														</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+															<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="13"/>
+															<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+																<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="14"/>
+															</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_disk">
+																<Param Name="size" paracomment-chs="磁盘大小(单位：G)" paracomment-en="disk size(unit:G)" DataType="DATA_TYPE_WORD64" Min="1" Max="17179869184" Length="" _Type="Param" _Index="15"/>
+																<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+																	<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="16"/>
+																</Param></Param></Param></Param></Param></Param></Param></Param></Param>
+							</Param></ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="imagedisk" treenode-comment-chs="设置映像磁盘" treenode-comment-en="set image disk"><Command CmdGroup="虚拟机模板配置管理" IdInGroup="4" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xC9010004">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="name" paracomment-chs="虚拟机模板名称" paracomment-en="vmtemplate name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+							<Param Name="{}MORE_ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" MoreFlags="NO">
+								<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="image_disk">
+									<Param Name="id" paracomment-chs="映像id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="1"/>
+									<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="2"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+										<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="3"/>
+									</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+										<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="4"/>
+										<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="5"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+											<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="6"/>
+										</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+											<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="7"/>
+											<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="8"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+												<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="9"/>
+											</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+												<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="10"/>
+												<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="11"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+													<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="12"/>
+												</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+													<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="13"/>
+													<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="14"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+														<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="15"/>
+													</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+														<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="16"/>
+														<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="17"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+															<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="18"/>
+														</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+															<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="19"/>
+															<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="20"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+																<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="21"/>
+															</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_imagedisk">
+																<Param Name="id" paracomment-chs="映像 id" paracomment-en="image id" DataType="DATA_TYPE_WORD64" Min="1" Max="9223372036854775807" Length="" _Type="Param" _Index="22"/>
+																<Param Name="type" paracomment-chs="磁盘文件类型" paracomment-en="disk file type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="904" _Type="Param" _Index="23"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="bus">
+																	<Param Name="bus" paracomment-chs="磁盘总线类型" paracomment-en="disk bus type" DataType="DATA_TYPE_MAP" Min="0" Max="10" Length="905" _Type="Param" _Index="24"/>
+																</Param></Param></Param></Param></Param></Param></Param></Param></Param>
+							</Param></ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="nic" treenode-comment-chs="设置虚拟机网络" treenode-comment-en="set virtual network"><Command CmdGroup="虚拟机模板配置管理" IdInGroup="3" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;%v%s&#xA;" formatstring-en="%v%b&#xA;%v%s&#xA;" _ID="0xC9010003">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="name" paracomment-chs="虚拟机模板名称" paracomment-en="vmtemplate name" DataType="DATA_TYPE_STRING" _Type="Param" _Index="0" Max="32" Min="1" Length=""/>
+							<Param Name="{}MORE_ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" MoreFlags="NO">
+								<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="vm_nic">
+									<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="1"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="2"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="3"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="4"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+										<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="5" Max="" Min=""/>
+										<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="6" Max="" Min=""/>
+										<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+											<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="7" Max="" Min=""/>
+										</Param>
+									</Param>
+									<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+										<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="8"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="9"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="10"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="11"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+											<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="12" Max="" Min=""/>
+											<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="13" Max="" Min=""/>
+											<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+												<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="14" Max="" Min=""/>
+											</Param>
+										</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+											<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="15"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="16"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="17"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="18"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+												<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="19" Max="" Min=""/>
+												<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="20" Max="" Min=""/>
+												<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+													<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="21" Max="" Min=""/>
+												</Param>
+											</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+												<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="22"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="23"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="24"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="25"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+													<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="26" Max="" Min=""/>
+													<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="27" Max="" Min=""/>
+													<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+														<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="28" Max="" Min=""/>
+													</Param>
+												</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+													<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="29"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="30"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="31"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="32"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+														<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="33" Max="" Min=""/>
+														<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="34" Max="" Min=""/>
+														<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+															<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="35" Max="" Min=""/>
+														</Param>
+													</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+														<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="36"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="37"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="38"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp?" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="39"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+															<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="40" Max="" Min=""/>
+															<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="41" Max="" Min=""/>
+															<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+																<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="42" Max="" Min=""/>
+															</Param>
+														</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+															<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="43"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="44"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="45"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="46"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+																<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="47" Max="" Min=""/>
+																<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="48" Max="" Min=""/>
+																<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+																	<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="49" Max="" Min=""/>
+																</Param>
+															</Param><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="next_vmnic">
+																<Param Name="sriov" paracomment-chs="使用SR-IOV端口？" paracomment-en="use SR-IOV port？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="907" _Type="Param" _Index="50"/><Param Name="plane" paracomment-chs="网络平面名称(管理员配置的名称)" paracomment-en="net plane name(admin cfg)" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="51"/><Param Name="vlan" paracomment-chs="vlan id" paracomment-en="vlan id" DataType="DATA_TYPE_INT" Min="1" Max="4095" Length="" _Type="Param" _Index="52"/><Param Name="dhcp" paracomment-chs="启用dhcp？" paracomment-en="start dhcp？" DataType="DATA_TYPE_MAP" Min="0" Max="1" Length="1" _Type="Param" _Index="53"/><Param Name="[]SQUARE" prammarcomment-chs="网络参数" prammarcomment-en="network para" _Type="Prammar" _Index="0" Flag="net_para">
+																	<Param Name="ip" paracomment-chs="网卡ip地址。如果不启用DHCP，则需要配置ip" paracomment-en="ip addr, if dhcp is not start, must config this" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="54" Max="" Min=""/>
+																	<Param Name="netmask" paracomment-chs="子网掩码" paracomment-en="netmask" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="55" Max="" Min=""/>
+																	<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="gateway">
+																		<Param Name="gateway" paracomment-chs="网关" paracomment-en="gateway" DataType="DATA_TYPE_IPADDR" Length="" _Type="Param" _Index="56" Max="" Min=""/>
+																	</Param>
+																</Param></Param></Param></Param></Param></Param></Param></Param></Param>
+							</Param>
+						</ParamNode>
+					</Command></TreeNode>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="显示虚拟机模板" treenode-comment-en="show vmtemplate">
+				<Command CmdGroup="虚拟机模板配置管理" IdInGroup="6" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;-----------------------------base info---------------------------&#xA;vt_name          = %v%s&#xA;is_public        = %v%b&#xA;id               = %v%w &#xA;owner            = %v%s&#xA;vcpu             = %v%d&#xA;tcu               = %v%d&#xA;memery           = %v%.0f MB&#xA;-------------------- machine image --------------------&#xA;machine_id       = %v%w&#xA;bus              = %v%s&#xA;target           = %v%s&#xA;---------------------xen config para---------------------&#xA;root_device      = %v%s &#xA;kernel_command   = %v%s &#xA;bootloader       = %v%s&#xA;virt_type        = %v%s&#xA;rawdata          = %v%s&#xA;----------------------context info-----------------------&#xA;%rs:&#xA;%v%s             = %v%s&#xA;%re &#xA;------------------vm sche policy(condition)--------------&#xA;%rs:&#xA;----------------------------------------&#xA;key              = %v%s&#xA;opt              = %v%s&#xA;value            = %v%s&#xA;%re&#xA;----------------------vm disk list-----------------------&#xA;%rs:&#xA;------------------disk------------------&#xA;id               = %v%w&#xA;size             = %v%.2f GB&#xA;bus              = %v%s&#xA;type             = %v%s&#xA;target           = %v%s&#xA;%re&#xA;-----------------------vm nic list-----------------------&#xA;%rs:&#xA;-------------------nic-------------------&#xA;sriov            = %v%b&#xA;vlan             = %v%d&#xA;plane            = %v%s&#xA;dhcp             = %v%b&#xA;ip               = %v%s&#xA;netmask          = %v%s&#xA;gateway          = %v%s&#xA;mac              = %v%s&#xA;%re&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;-----------------------------base info---------------------------&#xA;vt_name          = %v%s&#xA;is_public        = %v%b&#xA;id               = %v%w &#xA;owner            = %v%s&#xA;vcpu             = %v%d&#xA;tcu               = %v%d&#xA;memery           = %v%.0f MB&#xA;-------------------- machine image --------------------&#xA;machine_id       = %v%w&#xA;bus              = %v%s&#xA;target           = %v%s&#xA;---------------------xen config para---------------------&#xA;root_device      = %v%s &#xA;kernel_command   = %v%s &#xA;bootloader       = %v%s&#xA;virt_type        = %v%s&#xA;rawdata          = %v%s&#xA;----------------------context info-----------------------&#xA;%rs:&#xA;%v%s             = %v%s&#xA;%re &#xA;------------------vm sche policy(condition)--------------&#xA;%rs:&#xA;----------------------------------------&#xA;key              = %v%s&#xA;opt              = %v%s&#xA;value            = %v%s&#xA;%re&#xA;----------------------vm disk list-----------------------&#xA;%rs:&#xA;------------------disk------------------&#xA;id               = %v%w&#xA;size             = %v%.2f GB&#xA;bus              = %v%s&#xA;type             = %v%s&#xA;target           = %v%s&#xA;%re&#xA;-----------------------vm nic list-----------------------&#xA;%rs:&#xA;-------------------nic-------------------&#xA;sriov            = %v%b&#xA;vlan             = %v%d&#xA;plane            = %v%s&#xA;dhcp             = %v%b&#xA;ip               = %v%s&#xA;netmask          = %v%s&#xA;gateway          = %v%s&#xA;mac              = %v%s&#xA;%re&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;-----------------------------base info---------------------------&#xA;vt_name          = %v%s&#xA;is_public        = %v%b&#xA;id               = %v%w &#xA;owner            = %v%s&#xA;vcpu             = %v%d&#xA;tcu               = %v%d&#xA;memery           = %v%.0f MB&#xA;-------------------- machine image --------------------&#xA;machine_id       = %v%w&#xA;bus              = %v%s&#xA;target           = %v%s&#xA;---------------------xen config para---------------------&#xA;root_device      = %v%s &#xA;kernel_command   = %v%s &#xA;bootloader       = %v%s&#xA;virt_type        = %v%s&#xA;rawdata          = %v%s&#xA;----------------------context info-----------------------&#xA;%rs:&#xA;%v%s             = %v%s&#xA;%re &#xA;------------------vm sche policy(condition)--------------&#xA;%rs:&#xA;----------------------------------------&#xA;key              = %v%s&#xA;opt              = %v%s&#xA;value            = %v%s&#xA;%re&#xA;----------------------vm disk list-----------------------&#xA;%rs:&#xA;------------------disk------------------&#xA;id               = %v%w&#xA;size             = %v%.2f GB&#xA;bus              = %v%s&#xA;type             = %v%s&#xA;target           = %v%s&#xA;%re&#xA;-----------------------vm nic list-----------------------&#xA;%rs:&#xA;-------------------nic-------------------&#xA;sriov            = %v%b&#xA;vlan             = %v%d&#xA;plane            = %v%s&#xA;dhcp             = %v%b&#xA;ip               = %v%s&#xA;netmask          = %v%s&#xA;gateway          = %v%s&#xA;mac              = %v%s&#xA;%re&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;-----------------------------base info---------------------------&#xA;vt_name          = %v%s&#xA;is_public        = %v%b&#xA;id               = %v%w &#xA;owner            = %v%s&#xA;vcpu             = %v%d&#xA;tcu               = %v%d&#xA;memery           = %v%.0f MB&#xA;-------------------- machine image --------------------&#xA;machine_id       = %v%w&#xA;bus              = %v%s&#xA;target           = %v%s&#xA;---------------------xen config para---------------------&#xA;root_device      = %v%s &#xA;kernel_command   = %v%s &#xA;bootloader       = %v%s&#xA;virt_type        = %v%s&#xA;rawdata          = %v%s&#xA;----------------------context info-----------------------&#xA;%rs:&#xA;%v%s             = %v%s&#xA;%re &#xA;------------------vm sche policy(condition)--------------&#xA;%rs:&#xA;----------------------------------------&#xA;key              = %v%s&#xA;opt              = %v%s&#xA;value            = %v%s&#xA;%re&#xA;----------------------vm disk list-----------------------&#xA;%rs:&#xA;------------------disk------------------&#xA;id               = %v%w&#xA;size             = %v%.2f GB&#xA;bus              = %v%s&#xA;type             = %v%s&#xA;target           = %v%s&#xA;%re&#xA;-----------------------vm nic list-----------------------&#xA;%rs:&#xA;-------------------nic-------------------&#xA;sriov            = %v%b&#xA;vlan             = %v%d&#xA;plane            = %v%s&#xA;dhcp             = %v%b&#xA;ip               = %v%s&#xA;netmask          = %v%s&#xA;gateway          = %v%s&#xA;mac              = %v%s&#xA;%re&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xC9000006">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode>
+						<Param Name="{}ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="create" paracomment-chs="显示用户创建的虚拟机模板" paracomment-en="show vmtemplates create by user" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="0" Max="" Min=""/>
+							<Param Name="visible" paracomment-chs="显示用户可见的模板" paracomment-en="show vmtemplates can be used" DataType="DATA_TYPE_CONST" Length="" _Type="Param" _Index="1" Max="" Min=""/>
+							<Param Name="name" paracomment-chs="虚拟机模板名称" paracomment-en="vmtemplate name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/>
+						</Param>
+					</ParamNode>
+				</Command>
+			</TreeNode>
+		</Mode>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="vmtemplate" treenode-comment-chs="进入虚拟机模板管理模式" treenode-comment-en="enter virtual machine template manager mode">
+				<Command CmdGroup="虚拟机模板配置管理" IdInGroup="0" OprMode="SET" ExecMode="其他" NextMode="vmtemplate" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0xC9010000">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode></Modes>
+	<Maps>
+		<Map Type="1">
+			<MapItem Value="0" Name-chs="FALSE" Name-en="FALSE"/>
+			<MapItem Value="1" Name-chs="TRUE" Name-en="TRUE"/>
+		</Map>
+		<Map Type="901">
+			<MapItem Value="0" Name-chs="hvm" Name-en="hvm"/>
+			<MapItem Value="1" Name-chs="pvm" Name-en="pvm"/>
+		</Map>
+		<Map Type="904">
+			<MapItem Value="0" Name-chs="datablock" Name-en="datablock"/>
+			<MapItem Value="1" Name-chs="cdrom" Name-en="cdrom"/>
+		</Map>
+		<Map Type="905">
+			<MapItem Value="0" Name-chs="ide" Name-en="ide"/>
+			<MapItem Value="1" Name-chs="scsi" Name-en="scsi"/>
+		</Map>
+		<Map Type="906">
+			<MapItem Value="0" Name-chs="close" Name-en="close"/>
+			<MapItem Value="1" Name-chs="open" Name-en="open"/>
+		</Map>
+		<Map Type="907">
+			<MapItem Value="0" Name-chs="NO" Name-en="NO"/>
+			<MapItem Value="1" Name-chs="YES" Name-en="YES"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="201" groupname="虚拟机模板配置管理"/>
+	</CmdGroups>
+</Script>

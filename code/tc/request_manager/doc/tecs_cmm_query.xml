@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_host_cmm_query.xml">
+	<interface>tecs.cmm.query</interface>
+	<shortdesc lang_cn="查询cmm配置" lang_en="query cmm config info."/>
+	<description lang_cn="查询cmm配置" lang_en="query cmm config info."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询的起始CPU型号ID，起始值为0，指定CPU型号情况下，此字段无效。" lang_en="The start cpu information ID of this query(start value is 0), which is invalid when the cpu_info or cpu_info_id is specified."/>
+		<parameter name="query_count" type="int64" lang_cn="本次查询的数量，最大支持200，指定CPU型号情况下，此字段无效。" lang_en="The count limit of this query, which is not greater than 200, and is invalid when the cpu_info or cpu_info_id is specified."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="推荐的下一次查询起始位置。" lang_en="Suggested start position of next queyr."/>
+			<parameter name="max_count" type="int64" lang_cn="总的查询数量。" lang_en="Total query number informations."/>			
+			<array repeat="yes">
+				<struct>
+					<parameter name="bureau" type="int" lang_cn="局号" lang_en="bureau number."/>
+					<parameter name="rack" type="int" lang_cn="架号" lang_en="rack number:"/>
+					<parameter name="shelf" type="int" lang_cn="框号" lang_en="shelf number:"/>
+					<parameter name="ip_address" type="int" lang_cn="cmm ip地址" lang_en="cmm ip address:"/>	
+					<parameter name="description" type="string" lang_cn="描述信息" lang_en="description info:"/>					
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered"/>
+				<enum name="1003" lang_cn="错误，集群未注册到TC中" lang_en="Error, cluster have not registered into the Tecs Center"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.cmm.delete"     href="tecs_cmm_delete.xml"/>
+		<xref name="tecs.cmm.set" href="tecs_cmm_set.xml"/>
+		<xref name="tecs.cmm.add" href="tecs_cmm_add.xml"/>
+	</reference>
+</method>

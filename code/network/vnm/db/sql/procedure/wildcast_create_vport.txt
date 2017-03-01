@@ -1,0 +1,329 @@
+
+
+
+
+
+
+
+--- 查询wildcast create vport summary
+--- 输出 
+-- Function: pf_net_wildcast_query_create_vport_summary()
+
+-- DROP FUNCTION pf_net_wildcast_query_create_vport_summary();
+
+CREATE OR REPLACE FUNCTION pf_net_wildcast_query_create_vport_summary()
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+        ref refcursor;
+BEGIN
+       OPEN ref FOR
+	   SELECT 
+	      uuid,port_name,port_type,is_has_kernel_type,kernel_type,kernel_pg_uuid, switch_uuid, is_dhcp
+	   FROM v_net_wildcast_create_vport;
+       RETURN ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_wildcast_query_create_vport_summary() OWNER TO tecs;
+
+
+
+
+-- 查询VNA reg mdoule
+-- 输出 vna_uuid,module_uuid,module_name,role,is_online,cluster_name
+-- Function: pf_net_wildcast_query_create_vport(character varying)
+
+-- DROP FUNCTION pf_net_wildcast_query_create_vport(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_wildcast_query_create_vport(in_uuid character varying)
+  RETURNS t_wildcast_create_vport_query AS
+$BODY$
+DECLARE
+  result  t_wildcast_create_vport_query;
+  is_exist integer;
+  RTN_ITEM_NO_EXIST integer :=4;
+BEGIN
+  result.ret := 0;
+  SELECT count(*) INTO is_exist FROM wildcast_cfg_create_virtual_port WHERE uuid = in_uuid;
+  IF is_exist > 0 THEN
+     result.ret := 0;
+  ELSE
+     result.ret := RTN_ITEM_NO_EXIST; -- no exist item
+     return result;     
+  END IF;
+
+   SELECT uuid into result.uuid  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT port_name into result.port_name  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT port_type into result.port_type  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT is_has_kernel_type into result.is_has_kernel_type  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT kernel_type into result.kernel_type  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT kernel_pg_uuid into result.kernel_pg_uuid  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT switch_uuid into result.switch_uuid  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   SELECT is_dhcp into result.is_dhcp  FROM v_net_wildcast_create_vport WHERE uuid = in_uuid;
+   
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_wildcast_query_create_vport(character varying) OWNER TO tecs;
+
+
+
+-- 检查create virtual port 参数 
+CREATE OR REPLACE FUNCTION pf_net_check_add_wildcast_create_vport(in_uuid character varying, in_port_name character varying, in_port_type integer,
+           in_is_has_kernel_type integer, in_kernel_type integer,
+		   in_kernel_pg_uuid character varying, in_switch_uuid character varying, in_is_dhcp integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_PG_MUST_CFG_NETPLANE integer := 13;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+  
+  -- port type 必须是3/4
+  IF in_port_type < 3 THEN
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  IF in_port_type > 4 THEN
+     result := RTN_PARAM_INVALID; 
+     return result;
+  END IF;
+  
+  -- port_type = 3, in_is_has_kernel_type 才有效
+  IF in_port_type = 3 THEN 
+      IF in_is_has_kernel_type = 0 THEN 
+          result := RTN_PARAM_INVALID; 
+          return result;
+	  END IF;
+  ELSE
+      IF in_is_has_kernel_type = 0 THEN 
+          result := 0;           
+      ELSE
+          result := RTN_PARAM_INVALID; 
+          return result;          	   
+	  END IF;
+  END IF;
+  
+  IF in_is_has_kernel_type > 0 THEN 
+	 SELECT count(*) INTO is_exist FROM port_group a, kernel_pg b WHERE a.id = b.pg_id AND a.uuid = in_kernel_pg_uuid ;
+	 IF is_exist <= 0 THEN 
+	     result := RTN_PARAM_INVALID; 
+         return result; 
+	 END IF;
+	 
+	 SELECT count(*) INTO is_exist FROM switch WHERE uuid = in_switch_uuid ;
+	 IF is_exist <= 0 THEN 
+	     result := RTN_PARAM_INVALID; 
+         return result; 
+	 END IF;
+	 
+  END IF;
+  
+  --port name 不能冲突
+  IF in_port_name <> '' THEN 
+      SELECT count(*) into is_conflict FROM  wildcast_cfg_create_virtual_port WHERE port_name = in_port_name AND port_name <> '';  
+      IF is_conflict > 0 THEN
+         result := RTN_ITEM_CONFLICT; -- conflict 
+         return result;
+      END IF;
+  END IF;
+  
+  -- kernel type 检查
+  IF in_is_has_kernel_type = 1 THEN 
+      IF in_kernel_type = 10 OR in_kernel_type = 11 THEN 
+          result := 0;    
+	  ELSE
+          result := RTN_PARAM_INVALID; 
+          return result;  
+	  END IF;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_wildcast_create_vport(in_uuid character varying, in_port_name character varying, in_port_type integer,
+           in_is_has_kernel_type integer, in_kernel_type integer,
+		   in_kernel_pg_uuid character varying, in_switch_uuid character varying, in_is_dhcp integer) OWNER TO tecs;
+
+		   
+-- wildcast create vport 添加 
+-- Function: pf_net_add_wildcast_create_vport(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_wildcast_create_vport(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_wildcast_create_vport(in_uuid character varying, in_port_name character varying, in_port_type integer,
+           in_is_has_kernel_type integer, in_kernel_type integer,
+		   in_kernel_pg_uuid character varying, in_switch_uuid character varying, in_is_dhcp integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_same_hc integer;
+  is_exist integer;
+  is_conflict integer;
+  kernelpgid numeric(19,0);
+  switchid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否已存在相同记录
+
+  -- 参数检查 
+  result.ret := pf_net_check_add_wildcast_create_vport(in_uuid, in_port_name, in_port_type, in_is_has_kernel_type, in_kernel_type,
+					in_kernel_pg_uuid,in_switch_uuid,in_is_dhcp);
+  IF result.ret > 0 THEN 
+      return result;
+  END IF;
+      
+  IF in_is_has_kernel_type > 0 THEN 
+	 SELECT count(*) INTO is_exist FROM port_group a, kernel_pg b WHERE a.id = b.pg_id AND a.uuid = in_kernel_pg_uuid ;
+	 SELECT a.id INTO kernelpgid FROM port_group a, kernel_pg b WHERE a.id = b.pg_id AND a.uuid = in_kernel_pg_uuid ;
+	 IF is_exist <= 0 THEN 
+	     result := RTN_PARAM_INVALID; 
+         return result; 
+	 END IF;
+	 
+	 SELECT count(*) INTO is_exist FROM switch WHERE uuid = in_switch_uuid ;
+	 SELECT id INTO switchid FROM switch WHERE uuid = in_switch_uuid ;
+	 IF is_exist <= 0 THEN 
+	     result := RTN_PARAM_INVALID; 
+         return result; 
+	 END IF;
+  END IF;	
+  	  
+  -- insert item
+  result.id := nextval('serial_wildcast_create_virtual_port');
+  result.uuid := in_uuid;
+  BEGIN 
+    INSERT INTO wildcast_cfg_create_virtual_port(id,uuid, port_name, port_type) values(result.id,in_uuid, in_port_name, in_port_type);
+    IF in_is_has_kernel_type > 0 THEN 
+       INSERT INTO wildcast_cfg_create_kernel_port(wildcast_create_vport_id,port_type,kernel_type, kernel_pg_id,switch_id, is_dhcp) 
+	     values(result.id,in_port_type,in_kernel_type,kernelpgid,switchid, in_is_dhcp);
+    END IF;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_wildcast_create_vport(in_uuid character varying, in_port_name character varying, in_port_type integer,
+           in_is_has_kernel_type integer, in_kernel_type integer,
+		   in_kernel_pg_uuid character varying, in_switch_uuid character varying, in_is_dhcp integer) OWNER TO tecs;
+
+
+
+-- check del 		   
+CREATE OR REPLACE FUNCTION pf_net_check_del_wildcast_create_vport(in_uuid character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  wcid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_PG_MUST_CFG_NETPLANE integer := 13;
+  RTN_MUST_CFG_VALID_RANGE   integer := 14;
+  RTN_WILDCAST_TASK_IS_USING integer := 19;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+  
+   SELECT count(*) INTO is_exist FROM wildcast_cfg_create_virtual_port WHERE uuid = in_uuid ;  
+  SELECT id INTO wcid FROM wildcast_cfg_create_virtual_port WHERE uuid = in_uuid ; 
+  IF is_exist <= 0 THEN
+     result := RTN_ITEM_NO_EXIST;-- does not exist item
+     return result;
+  END IF;
+  
+  /* task是否在使用 */
+  SELECT count(*) INTO is_exist FROM wildcast_task_create_vport WHERE 
+  wildcast_cfg_create_vport_id = wcid;   
+  IF is_exist > 0 THEN
+     result := RTN_WILDCAST_TASK_IS_USING;
+     return result;
+  END IF;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_wildcast_create_vport(in_uuid character varying) OWNER TO tecs;
+
+		   
+-- 删除 
+-- Function: pf_net_del_wildcast_create_vporte(character varying)
+
+-- DROP FUNCTION pf_net_del_wildcast_create_vporte(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_del_wildcast_create_vport(in_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否存在记录
+  result.ret := pf_net_check_del_wildcast_create_vport(in_uuid);
+  IF result.ret > 0 THEN 
+      return result;
+  END IF;
+    
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM wildcast_cfg_create_virtual_port WHERE uuid = in_uuid ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_wildcast_create_vport(character varying) OWNER TO tecs;
+
+

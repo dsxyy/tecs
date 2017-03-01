@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="123" verno="15">
+	<Modes>
+		<Mode ID="101" Class="28" HasNo="NO" Prompt="(alarm)#" mode-help-chs="" mode-help-en="" Name="告警模式" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="" treenode-comment-en="">
+				<TreeNode Name="current_alarm" treenode-comment-chs="当前告警信息" treenode-comment-en="Current Alarm Information">
+					<Command CmdGroup="告警" IdInGroup="1" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2%hc0:%v1%b
+%rs3:  
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc1:%rs3:  
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc2:
+%v3%b
+%he" formatstring-en="%hs2%hc0:%v1%b
+%rs3:  
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc1:%rs3:  
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc2:
+%v3%b
+%he" _ID="0xF1000001">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="history_alarm" treenode-comment-chs="历史告警信息" treenode-comment-en="History Alarm Information">
+					<Command CmdGroup="告警" IdInGroup="2" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2%hc0:%v1%b
+%rs3:  
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Restore time: %v%s
+  Restore type: %v%d
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc1:%rs3: 
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Restore time: %v%s
+  Restore type: %v%d
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc2:
+%v3%b
+%he" formatstring-en="%hs2%hc0:%v1%b
+%rs3:  
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Restore time: %v%s
+  Restore type: %v%d
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc1:%rs3: 
+  Alarm code: %v%d
+  Alarm time: %v%s
+  Restore time: %v%s
+  Restore type: %v%d
+  Report address: %v%s
+  TC name: %v%s
+  CC name: %v%s
+  HC name: %v%s
+  Address location: %v%s
+  Additional information: %v%s
+%re%hc2:
+%v3%b
+%he" _ID="0xF1000002">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					</Command>
+				</TreeNode>
+			</TreeNode>
+		</Mode>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="alarm" treenode-comment-chs="告警信息" treenode-comment-en="Alarm Information">
+				<Command CmdGroup="告警" IdInGroup="0" OprMode="SET" ExecMode="其他" NextMode="告警模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%s" formatstring-en="%v%s" _ID="0xF1010000">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode></Modes>
+	<Maps>
+		<Map Type="1301">
+			<MapItem Value="1" Name-chs="当前告警数据表创建失败" Name-en="Current alarm database failed to create"/>
+			<MapItem Value="2" Name-chs="查询数据库失败" Name-en="Failed to query database"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="241" groupname="告警"/>
+	</CmdGroups>
+</Script>

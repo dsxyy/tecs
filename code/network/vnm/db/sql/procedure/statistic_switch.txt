@@ -1,0 +1,85 @@
+
+
+-- 触发器 内部返回值，统一加上100，便于定位
+-- 
+
+-- vsi attach vswitch 时触发 流程 
+CREATE OR REPLACE FUNCTION pf_net_tr_vsi_attach_vswitch(in_vsi_id numeric(19,0), in_switch_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  olddeployvsinum integer := 0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+  SELECT count(*) INTO is_exist FROM virtual_switch WHERE switch_id = in_switch_id;
+  SELECT deploy_vsi_num INTO olddeployvsinum FROM virtual_switch WHERE switch_id = in_switch_id;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  BEGIN 
+        UPDATE virtual_switch SET deploy_vsi_num = (olddeployvsinum +1) WHERE switch_id = in_switch_id;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_vsi_attach_vswitch(in_vsi_id numeric(19,0), in_switch_id numeric(19,0)) OWNER TO tecs;
+
+
+-- vsi unattach vswitch 时触发 流程 
+CREATE OR REPLACE FUNCTION pf_net_tr_vsi_unattach_vswitch(in_vsi_id numeric(19,0), in_switch_id numeric(19,0))
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  olddeployvsinum integer := 0;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1+100;
+  RTN_HAS_SAME_ITEM integer := 2+100;
+  RTN_ITEM_CONFLICT integer := 3+100;
+  RTN_ITEM_NO_EXIST integer := 4+100;
+BEGIN
+  result := 0; 
+  
+  SELECT count(*) INTO is_exist FROM virtual_switch WHERE switch_id = in_switch_id;
+  SELECT deploy_vsi_num INTO olddeployvsinum FROM virtual_switch WHERE switch_id = in_switch_id;
+  IF is_exist <= 0 THEN 
+      result := RTN_ITEM_NO_EXIST;
+      return result;
+  END IF;
+  
+  BEGIN 
+      UPDATE virtual_switch SET deploy_vsi_num = (olddeployvsinum - 1) WHERE switch_id = in_switch_id;                        
+  EXCEPTION 
+    WHEN others
+    THEN
+    result := RTN_OPERATOR_FAILED;
+  END;
+  
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_tr_vsi_unattach_vswitch(in_vsi_id numeric(19,0), in_switch_id numeric(19,0)) OWNER TO tecs;

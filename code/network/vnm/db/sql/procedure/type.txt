@@ -1,0 +1,523 @@
+
+-- vsi 
+CREATE TYPE t_query_vsi  AS(
+    ret integer, -- proc ret
+    vm_id numeric(19),
+    nic_index integer, 
+    is_sriov integer, 
+    is_loop integer, 
+    logic_network_uuid character varying(64),
+    port_type character varying(64),
+	
+    vsi_id_value character varying(64),
+    vsi_id_format integer,
+    vm_pg_uuid character varying(64),
+    mac character varying(64),
+    is_has_ip integer, 
+    ip  character varying(64),
+    mask character varying(64),
+    is_has_vswitch integer,  
+    vswitch_uuid character varying(64),
+    is_has_sriovvf integer,
+    sriovvfport_uuid character varying(64)
+);
+
+
+
+-- debug 
+-- RAISE EXCEPTION 'is_same here is %, %, %, %', is_same, $1,$2,$3;
+
+-- 通用添加修改删除存贮过程结果 
+-- add modify del proc result 
+--drop type t_operate_result;
+create TYPE t_operate_result AS (
+    ret integer,    -- =0 suc, = other failed
+    id numeric(19,0),  -- if ret = 0, add modify valid.
+    uuid character varying(64) -- if ret = 0, add modify valid.(netplane,port group,logic network,port)
+);
+
+
+
+-- 创建 TYPE t_port_query
+
+create TYPE t_port_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer
+);
+
+
+
+-- 创建 TYPE t_port_summary_query
+-- drop type t_port_summary_query;
+create TYPE t_port_summary_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64)  -- port uuid
+);
+
+
+
+
+-- 创建 TYPE t_bond_query
+--drop type t_bond_query;
+create TYPE t_bond_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer,    
+    is_port_cfg integer, 
+    is_consistency integer, 
+    
+    bond_mode integer,
+    policy  character varying(64),
+    
+    --lacp 信息
+    is_has_lacpinfo integer, 
+    lacp_state integer,
+    lacp_aggregator_id character varying(64),
+    lacp_partner_mac character varying(64)
+);
+
+
+
+-- 创建 TYPE t_phyport_query
+--drop type t_phyport_query;
+create TYPE t_phyport_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer,    
+    is_port_cfg integer, 
+    is_consistency integer, 
+    
+    supported_ports character varying(64),     -- physical port info
+    supported_link_modes character varying(64),
+    is_support_auto_negotiation integer,
+    advertised_link_modes character varying(64),
+    advertised_pause_frame_use character varying(64),
+    is_advertised_auto_negotiation integer,
+    speed character varying(64),
+    duplex character varying(64),
+    port character varying(64),
+    phyad character varying(64),
+    transceiver character varying(64),
+    auto_negotiate character varying(64),
+    supports_wake_on character varying(64),
+    wake_on character varying(64),
+    current_msg_level character varying(64),
+    is_linked integer,
+    is_rx_checksumming integer, -- extend info 
+    is_tx_checksumming integer, 
+    is_scatter_gather integer, 
+    is_tcp_segmentation_offload integer,
+    is_udp_fragmentation_offload integer,
+    is_generic_segmentation_offload integer,
+    is_generic_receive_offload integer, 
+    is_large_receive_offload integer,
+    is_sriov integer,       -- sriov info
+    is_loop_report integer, 
+    is_loop_cfg integer
+);
+
+
+create type t_logicnetwork_query AS (
+   ret integer, -- proc ret
+   uuid character varying,
+   name character varying,
+   pg_uuid character varying,
+   des character varying,
+   ipmode integer   
+);
+
+
+-- 创建 TYPE t_vna_query
+create TYPE t_vna_query AS (
+    ret integer, -- proc ret
+    uuid character varying(64),  -- vna uuid
+    vna_app character varying(64),  -- vna application    
+    vnm_app character varying(64),  -- vnm application    
+    host_name character varying(64),  -- host name        
+    os_name character varying(64),  -- os name    
+    is_online integer
+);
+
+
+
+CREATE TYPE t_query_total  AS(
+    ret integer, -- proc ret
+    total_num integer  --- 
+);
+
+
+
+
+-- 创建 TYPE t_vswtich_query
+--drop type t_vswtich_query;
+--DROP type t_vswtich_query;
+create TYPE t_vswtich_query AS (
+    ret integer, -- proc ret
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    switch_type integer, --- switch type
+    state integer, 
+    max_mtu integer,
+    evb_mode integer,
+    pg_uuid character varying(64), 
+    nic_max_num_cfg integer,        
+    is_active integer
+);
+
+
+
+
+
+-- 创建 TYPE t_portgroup_query
+--drop type t_portgroup_query;
+create TYPE t_portgroup_query AS (
+    ret integer, -- proc ret
+    name  character varying(64),
+    pg_type integer,
+    uuid  character varying(64),
+    acl character varying(64),
+    qos character varying(64),
+    allowed_priorities character varying(32),
+    receive_bandwidth_limit character varying(32),
+    receive_bandwidth_reserve character varying(32),
+    default_vlan_id integer,
+    promiscuous integer,
+    macvlan_filter_enable integer,
+    allowed_transmit_macs character varying(64),
+    allowed_transmit_macvlans character varying(64),
+    policy_block_override character varying(64),
+    policy_vlan_override character varying(64),
+    version integer,
+    mgr_id character varying(64),
+    type_id character varying(64),
+    allow_mac_change integer,
+    switchport_mode integer,    
+    is_cfg_netplane integer,
+    netplane_uuid character varying(64),
+    mtu integer,    
+    trunk_native_vlan_num integer,  --- if switchport_mode =0, valid.
+    access_vlan_num integer,        --- if switchport_mode =1 & pg_type != 21, valid.
+    access_isolate_no integer,      --- if switchport_mode =1 & pg_type = 21, valid.    
+	description character varying(512)
+);
+
+
+
+-- 创建 TYPE t_sriovvfport_query
+--drop type t_sriovvfport_query;
+create TYPE t_sriovvfport_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer,    
+    is_port_cfg integer, 
+    is_consistency integer, 
+    
+    physical_sriov_uuid  character varying(64), -- physical sriov port
+    pci  character varying(64),
+    vlan_num integer
+);
+
+
+-- 创建 TYPE t_uplinkloopport_query
+--drop type t_uplinkloopport_query;
+create TYPE t_uplinkloopport_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer,    
+    is_port_cfg integer, 
+    is_consistency integer, 
+        
+    is_cfg integer
+);
+
+-- 创建 TYPE t_vswitchport_query
+--drop type t_vswitchport_query;
+create TYPE t_vswitchport_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer,    
+    is_port_cfg integer, 
+    is_consistency integer
+);
+
+
+
+-- 创建 TYPE t_kernelport_query
+--drop type t_kernelport_query;
+create TYPE t_kernelport_query AS (
+    ret integer, -- proc ret
+    vna_uuid  character varying(64),  -- vna uuid
+    port_type integer, --- port type
+    name character varying(64), -- port name 
+    uuid character varying(64),  -- port uuid
+    state integer, 
+    is_broadcast integer,
+    is_running integer,
+    is_multicast integer,
+    promiscuous integer,
+    mtu integer,
+    is_master integer,
+    admin_state integer,
+    is_online integer,    
+    is_port_cfg integer, 
+    is_consistency integer, 
+        
+    is_cfg_vswitch integer,
+    vswitch_uuid  character varying(64),
+    is_cfg_pg integer,
+    kernel_pg_uuid  character varying(64),
+    type integer,
+    is_cfg integer,
+	is_dhcp integer
+);
+
+
+
+
+-- 创建 TYPE t_netplane_query
+create TYPE t_netplane_query AS (
+    ret integer, -- proc ret
+    uuid character varying(64),  -- netplane uuid
+    netplane_name character varying(32),  -- netplane name    
+    description character varying(512),
+    mtu integer
+);
+
+
+
+-- 创建 TYPE t_vna_reg_module_query
+create TYPE t_vna_reg_module_query AS (
+    ret integer, -- proc ret
+    vna_uuid character varying(64),  -- vna uuid
+    module_uuid character varying(64),  -- module uuid     
+    module_name character varying(64),  -- module name    
+    role integer,  -- role
+    is_online integer,
+    is_has_cluster integer,
+    cluster_name character varying(64)  -- cluster name    
+);
+-- 创建 TYPE t_port_mac_query
+create TYPE t_port_mac_query AS (
+    ret integer, -- proc ret
+    vna_uuid character varying(64),  -- vna uuid
+    vna_name character varying(64),  -- vna name
+    port_uuid character varying(64),  -- port uuid     
+    port_name character varying(64),  -- port name     
+    port_type integer,
+    mac character varying(64)  -- mac
+);
+
+-- 创建 TYPE t_port_ip_query
+create TYPE t_port_ip_query AS (
+    ret integer, -- proc ret
+    vna_uuid character varying(64),  -- vna uuid
+    vna_name character varying(64),  -- vna name
+    port_uuid character varying(64),  -- port uuid     
+    port_name character varying(64),  -- port name     
+    port_type integer,
+    port_ip_name character varying(64),  -- port name     
+    ip character varying(64), 
+    mask character varying(64), 
+    is_cfg integer,
+    is_online integer
+);
+
+-- 创建 TYPE t_kernelreport_query
+create TYPE t_kernelreport_query AS (
+    ret integer, -- proc ret
+    vna_uuid character varying(64),  -- vna uuid
+    uuid character varying(64),  --  uuid     
+    switch_name character varying(64),    
+    ip character varying(64), 
+    mask character varying(64), 
+    is_online integer,
+    kernel_port_name character varying(64),
+    uplink_port_name character varying(64),
+    uplink_port_type integer,
+	is_dhcp integer 
+);
+
+
+-- 创建 TYPE t_wildcast_create_vport_query
+create TYPE t_wildcast_create_vport_query AS (
+    ret integer, -- proc ret
+    uuid character varying(64),  -- vna uuid
+    port_name character varying(64),  -- port name     
+    port_type integer,
+    is_has_kernel_type integer, 
+    kernel_type integer,
+    kernel_pg_uuid character varying(64),
+    switch_uuid character varying(64),
+    is_dhcp integer
+);
+
+-- 创建 TYPE t_wildcast_loopback_port_query
+create TYPE t_wildcast_loopback_port_query AS (
+    ret integer, -- proc ret
+    uuid character varying(64),  -- vna uuid
+    port_name character varying(64),  -- port name    
+    is_loop integer
+);
+
+
+-- 创建 TYPE t_wildcast_switch_query
+create TYPE t_wildcast_switch_query AS (
+    ret integer, -- proc ret
+    uuid character varying(64),  --  uuid     
+    switch_name character varying(64),  
+    switch_type integer,
+	state  integer,
+	evb_mode integer,
+    pg_uuid character varying(64),
+    mtu_max integer,
+    nic_max_num integer,
+    port_name character varying(64),
+    port_type integer,
+    bond_mode integer
+);
+
+-- 创建 TYPE t_wildcast_task_switch_query
+create TYPE t_wildcast_task_switch_query AS (
+    ret integer, -- proc ret
+    task_uuid character varying(64),  --  uuid     
+	task_state integer,
+	task_send_num integer,
+	switch_uuid character varying(64),  
+    switch_name character varying(64),  
+    switch_type integer,
+    pg_uuid character varying(64),
+    mtu_max integer,
+    nic_max_num integer,
+    port_name character varying(64),
+    port_type integer,
+    bond_mode integer,
+	vna_uuid character varying(64),
+	vna_is_online integer
+);
+
+-- 创建 TYPE t_wildcast_task_create_vport_query
+create TYPE t_wildcast_task_create_vport_query AS (
+    ret integer, -- proc ret
+    task_uuid character varying(64),  --  uuid     
+	task_state integer,
+	task_send_num integer,
+	create_vport_uuid character varying(64),  
+    port_name character varying(64),  
+    port_type integer,
+    is_has_kernel_type integer,
+    kernel_type integer,
+	kernel_pg_uuid character varying(64),
+	switch_type integer,
+	switch_uuid character varying(64),
+	is_dhcp integer,
+	vna_uuid character varying(64),
+	vna_is_online integer
+);
+
+-- 创建 TYPE t_wildcast_task_loopback_query
+create TYPE t_wildcast_task_loopback_query AS (
+    ret integer, -- proc ret
+    task_uuid character varying(64),  --  uuid     
+	task_state integer,
+	task_send_num integer,
+	loopback_uuid character varying(64),  
+    port_name character varying(64), 
+    is_loop integer,
+	vna_uuid character varying(64),
+	vna_is_online integer
+);
+
+-- 创建 Type t_vm_migrate_query
+create TYPE t_vm_migrate_query AS (
+    ret integer, -- proc ret
+    vm_id numeric(19,0),  --  uuid    
+	src_clustername character varying(64),  
+    src_hostname character varying(64), 
+	dst_clustername character varying(64),  
+    dst_hostname character varying(64), 
+    state integer
+);
+
+-- 创建type  t_vm_query
+create TYPE t_vm_query AS (
+    ret integer, -- proc ret
+    vm_id numeric(19,0),  --  uuid    
+	project_id numeric(19,0),
+	is_enable_watchdog integer,
+	watchdog_timeout integer,
+	is_has_cluster integer,
+	cluster_name character varying(64),  
+	is_has_host integer,
+    host_name character varying(64)
+);
+

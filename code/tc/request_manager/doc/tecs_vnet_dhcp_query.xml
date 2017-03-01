@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vnet_dhcp_query.xml">
+	<interface>tecs.dhcp.query</interface>
+	<shortdesc lang_cn="查询DHCP配置信息" lang_en="Show DHCP configure"/>
+	<description lang_cn="查询DHCP配置信息。" lang_en="Show DHCP configure."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="记录集起始值，起始值为0。" lang_en="First index value, start value is 0."/>
+		<parameter name="query_count" type="int64" lang_cn="查询的记录集个数。" lang_en="Query index count."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称。" lang_en="Cluster name."/>
+		<parameter name="vlan" type="int" lang_cn="VLAN ID信息。">
+			<enum name="0" lang_cn="TECS系统网络管理平面" lang_en="TECS_NETWORK"/>
+			<enum name="4096" lang_cn="VM虚拟机网络管理平面" lang_en="VM_NETWORK"/>
+		</parameter>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="下次查询记录集起始值。" lang_en="Next index value."/>
+			<parameter name="max_count" type="int64" lang_cn="记录集总数。" lang_en="Max index count."/>
+			<struct name="VnetDhcp">
+				<parameter name="port_name" type="string" lang_cn="DHCP服务绑定端口。" lang_en="Dhcp service bonding interface name."/>
+				<parameter name="pxe_file" type="string" lang_cn="DHCP PXE 文件。" lang_en="DHCP PXE file"/>
+				<parameter name="pxe_server_address" type="int" lang_cn="DHCP PXE 服务器IP地址。" lang_en="DHCP PXE server address"/>
+				<array repeat="yes" name="dhcp_vlan_list">
+					<parameter name="cvid" type="int" lang_cn="Vlan ID" lang_en="vlan id"/>
+					<array repeat="yes"  name="dhcp_subnet_list">
+						<struct name="VnetDhcpSubnet">
+							<parameter name="subnet" type="int" lang_cn="Subnet地址。" lang_en="subnet address."/>
+							<parameter name="subnet_mask" type="int" lang_cn="Subnet掩码。" lang_en="subnet mask"/>
+							<parameter name="gateway" type="int" lang_cn="网关地址。" lang_en="gateway address."/>
+							<parameter name="client_mask" type="int" lang_cn="客户端掩码。" lang_en="client mask."/>
+							<array repeat="yes"  name="dhcp_range_list">
+								<struct name="VnetDhcpRange">
+									<parameter name="ip_start" type="int" lang_cn="开始地址。" lang_en="ip start."/>
+									<parameter name="ip_end" type="int" lang_cn="结束地址。" lang_en="ip end."/>
+								</struct>
+							</array>
+						</struct>
+					</array>
+					<array repeat="yes" name="dhcp_host_list">
+						<struct name="VnetDhcpHost">
+							<parameter name="vm_ip" type="int" lang_cn="虚拟机IP。" lang_en="vm ip address."/>
+							<parameter name="vm_mac" type="string" lang_cn="虚拟机MAC。" lang_en="vm mac address."/>
+							<parameter name="gateway" type="int" lang_cn="网关地址。" lang_en="gateway address."/>
+							<parameter name="gateway_mask" type="int" lang_cn="网关掩码。" lang_en="gateway mask."/>
+						</struct>
+					</array>
+				</array>
+			</struct>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2001" lang_cn="错误: 虚拟网络管理模块启动失败" lang_en="Error, vnet unit start failed"/>
+				<enum name="2002" lang_cn="错误: 网络平面名不存在" lang_en="Error, netplane name is not exist"/>
+				<enum name="2003" lang_cn="冲突: 网络平面名已经存在" lang_en="Conflict, netplane is exist"/>
+				<enum name="2004" lang_cn="失败: 网络平面正在使用" lang_en="Failed, netplane is using"/>
+				<enum name="2005" lang_cn="错误: 数据库操作失败" lang_en="Error, operate DB Failed"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.dhcp.start" href="tecs_vnet_dhcp_start.xml"/>
+		<xref name="tecs.dhcp.stop" href="tecs_vnet_dhcp_stop.xml"/>
+		<xref name="tecs.dhcp_subnet.set" href="tecs_vnet_dhcp_subnet_set.xml"/>
+	</reference>
+</method>

@@ -1,0 +1,57 @@
+##svn:http://10.44.19.237/svn/ZXTULIP/branches/ZXTULIP(TECS)_V01.01.10.P3.B2_20120312_bugfix/tecs/tools
+##workspace = /home/ci_server/tecs_data/jobs/Tecs_stinit00/workspace
+##build_id = 2012-04-12_19-25-19
+##target = 10.44.129.115
+##server build directory = /home/ci_server/tecs_data/jobs/Tecs_pwtest01/workspace/build/$build_id
+##job build directory = /home/ci_server/Tecs_stinit00
+##agent build directory = $target:/home/ci_agent/$build_id
+##agent script directory =$target:/home/ci_agent/script_home
+##version_path = /home/tecs/$version_no
+##images_home = /home/ci_server/images
+
+#正式开始系统测试流程，host_el6为tecs测试机（agent）
+#【M】host_el6需要修改为自己测试机器的IP
+host_el6=10.44.129.115
+#【M】版本放置的文件夹名称，需要自己建立和修改
+version_no=20120413
+#version_branch=tecs_bugfix
+#version_sub=el6
+image=ttylinux0.img
+job_bulid_dir=/home/ci_server/$JOB_NAME
+
+#指定CI服务器端image文件存放路径
+[ ! -e "/home/ci_server/images/$image" ] && echo "image $image does not exist!" && exit -1
+
+#建立CI服务器端自动化持续集成工作目录/home/ci_server/$JOB_NAME
+[ -e $job_bulid_dir ] && unlink $job_bulid_dir
+ln -s $WORKSPACE/ $job_bulid_dir
+cd $job_bulid_dir
+
+#更新脚本的执行权限
+chmod -R +x ./ci/*
+chmod -R +x ./test/*
+
+#下载版本到CI服务器的/home/tecs/$version_no目录
+#./test/update/getVersion.sh $version_no $version_sub $version_branch
+[ ! -d /home/tecs/$version_no ] && echo "ftp download version failed!" && exit -1
+
+#TECS测试机器的硬盘空间比较小，需要删除掉一些陈旧的内容
+ssh $host_el6 "rm -rf /home/ci_agent/2012*"
+
+#上传版本到host_el6进行安装启动
+cd ./test
+./prepare_tecs.sh $WORKSPACE $BUILD_ID $host_el6 $version_no
+./clear_tecs.sh $WORKSPACE $BUILD_ID $host_el6
+./start_tecs.sh $WORKSPACE $BUILD_ID $host_el6 
+
+#测试虚拟机部署流程
+./test_tecs.sh $WORKSPACE $BUILD_ID $host_el6 "./test/st_pytest/st_001.py -a $host_el6 -i $image"
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,114 @@
+include  $(_TECS_CODE_PATH)/common/makeconfig
+_TC_SRC_PATH    = $(_TECS_CODE_PATH)/tc
+_TC_COMMON_PATH = $(_TC_SRC_PATH)/common
+_TC_TMP_OBJ_PATH = $(_TEMP_OBJ_PATH)/tc
+_TC_TMP_DEP_PATH = $(_TEMP_DEP_PATH)/tc
+
+_NETWORK_PUB_PATH =$(_TECS_CODE_PATH)/network/pub
+_NETWORK_LIB_PATH =$(_TECS_CODE_PATH)/network/plugin/libnet/main/include
+
+_TC_OPERATOR_LOG_PATH    = $(_TC_SRC_PATH)/operator_log
+_TC_CLUSTER_MANAGER_PATH  = $(_TC_SRC_PATH)/cluster_manager
+_TC_CLOUD_NODE_MANAGER_PATH  = $(_TC_SRC_PATH)/cloud_node_manager
+_TC_REQUEST_MANAGER_PATH  = $(_TC_SRC_PATH)/request_manager
+_TC_ALARM_MANAGER_PATH    = $(_TC_SRC_PATH)/alarm_manager
+_TC_AUTH_MANAGER_PATH     = $(_TC_SRC_PATH)/auth_manager
+_TC_IMAGE_MANAGER_PATH    = $(_TC_SRC_PATH)/image_manager
+_TC_VMCFG_MANAGER_PATH    = $(_TC_SRC_PATH)/vmcfg_manager
+_TC_SNMP_AGENT_PATH    = $(_TC_SRC_PATH)/snmp
+_TC_FILE_MANAGER_PATH   = $(_TC_SRC_PATH)/file_manager
+_TC_PROJECT_MANAGER_PATH   = $(_TC_SRC_PATH)/project_manager
+
+_TC_TCSVR_PATH = $(_TC_SRC_PATH)/main
+_TC_VNET_CONFIG_PATH  =  $(_TC_SRC_PATH)/vnet_config
+
+export _TC_ALL_OBJECTS :=
+TC_COMMON_MAKEFILE = $(_TC_COMMON_PATH)/makefile
+MAIN_MAKEFILE = $(_TC_TCSVR_PATH)/makefile
+OPERATOR_LOG_MAKEFILE = $(_TC_OPERATOR_LOG_PATH)/makefile
+CLUSTER_MANAGER_MAKEFILE = $(_TC_CLUSTER_MANAGER_PATH)/makefile
+CLOUD_NODE_MANAGER_MAKEFILE  = $(_TC_CLOUD_NODE_MANAGER_PATH)/makefile
+REQUEST_MANAGER_MAKEFILE = $(_TC_REQUEST_MANAGER_PATH)/makefile
+ALARM_MANAGER_MAKEFILE = $(_TC_ALARM_MANAGER_PATH)/makefile
+AUTH_MANAGER_MAKEFILE  = $(_TC_AUTH_MANAGER_PATH)/makefile
+IMAGE_MANAGER_MAKEFILE = $(_TC_IMAGE_MANAGER_PATH)/makefile
+VMCFG_MANAGER_MAKEFILE = $(_TC_VMCFG_MANAGER_PATH)/makefile
+SNMP_AGENT_MAKEFILE = $(_TC_SNMP_AGENT_PATH)/makefile
+FILE_MANAGER_MAKEFILE = $(_TC_FILE_MANAGER_PATH)/makefile
+PROJECT_MANAGER_MAKEFILE = $(_TC_PROJECT_MANAGER_PATH)/makefile
+
+# ---- add VNET module ----
+#VNET_CONFIG_MAKEFILE  =  $(_TC_VNET_CONFIG_PATH)/makefile
+# ---- end VNET module ----
+
+_TC_INCLUDE_PATH += $(addprefix -I,$(_TECS_API_PATH)/include) \
+                    $(addprefix -I,$(_TC_COMMON_PATH)/include)          \
+                    $(addprefix -I,$(_TC_CLUSTER_MANAGER_PATH)/include) \
+                    $(addprefix -I,$(_TC_CLOUD_NODE_MANAGER_PATH)/include) \
+		            $(addprefix -I,$(_TC_REQUEST_MANAGER_PATH)/include) \
+					$(addprefix -I,$(_TC_ALARM_MANAGER_PATH)/include)   \
+                    $(addprefix -I,$(_TC_AUTH_MANAGER_PATH)/include)   \
+					$(addprefix -I,$(_TC_IMAGE_MANAGER_PATH)/include) \
+                    $(addprefix -I,$(_TC_FILE_MANAGER_PATH)/include) \
+					$(addprefix -I,$(_TC_VMCFG_MANAGER_PATH)/include) \
+					$(addprefix -I,$(_TC_PROJECT_MANAGER_PATH)/include) \
+					$(addprefix -I,$(_TC_OPERATOR_LOG_PATH)/include) \
+					$(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/net-snmp) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/net-snmp/agent) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/net-snmp/data-access) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/net-snmp/library) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/net-snmp/machine) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/net-snmp/system) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/mibII) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/notification) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/notification-log-mib) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/snmp-notification-mib/snmpNotifyFilterTable) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/snmpv3) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/target) \
+                                        $(addprefix -I,$(_TC_SNMP_AGENT_PATH)/include/mibgroup/utilities) \
+                                        $(addprefix -I,$(_TECS_TOOLS_PATH)/license) \
+					                    $(addprefix -I,$(_NETWORK_PUB_PATH)) \
+										$(addprefix -I,$(_NETWORK_LIB_PATH))
+_TC_MACRO_DEF +=
+export CPPFLAGS += $(_TC_INCLUDE_PATH) $(_TC_MACRO_DEF)
+export DEPCPPFLAGS += $(_TC_INCLUDE_PATH) $(_TC_MACRO_DEF)
+
+ifeq (_SVR_TC,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = TC
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -ltecsdb -lworkflow -lnet -lauth -lstorage $(_TECS_TOOLS_PATH)/license/license.a
+##默认库搜索路径以外的其它搜索路径
+#export _OTHER_LINK_PATH = -L/XXX
+endif
+
+ifeq (_SVR_APISVR,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = APISVR
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -ltecsdb -lworkflow -lnet -lxmlrpc_client++ $(_TECS_TOOLS_PATH)/license/license.a
+##默认库搜索路径以外的其它搜索路径
+##export _OTHER_LINK_PATH = -L/XXX
+endif
+
+ifeq (_SVR_IMAGE_MANAGER,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = IMAGE_MANAGER
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -ltecsdb -lworkflow -lauth -lstorage $(_TECS_TOOLS_PATH)/license/license.a
+endif
+
+ifeq (_SVR_FILE_MANAGER,$(_SVR_TYPE))
+##版本文件名
+export _VERSION_NAME = FILE_MANAGER
+##依赖的其它库文件
+export _OTHER_LINK_LIB = -lsky -ltecsdb -lworkflow -lauth  $(_TECS_TOOLS_PATH)/license/license.a
+endif
+
+##依赖的第三方库文件
+_OTHER_LINK_LIB += -lxmlrpc++ -lxmlrpc_server_abyss++ -lpq
+##define TC dynamic lib search path 
+export PROCESS=tc
+

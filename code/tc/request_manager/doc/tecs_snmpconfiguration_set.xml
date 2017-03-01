@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_snmpconfiguration_set.xml">
+	<interface>tecs.snmpconfiguration.set</interface>
+	<shortdesc lang_cn="配置SNMP基本配置" lang_en="Query SNMP basic configuration."/>
+	<description lang_cn="配置SNMP基本配置。如果配置结果返回失败，则返回失败原因。" lang_en="Configure SNMP basic configuration. If the configuration fail, it will return the fault reason. "/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+	    <parameter name="community" type="string" lang_cn="SNMP联合体串" lang_en="SNMP community."/>
+	    <parameter name="trapcommunity" type="string" lang_cn="SNMP Trap联合体串" lang_en="SNMP Trap community."/>
+            <parameter name="trapversion" type="int" lang_cn="TRAP版本" lang_en="Trap version">
+                         <enum name="0" lang_cn="v1" lang_en="v1"/>
+		         <enum name="1" lang_cn="v2c" lang_en="v2c"/>
+	    </parameter>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码:" lang_en="Error code:">
+				<enum name="11000" lang_cn="当前SNMP配置表不存在" lang_en="The SNMP configuration database do not exist"/>
+				<enum name="11001" lang_cn="查询数据库失败" lang_en="Failed to query database"/>
+				<enum name="11002" lang_cn="SNMP配置表新增失败" lang_en="Failed to add a record to the SNMP configuration database"/>
+				<enum name="11003" lang_cn="SNMP配置表更新失败" lang_en="Failed to modify the SNMP configuration database"/>
+				<enum name="11004" lang_cn="配置数据错误" lang_en="Configuration value is wrong"/>
+			</parameter>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.snmpconfiguration.query" href="tecs_snmpconfiguration_query.xml"/>
+	</reference>
+</method>

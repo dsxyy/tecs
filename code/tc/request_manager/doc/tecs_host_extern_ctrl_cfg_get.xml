@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_host_extern_ctrl_cfg_get.xml">
+	<interface>tecs.host.extern_ctrl_cfg_get</interface>
+	<shortdesc lang_cn="物理机外部管理相关配置获取" lang_en="get config of host maintain by extern node."/>
+	<description lang_cn="物理机外部管理相关配置获取" lang_en="get config of host maintain by extern node."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="host_name" type="string" lang_cn="物理机名称，1至64个为数字或字母或下划线的字符。" lang_en="Host name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+
+			<parameter name="node_type" type="string" lang_cn="管理节点的类型" lang_en="type of manager">
+				<enum name=""     lang_cn="没有配置,默认值" lang_en="none,default" />
+				<enum name="ATCA" lang_cn="ATCA 机框" lang_en="ATCA Shelf"/>
+				<enum name="ETCA" lang_cn="ETCA 机框" lang_en="ETCA shelf"/>
+				<enum name="NONE" lang_cn="无外部管理节点" lang_en="无外部管理节点"/>
+			</parameter>
+
+			<parameter name="node_manager" type="string" lang_cn="管理节点的地址" lang_en="address of manager">
+			</parameter>
+
+			<parameter name="node_address" type="string" lang_cn="主机在这个管理节点中的位置" lang_en="address of host in manager">
+			</parameter>
+
+		</success>
+
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered"/>
+				<enum name="1003" lang_cn="错误，集群未注册到TC中" lang_en="Error, cluster have not registered into the Tecs Center"/>
+				<enum name="1004" lang_cn="失败，物理机不存在" lang_en="Failed, host is not exist"/>
+				<enum name="1011" lang_cn="失败, 命令执行失败" lang_en="Failed, command execute failed."/>
+				<enum name="1030" lang_cn="失败，物理机不支持这个操作" lang_en="Failed, the host is not support eht operation"/>
+			</parameter>
+
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.host.extern_ctrl_cmd"     href="tecs_host_extern_ctrl_cmd.xml"/>
+		<xref name="tecs.host.extern_ctrl.query"   href="tecs_host_extern_ctrl_query.xml"/>
+		<xref name="tecs.host.extern_ctrl_cfg_set" href="tecs_host_extern_ctrl_cfg_set.xml"/>
+	</reference>
+</method>

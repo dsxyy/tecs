@@ -1,0 +1,70 @@
+F:\>cd test
+
+F:\test>dir
+ 驱动器 F 中的卷是 新加卷
+ 卷的序列号是 2617-E5D4
+
+ F:\test 的目录
+
+2012/06/21  10:21    <DIR>          .
+2012/06/21  10:21    <DIR>          ..
+2012/06/21  10:18    <DIR>          com
+2012/06/21  10:21               880 FileFtpApplet.html
+2012/06/21  10:21               885 FileFtpApplet.html.bak
+2012/06/21  10:16            20,873 ftp_client.jar
+               3 个文件         22,638 字节
+               3 个目录 92,036,718,592 可用字节
+jar cvf FileFtpForm.jar com\test\ftp\*.class  org\apache\commons\net\*.class org\apache\commons\net\bsd\*.class org\apache\commons\net\chargen\*.class org\apache\commons\net\daytime\*.class org\apache\commons\net\discard\*.class org\apache\commons\net\echo\*.class org\apache\commons\net\finger\*.class org\apache\commons\net\ftp\*.class  org\apache\commons\net\imap\*.class  org\apache\commons\net\io\*.class  org\apache\commons\net\nntp\*.class org\apache\commons\net\ntp\*.class  org\apache\commons\net\pop3\*.class org\apache\commons\net\smtp\*.class org\apache\commons\net\telnet\*.class  org\apache\commons\net\tftp\*.class  org\apache\commons\net\time\*.class  org\apache\commons\net\util\*.class  org\apache\commons\net\whois\*.class org\apache\ws\commons\serialize\*.class org\apache\ws\commons\util\*.class org\apache\xmlrpc\*.class org\apache\xmlrpc\client\*.class org\apache\xmlrpc\client\util\*.class org\apache\xmlrpc\common\*.class org\apache\xmlrpc\jaxb\*.class org\apache\xmlrpc\parser\*.class org\apache\xmlrpc\serializer\*.class org\apache\xmlrpc\util\*.class 
+
+F:\test>keytool -genkey -keystore FileFtpForm.store -alias FileFtpForm -validity 365
+输入keystore密码：
+再次输入新密码:
+您的名字与姓氏是什么？
+  [Unknown]：  a
+您的组织单位名称是什么？
+  [Unknown]：  a
+您的组织名称是什么？
+  [Unknown]：  a
+您所在的城市或区域名称是什么？
+  [Unknown]：  a
+您所在的州或省份名称是什么？
+  [Unknown]：  a
+该单位的两字母国家代码是什么
+  [Unknown]：  a
+CN=a, OU=a, O=a, L=a, ST=a, C=a 正确吗？
+  [否]：  y
+
+输入<FileFtpApplet>的主密码
+        （如果和 keystore 密码相同，按回车）：
+
+F:\test>keytool -export -keystore FileFtpForm.store -alias FileFtpForm -file FileFtpForm.cer
+输入keystore密码：
+保存在文件中的认证 <FileFtpApplet.cer>
+
+F:\test>jarsigner -keystore FileFtpForm.store FileFtpForm.jar FileFtpForm
+输入密钥库的口令短语：
+
+F:\test>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##########################生成policy文件
+keystore"file:F:/test/FileFtpForm.store","JKS";
+grantsignedBy"FileFtpForm"
+{
+permission java.io.FilePermission"<<ALLFILES>>","read";
+}; 
+
+[JAVAHOME]\jre\lib\security 增加：
+policy.url.3=file:F:/test/FileFtpForm.policy

@@ -1,0 +1,23 @@
+
+CREATE OR REPLACE VIEW v_net_logicnetwork_portgroup_netplane AS 
+SELECT 
+  netplane."name" AS netplane_name, 
+  netplane.uuid AS netplane_uuid, 
+  netplane.mtu AS netplane_mtu, 
+  port_group."name" AS pg_name, 
+  port_group.uuid AS pg_uuid, 
+  port_group.mtu AS pg_mtu, 
+  logic_network."name" AS logicnetwork_name, 
+  logic_network.uuid AS logicnetwork_uuid,
+  logic_network.ip_bootprotocolmode AS logicnetwork_ipmode,
+  logic_network.id AS logicnetwork_id 
+FROM 
+  public.port_group, 
+  public.vm_pg, 
+  public.netplane, 
+  public.logic_network
+WHERE 
+  port_group.id = vm_pg.pg_id AND
+  vm_pg.pg_id = logic_network.vm_pg_id AND
+  netplane.id = port_group.netplane_id AND 
+  port_group.netplane_id is not null;

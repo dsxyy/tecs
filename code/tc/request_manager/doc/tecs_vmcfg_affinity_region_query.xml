@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_vmcfg_affinity_region_query.xml">
+	<interface>tecs.vmcfg.affinity_region.query</interface>
+	<shortdesc lang_cn="亲和域查询" lang_en="show affinity region"/>
+	<description lang_cn="亲和域查询。" lang_en="show affinity region."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <parameter name="start_index" type="int64" lang_cn="查询起始位置，起始值为0。" lang_en="query start index, start value is 0."/>
+        <parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-200。" lang_en="num once query,range 1-200."/>
+		<parameter name="type" type="string" lang_cn="查询类型：" lang_en="show type:">
+			<enum name="query_all_self " lang_cn="查询当前用户创建的亲和域" lang_en="show info of affinity region which create by current user"/>
+            <enum name="query_all_appointed" lang_cn="查询指定用户创建的亲和域" lang_en="show info of affinity region which create by user"/>
+			<enum name="query_all" lang_cn="查询所有用户创建的亲和域，仅云管理元可见，其他用户不见该选项" lang_en="show info of all users' affinity region "/>
+			<enum name="query_self_appointed" lang_cn="使用ID查询指定亲和域" lang_en="show affinity region info use affinity region id"/>
+		</parameter>
+		<parameter name="id" type="int64" lang_cn="亲和域id，如果参数type=query_self_appointed,该字段必须是有效的" lang_en="affinity region，if parameter type=query_self_appointed,this parameter must be valid."/>
+        <parameter name="user_name" type="string" lang_cn="用户名，如果参数为flag=query_all_appointed,该字段填写指定的用户名，云管理员有权限。" lang_en="user name，if parameter flag=query_all_appointed,this parameter is user name."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+				<struct name="ApiAffinityRegionInfo">
+					<parameter name="id" type="int64" lang_cn="亲和域 id。" lang_en="affinity region id."/>
+					<parameter name="user_name" type="string" lang_cn="用户名。" lang_en="user name."/>
+					<parameter name="name" type="string" lang_cn="亲和域名称。" lang_en="affinity region name."/>
+					<parameter name="description" type="string" lang_cn="描述信息。" lang_en="description info."/>
+					<parameter name="level" type="string" lang_cn="亲和域级别：" lang_en="affinity region level:">
+						<enum name="shelf" lang_cn="架" lang_en="shelf"/>
+						<enum name="rack" lang_cn="框" lang_en="rack"/>
+						<enum name="board" lang_cn="板" lang_en="board"/>
+					</parameter>
+		            <parameter name="is_forced" type="bool" lang_cn="亲和关系是否必须满足：" lang_en="affinity region relation is forced or not:">
+						<enum name="0" lang_cn="否" lang_en="No"/>
+						<enum name="1" lang_cn="是" lang_en="Yes"/>
+					</parameter>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="6" lang_cn="授权失败 " lang_en="Error, failed to authorize usr's operation"/>
+				<enum name="11" lang_cn="查询数据库失败" lang_en="Error, falied to query database"/>
+				<enum name="17" lang_cn="查询对象不存在" lang_en="Error, object instance not exist"/>
+				<enum name="18" lang_cn="参数无效" lang_en="Error, invalide parameter"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.affinity_region.set" href="tecs_vmcfg_affinity_region_set.xml"/>
+		<xref name="tecs.vmcfg.affinity_region.allocate" href="tecs_vmcfg_affinity_region_allocate.xml"/>
+		<xref name="tecs.vmcfg.affinity_region.delete" href="tecs_vmcfg_affinity_region_delete.xml"/>
+	</reference>
+</method>

@@ -1,0 +1,288 @@
+
+
+-- 网络平面添加 
+-- Function: pf_net_add_netplane(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_netplane(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_netplane(in_netplane_name character varying, in_netplane_uuid character varying, in_des character varying, in_mtu integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_conflict integer;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否已存在相同记录
+  SELECT count(*) INTO is_same FROM netplane WHERE name = in_netplane_name AND description = in_des  AND mtu = in_mtu;  
+--  SELECT count(*) INTO is_same FROM netplane WHERE name = in_netplane_name  AND description = in_des AND mtu = in_mtu;    
+  IF is_same > 0 THEN
+     result.ret := RTN_HAS_SAME_ITEM;   -- has same item
+     SELECT id INTO result.id FROM netplane WHERE name = in_netplane_name;
+     SELECT uuid INTO result.uuid FROM netplane WHERE name = in_netplane_name;
+     return result;
+  END IF;
+
+  -- netplane 名称是否冲突
+  SELECT count(*) INTO is_conflict FROM netplane WHERE name = in_netplane_name ;
+  IF is_conflict > 0 THEN
+     result.ret := RTN_ITEM_CONFLICT; -- conflict 
+     return result;
+  END IF;
+
+  -- insert item
+  result.id := nextval('serial_netplane');
+  result.uuid := $2;
+  BEGIN 
+    INSERT INTO netplane values(result.id,in_netplane_name,in_netplane_uuid,in_des,in_mtu);
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_netplane(character varying, character varying, character varying, integer) OWNER TO tecs;
+
+
+-- 网络平面修改
+-- Function: pf_net_modify_netplane(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_modify_netplane(in_netplane_uuid character varying, in_netplane_name character varying, in_des character varying, in_mtu integer);
+
+CREATE OR REPLACE FUNCTION pf_net_modify_netplane(in_netplane_uuid character varying, in_netplane_name character varying, in_des character varying, in_mtu integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  netplaneid  numeric(19,0);
+  max_pg_mtu integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG  integer := 5;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否已存在相同记录
+  SELECT count(*) INTO is_same FROM netplane WHERE uuid = in_netplane_uuid AND name = in_netplane_name AND description = in_des AND mtu = in_mtu;  
+  IF is_same > 0 THEN
+     result.ret := RTN_HAS_SAME_ITEM; -- same item
+     SELECT id INTO result.id FROM netplane WHERE uuid = in_netplane_uuid;
+     return result;
+  END IF;
+
+  --  netplane uuid记录是否存在
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_netplane_uuid ;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_netplane_uuid ;
+  IF is_exist <= 0 THEN
+     result.ret := RTN_ITEM_NO_EXIST;-- don't exist item 
+     return result;     
+  END IF;
+  
+  -- netplane uuid name
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_netplane_uuid AND name = in_netplane_name;
+  IF is_exist <= 0 THEN
+     SELECT count(*) INTO is_exist FROM netplane WHERE name = in_netplane_name;
+     IF is_exist > 0 THEN
+       result.ret := RTN_ITEM_CONFLICT;-- netplane
+       return result;          
+     END IF;
+  END IF;
+
+  -- mtu 检查 不能比PG mtu小
+  SELECT max(mtu) INTO max_pg_mtu FROM port_group WHERE netplane_id = netplaneid;
+  IF max_pg_mtu > in_mtu THEN
+      result.ret := RTN_NETPLANE_MTU_LESS_PG;-- pg mtu > np mtu
+      return result;
+  END IF; 
+/*  
+  SELECT count('PG_mtu') into is_exist FROM v_net_netplane_uplinkpg WHERE 'NP_uuid' = in_netplane_uuid ;
+  IF is_exist > 0 THEN  
+    SELECT max('PG_mtu') into max_pg_mtu FROM v_net_netplane_uplinkpg WHERE 'NP_uuid' = in_netplane_uuid ;
+--    RAISE EXCEPTION 'max_pg_mtu here is %', max_pg_mtu;
+    IF max_pg_mtu > in_mtu THEN
+      result.ret := RTN_NETPLANE_MTU_LESS_PG;-- pg mtu > np mtu
+      return result;
+    END IF;
+  END IF;
+   */
+  -- modify item
+  BEGIN 
+    SELECT id INTO result.id FROM netplane WHERE uuid = in_netplane_uuid;
+    SELECT uuid INTO result.uuid FROM netplane WHERE uuid = in_netplane_uuid;    
+    UPDATE netplane SET name = in_netplane_name, description = in_des, mtu = in_mtu WHERE uuid = in_netplane_uuid ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_netplane(character varying, character varying, character varying, integer) OWNER TO tecs;
+
+
+
+-- 删除网络平面
+-- Function: pf_net_del_netplane(character varying)
+
+-- DROP FUNCTION pf_net_del_netplane(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_del_netplane(netplane_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  max_pg_mtu integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否存在记录
+  SELECT count(*) INTO is_same FROM netplane WHERE uuid = $1 ;  
+  IF is_same <= 0 THEN
+     result.ret := RTN_ITEM_NO_EXIST;-- does not exist item
+     return result;
+  END IF;
+
+  -- netplane 是否被占用  
+  -- PG
+  SELECT count(*) INTO is_exist FROM netplane,port_group WHERE netplane.uuid = $1 AND netplane.id = port_group.netplane_id;
+  IF is_exist > 0 THEN
+     result.ret := RTN_RESOURCE_USING;-- resource has been using
+     return result;
+  END IF;
+
+  -- vlan_range 
+  SELECT count(*) INTO is_exist FROM netplane,vlan_range WHERE netplane.uuid = $1 AND netplane.id = vlan_range.netplane_id;
+  IF is_exist > 0 THEN
+     result.ret := RTN_RESOURCE_USING;-- resource has been using
+     return result;
+  END IF;
+
+  -- mac_pool 
+  SELECT count(*) INTO is_exist FROM netplane,mac_pool WHERE netplane.uuid = $1 AND netplane.id = mac_pool.netplane_id;
+  IF is_exist > 0 THEN
+     result.ret := RTN_RESOURCE_USING;-- resource has been using
+     return result;
+  END IF;
+
+  -- mac_range 
+  SELECT count(*) INTO is_exist FROM netplane,mac_range WHERE netplane.uuid = $1 AND netplane.id = mac_range.netplane_id;
+  IF is_exist > 0 THEN
+     result.ret := RTN_RESOURCE_USING;-- resource has been using
+     return result;
+  END IF;
+
+  -- vlan_pool 
+  SELECT count(*) INTO is_exist FROM netplane,vlan_pool WHERE netplane.uuid = $1 AND netplane.id = vlan_pool.netplane_id;
+  IF is_exist > 0 THEN
+     result.ret := RTN_RESOURCE_USING;-- resource has been using
+     return result;
+  END IF;
+
+  -- ip_range 
+  SELECT count(*) INTO is_exist FROM netplane,ip_range WHERE netplane.uuid = $1 AND netplane.id = ip_range.netplane_id;
+  IF is_exist > 0 THEN
+     result.ret := RTN_RESOURCE_USING;-- resource has been using
+     return result;
+  END IF;
+   
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM netplane WHERE uuid = $1 ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_netplane(character varying) OWNER TO tecs;
+
+
+
+--- 查询网络平面 summary
+--- 输出 name,uuid
+-- Function: pf_net_query_netplane_summary()
+
+-- DROP FUNCTION pf_net_query_netplane_summary();
+
+CREATE OR REPLACE FUNCTION pf_net_query_netplane_summary()
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+        ref refcursor;
+BEGIN
+       OPEN ref FOR SELECT name,uuid FROM netplane;
+       RETURN ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_netplane_summary() OWNER TO tecs;
+
+
+
+-- 查询网络平面 
+-- 输出 uuid,name,description,mtu
+-- Function: pf_net_query_netplane(character varying)
+
+-- DROP FUNCTION pf_net_query_netplane(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_query_netplane(netplane_uuid character varying)
+  RETURNS t_netplane_query AS
+$BODY$
+DECLARE
+  result  t_netplane_query;
+  is_exist integer;
+  RTN_ITEM_NO_EXIST integer :=4;
+BEGIN
+--  SELECT uuid into result.uuid, name into result.name,description into result.description,mtu into result.mtu FROM netplane WHERE uuid = $1;
+  result.ret := 0;
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = $1;
+  IF is_exist > 0 THEN
+     result.ret := 0;
+  ELSE
+     result.ret := RTN_ITEM_NO_EXIST; -- no exist item
+     return result;     
+  END IF;
+
+   SELECT uuid into result.uuid  FROM netplane WHERE uuid = $1;
+   SELECT name into result.netplane_name  FROM netplane WHERE uuid = $1;
+   SELECT description into result.description  FROM netplane WHERE uuid = $1;
+   SELECT mtu into result.mtu  FROM netplane WHERE uuid = $1;   
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_netplane(character varying) OWNER TO tecs;
+
+
+
+
+

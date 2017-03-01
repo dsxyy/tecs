@@ -1,0 +1,73 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# Copyright (c) 2011，中兴通讯股份有限公司，All rights reserved.
+# 
+# 文件名称：autoupdate
+# 文件标识：
+# 内容摘要：自动化升级脚本
+# 当前版本：1.0
+# 作    者：彭伟
+# 完成日期：2012/3/22
+#
+# 修改记录1：
+#     修改日期：2012/3/22
+#     版 本 号：V1.0
+#     修 改 人：彭伟
+#     修改内容：创建
+#------------------------------------------------------------------------------
+
+
+#1. class:updatesh--自动更新脚本；
+#   arg:$1 dir:所在目录 
+#   style:updatesh $dir
+updatesh()
+{
+    local dir=$1
+    cd $dir
+    chmod +x ./*
+    
+    if ! [ -w update.log ]; then
+      echo -e "filename\t\tmodifytime" >update.log  
+      for i in `ls *.sh`
+        do
+        mtime=`stat $i|grep -i "Modify"|awk -F. '{print $1}'|awk -F ' ' '{print $2" "$3}'`
+        echo -e "$i\t\t$mtime">>update.log
+      done
+      
+      cp -f *.sh /usr/local/bin
+      echo "Congratulations! generate update.log and update all sh success!"
+    
+    else
+            
+    for i in `ls *.sh`
+    do 
+      match=`cat update.log|grep -o "$i"`     
+      if [ -z $match ];then
+        mtime=`stat $i|grep -i "Modify"|awk -F. '{print $1}'|awk -F ' ' '{print $2" "$3}'`
+        echo -e "$i\t\t$mtime">>update.log
+        
+        cp -f $i /usr/local/bin
+        echo "add new $i success!"
+      else
+        oldtime=`cat update.log|grep -i "$i"|awk -F ' ' '{print $2" "$3}'`
+        oldsec=`date -d "$oldtime" +%s`
+        newtime=`stat $i|grep -i "Modify"|awk -F. '{print $1}'|awk -F ' ' '{print $2" "$3}'`
+        newsec=`date -d "$newtime" +%s`
+        if [ "${newsec}" -gt "${oldsec}" ];then
+          sed -i "s/$i.*/$i\t\t$newtime/" update.log
+          
+          cp -f $i /usr/local/bin
+          echo "update $i success!"
+        fi
+      fi
+    done 
+    
+    fi           
+}
+
+if [ -z $1 ]; then
+   updatesh ./
+else
+   updatesh $1
+fi
+    

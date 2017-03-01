@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_project_save_as_image.xml">
+	<interface>tecs.project.save_as_image</interface>
+	<shortdesc lang_cn="工程保存为镜像" lang_en="project save as a image"/>
+	<description lang_cn="工程保存为镜像。" lang_en="project save as a image."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <struct name="ApiProjectSaveAsImageData">
+    		<parameter name="project_name" type="string" lang_cn="工程名称,长度范围 1-32。" lang_en="project name,length range 1-32."/>
+    		<parameter name="is_deployed_only" type="bool" lang_cn="是否只包含已部署的虚拟机:" lang_en="is contain deployed vms only:">
+    			<enum name="0" lang_cn="否" lang_en="NO"/>
+    			<enum name="1" lang_cn="是" lang_en="YES"/>
+    		</parameter>
+    		<parameter name="is_image_save" type="bool" lang_cn="是否包含虚拟机镜像:" lang_en="is contain vm's image:">
+    			<enum name="0" lang_cn="否" lang_en="NO"/>
+    			<enum name="1" lang_cn="是" lang_en="YES"/>
+    		</parameter>
+    		<parameter name="description" type="string" lang_cn="工程镜像描述信息,长度范围 1-512。" lang_en="project image description,length range 1-512."/>
+    	</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="17" lang_cn="工程不存在" lang_en="project not exist"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.project.create_by_image" href="tecs_project_create_by_image.xml"/>
+	</reference>
+</method>

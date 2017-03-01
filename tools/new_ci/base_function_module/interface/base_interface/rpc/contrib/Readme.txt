@@ -1,0 +1,3 @@
+这个目录下存放测试用例中需要的第三方模块代码，这些代码是python标准库里面找不到的，所以必须自己维护
+xmlrpclibex.py是在python的xmlrpc标准库基础上改的，因为标准的xmlrpclib.py不支持i8数据类型，
+而tecs中多处使用了int64，它就是对应于xmlrpc协议中的i8

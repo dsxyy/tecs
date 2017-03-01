@@ -1,0 +1,85 @@
+
+# description: Starts and stops the nicchk daemons.
+### BEGIN INIT INFO
+# Provides: ZTE
+# Should-Start: 
+# Default-Start: 3 4 5
+# Short-Description: Start/stop nicchk daemons
+# Description: Starts and stops the nicchk daemons.
+### END INIT INFO
+
+# processname: 
+# pidfile: 
+#
+# chkconfig: 2345 99 00
+# description: Starts and stops the tecs-hc daemons.
+
+# Default-Start: 3 4 5
+# Short-Description: Start/stop nicchk daemons
+# Description: Starts and stops the nicchk daemons.
+### END INIT INFO
+
+# processname: 
+# pidfile: 
+#
+# Source function library.
+if [ -f /etc/init.d/functions ] ; then
+  . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+  . /etc/rc.d/init.d/functions
+else
+  exit 1
+fi
+
+
+SERVICE=nicchk
+
+
+############################################################################
+
+
+start() {
+    echo -n "Starting $SERVICE: "
+    daemon  /usr/bin/nicchk.py 
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SERVICE
+}
+
+stop() {
+    echo -n "Stopping $SERVICE: "
+    killproc $SERVICE
+    /usr/bin/nicchk.py stop
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$SERVICE
+}
+
+probe(){
+    /usr/bin/nicchk.py probe
+    RETVAL=$?
+}
+_status() {
+
+    status $SERVICE    
+}
+
+restart() {
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start|stop|restart|probe)
+        $1
+        ;;
+    status)
+     _status
+     ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|probe}"
+	exit 1
+        ;;
+esac
+exit $RETVAL

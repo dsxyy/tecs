@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_host_forget.xml">
+	<interface>tecs.host.forget</interface>
+	<shortdesc lang_cn="将已注销物理机从集群中遗忘掉" lang_en="Forget the unregistered host from cluster."/>
+	<description lang_cn="将已注销物理机从集群中遗忘掉。由于已注销的物理机会被禁止自动注册到集群中，通过“遗忘”动作能够将物理机从集群中清除。假如集群配置为允许物理机自动注册，则被遗忘的物理机后续也能够自动注册进来。" lang_en="Forget the unregistered host from cluster. The unregistered host is forbidden register into the cluster, forget the host can clear the host from the cluster. If the cluster is configured allow host auto register, the forgotten host can be auto registered in."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="host_name" type="string" lang_cn="物理机名称，1至64个为数字或字母或下划线的字符。" lang_en="Host name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered"/>
+				<enum name="1003" lang_cn="错误，集群未注册到TC中" lang_en="Error, cluster have not registered into the Tecs Center"/>
+				<enum name="1004" lang_cn="失败，物理机不存在" lang_en="Failed, host is not exist"/>
+				<enum name="1008" lang_cn="失败，物理机上有虚拟机运行" lang_en="Failed, there are some VMs running on the host"/>				
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.host.query" href="tecs_host_query.xml"/>
+	</reference>
+</method>

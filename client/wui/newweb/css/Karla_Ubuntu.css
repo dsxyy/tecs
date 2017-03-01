@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'Karla';
+  font-style: normal;
+  font-weight: 400;
+  src: url(8gO-GQO6h3meAtqRrd890A.eot);
+  src: local('Karla'), local('Karla-Regular'), url(./8gO-GQO6h3meAtqRrd890A.eot) format('embedded-opentype'), url(azR40LUJrT4HaWK28zHmVA.woff) format('woff');
+}
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: url(_tMhxyW6i8lbI7YsUdFlGA.eot);
+  src: local('Ubuntu'), url(./_tMhxyW6i8lbI7YsUdFlGA.eot) format('embedded-opentype'), url(./_xyN3apAT_yRRDeqB3sPRg.woff) format('woff');
+}

@@ -1,0 +1,681 @@
+
+  
+--调度选择合适的 vna， 必须存在cluster才能参与调度 
+CREATE OR REPLACE VIEW v_net_schedule_vna_hc_cluster AS  
+SELECT 
+  vna_uuid, 
+  module_name, 
+  module_uuid, 
+  module_role, 
+  cluster_name, 
+  vna_application, 
+  vnm_application, 
+  host_name, 
+  vna_id
+FROM 
+  v_net_vna_hc_cluster
+WHERE 
+  module_is_online = 1 AND 
+  vna_is_online = 1; 
+  
+
+-- 调度选择合适的sriov vf，
+-- free sriov vf port view 
+CREATE OR REPLACE VIEW v_net_schedule_free_sriov_vf_port_vna AS   
+SELECT 
+  distinct 
+  vna_uuid, 
+  vna_is_online,
+  sriov_name, 
+  sriov_uuid, 
+  sriov_id, 
+  sriov_is_online,
+  sriov_is_consistency,
+  sriov_admin_state,
+  vf_name, 
+  vf_uuid, 
+  vf_id, 
+  pci, 
+  vlan_num,
+  vf_is_online,
+  vf_is_consistency,
+  vf_is_cfg,
+  vf_admin_state 
+FROM 
+  v_net_free_sriov_vf_port_vna 
+WHERE 
+  vna_is_online = 1 AND 
+  sriov_is_online = 1 AND sriov_is_consistency = 1 AND 
+  vf_is_online = 1 AND vf_is_consistency = 1 ;
+
+  
+-- 调度选择合适的bond 端口; 
+-- free sriov vf port view 
+CREATE OR REPLACE VIEW v_net_schedule_bond_free_sriov_vf_port_vna AS   
+SELECT 
+  distinct   
+  bond_name, 
+  bond_uuid, 
+  vna_uuid, 
+  vna_is_online, 
+  phy_uuid, 
+  phy_name, 
+  phy_is_online,
+  phy_is_consistency,
+  phy_admin_state,
+  vf_uuid, 
+  pci, 
+  vlan_num, 
+  vf_name,
+  vf_is_online,
+  vf_is_consistency,
+  vf_is_cfg,
+  vf_admin_state 
+FROM 
+  v_net_bond_phy_free_sriov_vf_port_vna 
+WHERE 
+  vna_is_online = 1 AND 
+  phy_is_online = 1 AND phy_is_consistency = 1 AND 
+  vf_is_online = 1 AND vf_is_consistency = 1;
+  
+  
+-- 调度选择，查看某端口是否是loop 
+CREATE OR REPLACE VIEW v_net_schedule_port_is_loop AS   
+SELECT 
+  distinct
+  id,
+  uuid, 
+  port_type, 
+  name,
+  admin_state,
+  is_online,
+  is_cfg,
+  is_consistency,
+  CASE 
+     WHEN (SELECT is_loop_report  IS NOT NULL FROM sriov_port b WHERE a.id = b.physical_port_id  )
+         THEN (SELECT is_loop_report FROM sriov_port b WHERE a.id = b.physical_port_id)
+     WHEN (port_type = 4 ) THEN ( 1)
+     ELSE (0 ) 
+  END AS  port_is_loop 
+FROM 
+  port a
+WHERE 
+  is_online = 1 AND is_consistency = 1;
+  
+
+  
+  
+  
+  
+-- 调度选择合适的port   vswitch_map 
+-- vsi 端口数不能大于switch配置的
+CREATE OR REPLACE VIEW v_net_schedule_switch_port_vna AS   
+
+SELECT 
+  distinct   
+  v_net_vna_hc_cluster.vna_uuid, 
+  v_net_vna_hc_cluster.vna_is_online, 
+  v_net_vna_hc_cluster.module_name, 
+  v_net_vna_hc_cluster.module_uuid, 
+  v_net_vna_hc_cluster.module_is_online, 
+  v_net_vna_hc_cluster.cluster_name, 
+  v_net_vna_hc_cluster.vna_application, 
+  v_net_vna_hc_cluster.vnm_application, 
+  v_net_vna_hc_cluster.host_name, 
+  v_net_switch_port_vna.port_uuid, 
+  v_net_switch_port_vna.port_name, 
+  v_net_switch_port_vna.port_type, 
+  v_net_switch_port_vna.switch_type, 
+  v_net_switch_port_vna.switch_name, 
+  v_net_switch_port_vna.switch_uuid,
+  v_net_switch_port_vna.is_active AS switch_is_active,
+  v_net_switch_port_vna.evb_mode AS switch_evb_mode,
+  v_net_switch_port_vna.uplink_pg_id AS switch_uplink_pg_id,
+  v_net_switch_port_vna.nic_max_num_cfg AS switch_nic_max_num_cfg,
+  v_net_switch_port_vna.switch_id,
+  v_net_switch_port_vna.port_admin_state,
+  v_net_switch_port_vna.port_is_online,
+  v_net_switch_port_vna.port_is_cfg,
+  v_net_switch_port_vna.port_is_consistency,
+(SELECT count(*) FROM vsi_profile WHERE virtual_switch_id = v_net_switch_port_vna.switch_id)  AS switch_current_nic_num,
+  v_net_schedule_port_is_loop.port_is_loop
+FROM 
+  v_net_vna_hc_cluster, 
+  v_net_switch_port_vna,
+  v_net_schedule_port_is_loop
+WHERE 
+  v_net_vna_hc_cluster.vna_uuid = v_net_switch_port_vna.vna_uuid AND 
+  v_net_vna_hc_cluster.vna_is_online = 1 AND v_net_vna_hc_cluster.module_is_online = 1  AND 
+  (v_net_switch_port_vna.nic_max_num_cfg > (SELECT count(*) FROM vsi_profile WHERE virtual_switch_id = v_net_switch_port_vna.switch_id) ) AND 
+  v_net_switch_port_vna.port_is_online = 1 AND v_net_switch_port_vna.port_is_consistency = 1 AND 
+  v_net_switch_port_vna.switch_map_is_consistency = 1 AND 
+  v_net_switch_port_vna.port_uuid = v_net_schedule_port_is_loop.uuid;
+  
+  
+
+
+-- 查看bond phy 成员口的sriov空闲情况 
+CREATE OR REPLACE VIEW v_net_schedule_edvs_bond_phy_free_sriov_vf_statistic AS   
+SELECT 
+  a.bond_name, 
+  a.bond_uuid, 
+  a.bond_mode, 
+  a.vna_uuid, 
+  a.vna_is_online,  
+  a.phy_name, 
+  a.phy_uuid, 
+  a.phy_is_online,
+  a.phy_is_consistency,
+  a.phy_admin_state,
+  (SELECT count(*) FROM v_net_bond_phy_free_sriov_vf_port_vna b 
+   WHERE  
+     a.bond_uuid = b.bond_uuid AND a.phy_uuid = b.phy_uuid AND 
+	 b.vf_is_consistency = 1 ) AS port_free_sriov_num 
+FROM 
+  v_net_bondmap_bond_phy a
+WHERE 
+  a.vna_is_online = 1 AND a.phy_is_consistency = 1;  
+  
+
+  
+-- 调度选择合适的edvs switch 
+CREATE OR REPLACE VIEW v_net_schedule_edvs_port_vna_free_sriovvf AS   
+SELECT   
+  distinct   
+  
+  a.vna_uuid, 
+  a.vna_is_online, 
+  a.module_name, 
+  a.module_uuid, 
+  a.module_is_online, 
+  a.cluster_name, 
+  a.vna_application, 
+  a.vnm_application, 
+  a.host_name, 
+  
+  a.port_uuid, 
+  a.port_name, 
+  a.port_type, 
+  a.switch_type, 
+  a.switch_name, 
+  a.switch_uuid,
+  CASE 
+     WHEN (port_type = 1 ) THEN (SELECT count(*)  FROM v_net_schedule_bond_free_sriov_vf_port_vna b 
+               WHERE a.vna_uuid = b.vna_uuid AND a.port_uuid = b.bond_uuid )
+     WHEN (port_type = 0 ) THEN (SELECT count(*)  FROM v_net_schedule_free_sriov_vf_port_vna b 
+               WHERE a.vna_uuid = b.vna_uuid AND a.port_uuid = b.sriov_uuid )
+     ELSE (0 ) 
+  END AS  sriov_free_num,
+
+  c.phy_uuid AS phy_port_uuid,
+  c.phy_name AS phy_port_name,
+  c.port_free_sriov_num AS phy_port_sriov_free_num,
+
+  CASE 
+     WHEN (port_type = 1 ) THEN (SELECT count(*)  FROM v_net_schedule_edvs_bond_phy_free_sriov_vf_statistic d 
+               WHERE a.port_uuid = d.bond_uuid  )
+     ELSE (0 ) 
+  END AS  bond_total_phy_port_num, 
+  CASE 
+     WHEN (port_type = 1 ) THEN (SELECT count(*)  FROM v_net_schedule_edvs_bond_phy_free_sriov_vf_statistic d 
+               WHERE a.port_uuid = d.bond_uuid AND ( d.port_free_sriov_num > 0 ) )
+     ELSE (0 ) 
+  END AS  bond_valid_phy_port_num, 
+
+  a.switch_is_active,
+  a.switch_evb_mode,
+  a.switch_uplink_pg_id,
+  a.switch_nic_max_num_cfg,
+  a.switch_current_nic_num,
+  a.switch_id,
+  a.port_is_loop
+FROM   
+  v_net_schedule_switch_port_vna a
+
+LEFT JOIN v_net_schedule_edvs_bond_phy_free_sriov_vf_statistic c ON 
+  a.port_uuid = c.bond_uuid 
+
+WHERE 
+  a.vna_is_online = 1 AND a.switch_type = 2  
+ AND ( ( (port_type = 1) AND (c.port_free_sriov_num > 0 ) ) OR (port_type = 0) ) 
+  order by vna_uuid, switch_uuid, bond_valid_phy_port_num DESC, port_name, sriov_free_num DESC, phy_port_sriov_free_num DESC;
+
+
+  
+
+  
+  
+-- 调度选择合适的sdvs switch 
+CREATE OR REPLACE VIEW v_net_schedule_sdvs_port_vna AS   
+SELECT   
+  distinct   
+  vna_uuid, 
+  vna_is_online, 
+  module_name, 
+  module_uuid, 
+  module_is_online, 
+  cluster_name, 
+  vna_application, 
+  vnm_application, 
+  host_name, 
+  port_uuid, 
+  port_name, 
+  port_type, 
+  switch_type, 
+  switch_name, 
+  switch_uuid,
+  switch_is_active,
+  switch_evb_mode,
+  switch_uplink_pg_id,
+  switch_nic_max_num_cfg,
+  switch_current_nic_num,
+  switch_id,
+  port_is_loop
+FROM   
+  v_net_schedule_switch_port_vna a 
+WHERE 
+  vna_is_online = 1 AND switch_type = 1;  
+  
+  
+-- 调度创建uplink pg 视图
+CREATE OR REPLACE VIEW v_net_uplink_pg_netplane AS   
+SELECT 
+  distinct   
+  port_group."name" AS uplink_pg_name, 
+  port_group.uuid AS uplink_pg_uuid, 
+  port_group.mtu AS uplink_pg_mtu, 
+  port_group.netplane_id AS uplink_pg_netplane_id, 
+  port_group.switchport_mode AS uplink_pg_switchport_mode, 
+  port_group.allow_mac_change AS upilnk_pg_allow_mac_change, 
+  port_group.id AS uplink_pg_id, 
+  port_group.pg_type AS uplink_pg_type, 
+  netplane.uuid AS netplane_uuid, 
+  netplane."name" AS netplane_name,
+  netplane.id AS netplane_id
+FROM 
+  port_group, 
+  uplink_pg, 
+  netplane
+WHERE 
+  port_group.netplane_id = netplane.id AND
+  uplink_pg.pg_id = port_group.id;
+
+  -- 调度创建vm pg 视图
+CREATE OR REPLACE VIEW v_net_vm_pg_netplane AS   
+SELECT 
+  distinct   
+  port_group."name" AS vm_pg_name, 
+  port_group.uuid AS vm_pg_uuid, 
+  port_group.mtu AS vm_pg_mtu, 
+  port_group.netplane_id AS vm_pg_netplane_id, 
+  port_group.switchport_mode AS vm_pg_switchport_mode, 
+  port_group.allow_mac_change AS vm_allow_mac_change, 
+  port_group.id AS vm_pg_id, 
+  port_group.pg_type AS vm_pg_type, 
+  netplane.uuid AS netplane_uuid, 
+  netplane."name" AS netplane_name,
+  netplane.id AS netplane_id
+FROM 
+  port_group, 
+  vm_pg, 
+  netplane
+WHERE 
+  port_group.netplane_id = netplane.id AND
+  vm_pg.pg_id = port_group.id;
+
+
+-- 调度选择合适的uplink pg,创建uplink pg, vm_pg视图
+-- 
+CREATE OR REPLACE VIEW v_net_schedule_uplink_pg_by_vm_pg AS   
+SELECT 
+  distinct   
+  a.uplink_pg_name, 
+  a.uplink_pg_uuid, 
+  a.uplink_pg_mtu, 
+  a.uplink_pg_netplane_id, 
+  a.uplink_pg_switchport_mode, 
+  a.upilnk_pg_allow_mac_change, 
+  a.uplink_pg_id, 
+  a.uplink_pg_type, 
+  a.netplane_uuid, 
+  a.netplane_name,
+  b.vm_pg_name, 
+  b.vm_pg_uuid, 
+  b.vm_pg_mtu, 
+  b.vm_pg_id,
+  b.vm_allow_mac_change
+FROM 
+  v_net_uplink_pg_netplane a,
+  v_net_vm_pg_netplane b 
+WHERE 
+  a.netplane_id = b.netplane_id AND a.uplink_pg_mtu >= b.vm_pg_mtu ; 
+  
+  
+
+  
+  
+
+
+-- 调度使用 查看vnic 视图（mac，ip，sriov，switch，vna， hc ，cluster）
+-- 以后实现，作为调度的优化项 
+-- vsi vnic 资源视图   
+
+CREATE OR REPLACE VIEW v_net_vsi_vnic_resource AS    
+SELECT    
+  vnic_vm_id, 
+  vnic_nic_index, 
+  vnic_is_sriov, 
+  vnic_project_id, 
+  vnic_is_loop, 
+  vnic_logic_network_uuid, 
+  vnic_port_type, 
+  vnic_host_name, 
+  vnic_cluster_name, 
+  vnic_id, 
+  vsi_profile_id,
+  vsi_id_value, 
+  vsi_id_format, 
+  vsi_vm_pg_id, 
+  vsi_mac_id, 
+  vsi_logic_network_ip_id, 
+  vsi_virtual_switch_id,
+  CASE 
+     WHEN (SELECT b.sriov_vf_port_id  is not null  FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+       THEN (1)
+     ELSE (0) 
+  END AS  is_has_sriovvf,
+  CASE 
+     WHEN (SELECT b.sriov_vf_port_id  is not null  FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+       THEN (SELECT c.pci FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+     ELSE (null) 
+  END AS  sriov_vf_pci,
+  CASE 
+     WHEN (SELECT b.sriov_vf_port_id  is not null  FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+       THEN (SELECT c.uuid FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+     ELSE (null) 
+  END AS  sriov_vf_uuid,
+  CASE 
+     WHEN (SELECT b.sriov_vf_port_id  is not null  FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+       THEN (SELECT c.name FROM v_net_sriov_vf_port_vna c, vsi_sriov b
+               WHERE a.vsi_profile_id = b.vsi_profile_id AND b.sriov_vf_port_id = c.id )
+     ELSE (null) 
+  END AS  sriov_vf_name,
+  
+  CASE 
+     WHEN (SELECT a.vsi_vm_pg_id  is not null  FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id )
+       THEN (1)
+     ELSE (0) 
+  END AS  is_has_vmpg,
+  
+  CASE 
+     WHEN (SELECT a.vsi_vm_pg_id  is not null  FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id )
+       THEN (SELECT b.uuid FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id)
+     ELSE (null) 
+  END AS  vmpg_uuid,
+  CASE 
+     WHEN (SELECT a.vsi_vm_pg_id  is not null  FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id )
+       THEN (SELECT b.name FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id)
+     ELSE (null) 
+  END AS  vmpg_name,
+  CASE 
+     WHEN (SELECT a.vsi_vm_pg_id  is not null  FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id )
+       THEN (SELECT b.pg_type FROM port_group b
+               WHERE a.vsi_vm_pg_id = b.id)
+     ELSE (null) 
+  END AS  vmpg_type,
+  
+  CASE 
+     WHEN (SELECT a.vsi_mac_id  is not null  FROM mac_pool b
+               WHERE a.vsi_mac_id = b.id )
+       THEN (SELECT b.mac FROM mac_pool b
+               WHERE a.vsi_mac_id = b.id )
+     ELSE (null) 
+  END AS mac,
+  
+  CASE 
+     WHEN (SELECT a.vsi_logic_network_ip_id  is not null  FROM logic_network_ip_pool b
+               WHERE a.vsi_logic_network_ip_id = b.id )
+       THEN (1)
+     ELSE (0) 
+  END AS  is_has_ip,  
+  CASE 
+     WHEN (SELECT a.vsi_logic_network_ip_id  is not null  FROM logic_network_ip_pool b
+               WHERE a.vsi_logic_network_ip_id = b.id )
+       THEN (SELECT b.ip FROM logic_network_ip_pool b
+               WHERE a.vsi_logic_network_ip_id = b.id )
+     ELSE (null) 
+  END AS ip,
+  
+  CASE 
+     WHEN (SELECT a.vsi_virtual_switch_id  is not null  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id )
+       THEN (1)
+     ELSE (0) 
+  END AS  is_has_switch,  
+  CASE 
+     WHEN (SELECT a.vsi_virtual_switch_id  is not null  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id )
+         THEN ( SELECT b.uuid  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id)
+     ELSE (null) 
+  END AS  switch_uuid,  
+  CASE 
+     WHEN (SELECT a.vsi_virtual_switch_id  is not null  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id )
+       THEN (SELECT b.name  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id)
+     ELSE (null) 
+  END AS  switch_name,
+  CASE 
+     WHEN (SELECT a.vsi_virtual_switch_id  is not null  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id )
+       THEN (SELECT b.switch_type  FROM v_net_vswitch b
+               WHERE a.vsi_virtual_switch_id = b.id)
+     ELSE (null) 
+  END AS  switch_type
+  
+FROM
+   v_net_vsi_vnic a ;
+   
+
+
+
+-- 通过project 查询到之前 的虚拟机部署 
+-- DVS,VNA,IS_LOOP
+
+CREATE OR REPLACE VIEW v_net_deploy_vsi AS    
+SELECT 
+  v_net_vsi_vnic_resource.vnic_vm_id, 
+  v_net_vsi_vnic_resource.vnic_nic_index, 
+  v_net_vsi_vnic_resource.vnic_is_sriov, 
+  v_net_vsi_vnic_resource.vnic_project_id, 
+  v_net_vsi_vnic_resource.vnic_is_loop, 
+  v_net_vsi_vnic_resource.vnic_logic_network_uuid, 
+  v_net_vsi_vnic_resource.vnic_port_type, 
+  v_net_vsi_vnic_resource.vnic_host_name, 
+  v_net_vsi_vnic_resource.vnic_cluster_name, 
+  v_net_vsi_vnic_resource.vnic_id, 
+  v_net_vsi_vnic_resource.vsi_profile_id, 
+  v_net_vsi_vnic_resource.vsi_id_format, 
+  v_net_vsi_vnic_resource.vsi_id_value, 
+  v_net_vsi_vnic_resource.vsi_vm_pg_id, 
+  v_net_vsi_vnic_resource.vsi_mac_id, 
+  v_net_vsi_vnic_resource.vsi_logic_network_ip_id, 
+  v_net_vsi_vnic_resource.vsi_virtual_switch_id, 
+  v_net_vsi_vnic_resource.is_has_sriovvf, 
+  v_net_vsi_vnic_resource.sriov_vf_pci, 
+  v_net_vsi_vnic_resource.sriov_vf_uuid, 
+  v_net_vsi_vnic_resource.sriov_vf_name, 
+  v_net_vsi_vnic_resource.is_has_vmpg, 
+  v_net_vsi_vnic_resource.vmpg_uuid, 
+  v_net_vsi_vnic_resource.vmpg_name, 
+  v_net_vsi_vnic_resource.vmpg_type, 
+  v_net_vsi_vnic_resource.mac, 
+  v_net_vsi_vnic_resource.is_has_ip, 
+  v_net_vsi_vnic_resource.ip, 
+  v_net_vsi_vnic_resource.is_has_switch, 
+  v_net_vsi_vnic_resource.switch_uuid, 
+  v_net_vsi_vnic_resource.switch_name, 
+  v_net_vsi_vnic_resource.switch_type, 
+  v_net_vna_hc_cluster.vna_uuid, 
+  v_net_vna_hc_cluster.module_name, 
+  v_net_vna_hc_cluster.module_uuid, 
+  v_net_vna_hc_cluster.module_is_online, 
+  v_net_vna_hc_cluster.cluster_name, 
+  v_net_vna_hc_cluster.vna_application, 
+  v_net_vna_hc_cluster.vnm_application, 
+  v_net_vna_hc_cluster.vna_id, 
+  v_net_vna_hc_cluster.vna_is_online, 
+  v_net_switch_port_vna.port_uuid, 
+  v_net_switch_port_vna.port_name, 
+  v_net_switch_port_vna.port_type, 
+  v_net_switch_port_vna.port_admin_state, 
+  v_net_switch_port_vna.port_is_online, 
+  v_net_switch_port_vna.port_is_cfg, 
+  v_net_switch_port_vna.port_is_consistency, 
+  v_net_switch_port_vna.switch_map_is_cfg, 
+  v_net_switch_port_vna.switch_map_is_selected, 
+  v_net_switch_port_vna.switch_map_is_consistency, 
+  v_net_schedule_port_is_loop.port_is_loop
+FROM 
+  v_net_vsi_vnic_resource, 
+  v_net_vna_hc_cluster, 
+  v_net_schedule_port_is_loop, 
+  v_net_switch_port_vna
+WHERE 
+  v_net_vsi_vnic_resource.vnic_host_name = v_net_vna_hc_cluster.module_name AND
+  v_net_vsi_vnic_resource.vnic_cluster_name = v_net_vna_hc_cluster.cluster_name AND
+  v_net_vsi_vnic_resource.switch_uuid = v_net_switch_port_vna.switch_uuid AND
+  v_net_switch_port_vna.port_uuid = v_net_schedule_port_is_loop.uuid AND   
+  v_net_vna_hc_cluster.vna_uuid = v_net_switch_port_vna.vna_uuid;
+
+
+-- 调度EDVS 选择合适的hc cluster  
+CREATE OR REPLACE VIEW v_net_schedule_edvs_vna_hc_cluster AS   
+SELECT 
+   distinct   
+   b.vna_uuid, 
+   b.vna_is_online, 
+   b.module_name, 
+   b.module_uuid, 
+   b.module_is_online, 
+   b.cluster_name, 
+   b.vna_application, 
+   b.vnm_application, 
+   b.host_name, 
+   a.uplink_pg_name, 
+   a.uplink_pg_uuid, 
+   a.uplink_pg_id,
+   a.uplink_pg_mtu,
+   a.netplane_uuid,
+   a.netplane_name,
+   a.netplane_id,
+   
+   b.port_is_loop,
+   
+   b.switch_id,
+   b.switch_type, 
+   b.switch_name, 
+   b.switch_uuid,   
+   b.port_name,
+   b.port_uuid,
+   b.port_type,
+   b.sriov_free_num,
+   b.bond_total_phy_port_num,
+   b.bond_valid_phy_port_num, 
+   b.phy_port_uuid,
+   b.phy_port_name,
+   b.phy_port_sriov_free_num,
+  
+   b.switch_is_active,
+   b.switch_evb_mode,
+   b.switch_nic_max_num_cfg,
+   b.switch_current_nic_num,
+   (b.switch_nic_max_num_cfg - b.switch_current_nic_num ) AS switch_free_num,
+   (SELECT count(*) FROM v_net_deploy_vsi c WHERE c.vna_uuid = b.vna_uuid AND c.switch_uuid = b.switch_uuid AND c.port_uuid = b.port_uuid )
+   AS deploy_vsi_num,
+   (SELECT sum(d.switch_nic_max_num_cfg - d.switch_current_nic_num ) FROM v_net_schedule_edvs_port_vna_free_sriovvf d 
+     WHERE d.vna_uuid = b.vna_uuid) AS vna_free_num,
+   (SELECT sum(e.sriov_free_num) FROM v_net_schedule_edvs_port_vna_free_sriovvf e 
+     WHERE e.vna_uuid = b.vna_uuid) AS vna_sriov_free_num ,
+   c.is_has_watchdog,
+   c.watchdog_is_online
+FROM 
+    v_net_uplink_pg_netplane a,
+    v_net_schedule_edvs_port_vna_free_sriovvf b,
+	v_net_vna_hc_cluster c
+WHERE 
+    b.switch_uplink_pg_id = a.uplink_pg_id AND b.sriov_free_num > 0 AND 
+	c.vna_uuid = b.vna_uuid 
+ORDER BY 
+    uplink_pg_mtu DESC, 
+	bond_valid_phy_port_num DESC, sriov_free_num DESC, phy_port_sriov_free_num DESC,  switch_free_num DESC, deploy_vsi_num,
+	vna_uuid, switch_uuid, phy_port_uuid;
+	
+  
+-- 调度SDVS 选择合适的hc cluster  
+CREATE OR REPLACE VIEW v_net_schedule_sdvs_vna_hc_cluster AS   
+SELECT 
+   distinct   
+   b.vna_uuid, 
+   b.vna_is_online, 
+   b.module_name, 
+   b.module_uuid, 
+   b.module_is_online, 
+   b.cluster_name, 
+   b.vna_application, 
+   b.vnm_application, 
+   b.host_name, 
+   a.uplink_pg_name, 
+   a.uplink_pg_uuid, 
+   a.uplink_pg_id,
+   a.uplink_pg_mtu,
+   a.netplane_uuid,
+   a.netplane_name,
+   a.netplane_id,   
+   b.port_is_loop,
+   b.switch_id,
+   b.switch_type, 
+   b.switch_name, 
+   b.switch_uuid,
+   b.switch_is_active,
+   b.switch_evb_mode,
+   b.switch_uplink_pg_id,
+   b.switch_nic_max_num_cfg,
+   b.switch_current_nic_num ,
+   (b.switch_nic_max_num_cfg - b.switch_current_nic_num ) AS switch_free_num,
+   b.port_name,
+   b.port_uuid,
+   b.port_type,
+   (SELECT count(*) FROM v_net_deploy_vsi c WHERE c.vna_uuid = b.vna_uuid AND c.switch_uuid = b.switch_uuid AND c.port_uuid = b.port_uuid )
+   AS deploy_vsi_num,
+   (SELECT sum(d.switch_nic_max_num_cfg - d.switch_current_nic_num ) FROM v_net_schedule_sdvs_port_vna d 
+     WHERE d.vna_uuid = b.vna_uuid) AS vna_free_num,
+   c.is_has_watchdog,
+   c.watchdog_is_online
+FROM 
+    v_net_uplink_pg_netplane a,
+    v_net_schedule_sdvs_port_vna b,
+	v_net_vna_hc_cluster c
+WHERE 
+    b.switch_uplink_pg_id = a.uplink_pg_id AND 
+	c.vna_uuid = b.vna_uuid 
+ORDER BY 
+    uplink_pg_mtu DESC, switch_free_num DESC, deploy_vsi_num; 
+  
+
+
+
+    

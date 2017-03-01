@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_user_fullquery.xml">
+	<interface>tecs.user.full.query</interface>
+	<shortdesc lang_cn="查询用户完整信息，包括该用户所占用、创建的各项资源统计" lang_en="Query user full info"/>
+	<description lang_cn="查询用户信息，如果成功，则第一个参数返回0，第二个为用户信息数组；如果失败，则第一个参数返回非0，第二个为错误信息。" lang_en="Query user info. If operation success, the first renturn parameter is 0, second is array of user info. If failed, the first is not 0, second is appending error information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+        <parameter name="start_index" type="int64" lang_cn="查询起始位置。" lang_en="query start index."/>
+        <parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-100。" lang_en="num once query,range 1-100."/>
+		<parameter name="query_type" type="int" lang_cn="查询类型，-1表示所有用户，0表示当前用户，1表示指定用户，即query_user参数指定的用户名称" lang_en="query type, -1 means query all users, 0 means query current user, 1 means query appointed user"/>
+        <parameter name="query_user" type="string" lang_cn="待查询的指定用户名，仅当query_type=1时有意义" lang_en="appointed user name, only used when query type = 1"/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+            <parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+            <parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+				<struct>
+					<parameter name="user_id" type="string" lang_cn="用户id" lang_en="user id"/>
+					<parameter name="user_name" type="string" lang_cn="用户名称" lang_en="user name"/>
+                    <parameter name="user_enabled" type="int" lang_cn="用户账号是否被启用" lang_en="whether this account is enabled">
+                        <enum name="1" lang_cn="账号被启用" lang_en="user account is enabled"/>
+						<enum name="2" lang_cn="账号被禁用" lang_en="user account is disabled"/>
+                    </parameter>
+					<parameter name="role" type="int" lang_cn="用户账号角色" lang_en="user role">
+						<enum name="1" lang_cn="云管理员" lang_en="cloud administrator"/>
+						<enum name="2" lang_cn="帐户管理员" lang_en="account administrator"/>
+						<enum name="3" lang_cn="普通用户" lang_en="user"/>
+					</parameter>
+                    <parameter name="email" type="string" lang_cn="用户的电子邮件地址" lang_en="user's email address"/>
+					<parameter name="phone" type="string" lang_cn="用户的电话号码" lang_en="user's telephone number"/>
+					<parameter name="location" type="string" lang_cn="用户的通信地址" lang_en="user's address."/>
+                    <parameter name="group_id" type="int64" lang_cn="所属用户组id" lang_en="user group id"/>
+					<parameter name="group_name" type="string" lang_cn="所属用户组名" lang_en="user group name"/>
+                    <parameter name="group_type" type="int" lang_cn="所属用户组类型" lang_en="user group type"/>
+                    <parameter name="group_enabled" type="int" lang_cn="所属用户组是否被启用" lang_en="whether user group is enabled">
+                        <enum name="1" lang_cn="用户组被启用" lang_en="user account group is enabled"/>
+						<enum name="2" lang_cn="用户组被禁用" lang_en="user account group is disabled"/>
+                    </parameter>
+                    <parameter name="group_description" type="string" lang_cn="所属用户组的描述信息" lang_en="description of user group"/>
+                    <parameter name="project_count" type="int64" lang_cn="用户名下的project数量" lang_en="number of projects owned by this user"/>
+                    <parameter name="vmcfg_count" type="int64" lang_cn="用户名下的所有虚拟机数量，包括创建的和已经部署的" lang_en="number of vms owned by this user"/>
+                    <parameter name="vmtpl_count" type="int64" lang_cn="用户名下的所有虚拟机模板数量" lang_en="number of vm templates  owned by this user"/>
+                    <parameter name="image_count" type="int64" lang_cn="用户上传的虚拟机映像数量" lang_en="number of images uploaded by this user"/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed.">
+    			<enum name="8002" lang_cn="错误，用户不存在" lang_en="Error, user does not exist."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+		<user name="Account Administrator" lang_cn="帐户管理员。" lang_en="Account Administrator."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+        <xref name="tecs.user.query" href="tecs_user_query.xml"/>
+		<xref name="tecs.user.allocate" href="tecs_user_allocate.xml"/>
+		<xref name="tecs.user.set" href="tecs_user_set.xml"/>
+		<xref name="tecs.user.delete" href="tecs_user_delete.xml"/>
+	</reference>
+</method>

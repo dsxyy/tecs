@@ -1,0 +1,316 @@
+
+
+
+-- 判断逻辑网络IP RANGE 能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_add_logicnetwork_iprange(in_uuid character varying, 
+                           in_num_begin numeric(19), in_num_end numeric(19),in_num_mask numeric(19),
+                           in_str_begin character varying,in_str_end character varying,in_str_mask character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  lgnetworkid numeric(19,0);
+  netplaneuuid character varying;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+  RTN_MUST_CFG_VALID_RANGE integer := 14;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- begin end 
+  IF in_num_begin > in_num_end THEN 
+      result := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+  
+/*  
+  -- ip begin end mask 互相不能重叠    由应用控制   
+  SELECT count(*) INTO is_exist FROM logic_network_ip_range WHERE 
+logic_network_id = lgnetworkid  
+
+       AND (( in_num_begin >= ip_begin_num AND in_num_begin <= ip_end_num ) OR 
+           ( in_num_end >= ip_begin_num AND in_num_end <= ip_end_num ) OR 
+           ( in_num_begin <= ip_begin_num AND in_num_end >= ip_end_num ) );  
+  IF is_exist > 0 THEN 
+     result := RTN_ITEM_CONFLICT; 
+     return result;
+  END IF;  
+ 
+*/  
+/*
+  --netplane 必须首先配置 iprange
+  SELECT count(*) into is_exist FROM v_net_logicnetwork_portgroup_netplane WHERE logicnetwork_uuid = in_uuid;
+  SELECT netplane_uuid into netplaneuuid FROM v_net_logicnetwork_portgroup_netplane WHERE logicnetwork_uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+  
+  --ip begin end必须在netplane iprange 范围内
+  SELECT count(*) into is_exist FROM ip_range a, netplane b WHERE b.uuid = netplaneuuid AND a.netplane_id = b.id  
+              AND (( ip_begin_num <= in_num_begin ) AND (ip_end_num >= in_num_end)) 
+              AND ( mask_num = in_num_mask );
+  IF is_exist <= 0 THEN 
+     result := RTN_MUST_CFG_VALID_RANGE; 
+     return result;
+  END IF; 
+*/  
+  
+
+
+  SELECT count(*) into is_exist FROM v_net_logicnetwork_portgroup_netplane WHERE logicnetwork_uuid = in_uuid;
+  SELECT netplane_uuid into netplaneuuid FROM v_net_logicnetwork_portgroup_netplane WHERE logicnetwork_uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF; 
+  
+  
+  -- ip begin end不能和该网络平面下其他的逻辑网络IP RANGE重合冲突
+  SELECT count(*) into is_exist FROM logic_network_ip_range a, v_net_logicnetwork_portgroup_netplane b WHERE b.netplane_uuid = netplaneuuid AND a.logic_network_id = b.logicnetwork_id 
+              AND (b.logicnetwork_uuid <> in_uuid)
+              AND (( ip_begin_num <= in_num_end) AND (ip_end_num >= in_num_begin)) 
+              AND ( mask_num = in_num_mask );
+  IF is_exist > 0 THEN 
+     result := RTN_MUST_CFG_VALID_RANGE; 
+     return result;
+  END IF;  
+  
+  return result;  
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_logicnetwork_iprange(in_uuid character varying, 
+                           in_num_begin numeric(19), in_num_end numeric(19),in_num_mask numeric(19),
+                           in_str_begin character varying,in_str_end character varying,in_str_mask character varying) OWNER TO tecs;
+
+
+-- 逻辑网络IP RANGE添加 
+-- Function: pf_net_add_logicnetwork_iprange(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_logicnetwork_iprange(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_logicnetwork_iprange(in_uuid character varying, 
+                            in_num_begin numeric(19), in_num_end numeric(19),in_num_mask numeric(19),
+                           in_str_begin character varying,in_str_end character varying,in_str_mask character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  lgnetworkid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_logicnetwork_iprange(in_uuid,in_num_begin,in_num_end,in_num_mask, 
+                            in_str_begin,in_str_end,in_str_mask);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+    
+  -- 不支持重复添加 
+
+  -- insert item 
+  result.id := nextval('serial_logicnetwork_ip_range');
+  --result.uuid := in_uuid;
+  BEGIN 
+    INSERT INTO logic_network_ip_range(id,logic_network_id,ip_begin,ip_end,mask,ip_begin_num,ip_end_num,mask_num) 
+            values(result.id,lgnetworkid,in_str_begin, in_str_end,in_str_mask,in_num_begin,in_num_end,in_num_mask);
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_logicnetwork_iprange(in_uuid character varying, 
+                            in_num_begin numeric(19), in_num_end numeric(19),in_num_mask numeric(19),
+                           in_str_begin character varying,in_str_end character varying,in_str_mask character varying) OWNER TO tecs;
+
+                 
+     
+
+-- 删除 logicnetwork iprange
+CREATE OR REPLACE FUNCTION pf_net_del_logicnetwork_iprange(in_uuid character varying,
+                            in_num_begin numeric(19), in_num_end numeric(19),in_num_mask numeric(19),
+                           in_str_begin character varying,in_str_end character varying,in_str_mask character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  lgnetworkid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- del 不作检查，由应用保准
+  
+  -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+    
+  SELECT count(*) INTO is_exist FROM logic_network_ip_range WHERE logic_network_id = lgnetworkid 
+                AND ip_begin_num = in_num_begin AND ip_end_num = in_num_end AND mask_num = in_num_mask 
+                AND ip_begin = in_str_begin AND ip_end = in_str_end AND mask = in_str_mask;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;                
+    
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM logic_network_ip_range WHERE logic_network_id = lgnetworkid 
+                AND ip_begin_num = in_num_begin AND ip_end_num = in_num_end AND mask_num = in_num_mask 
+                AND ip_begin = in_str_begin AND ip_end = in_str_end AND mask = in_str_mask;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_logicnetwork_iprange(in_uuid character varying,
+                            in_num_begin numeric(19), in_num_end numeric(19),in_num_mask numeric(19),
+                           in_str_begin character varying,in_str_end character varying,in_str_mask character varying) OWNER TO tecs;
+
+
+
+
+-- 检查 check logicnetwork ip range 是否已有资源被分配
+CREATE OR REPLACE FUNCTION pf_net_query_logicnetwork_iprange_alloc(in_uuid character varying,
+                            in_num_begin numeric(19), in_num_end numeric(19))
+  RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_same integer;
+  is_exist integer;
+  lgnetworkid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+   -- logicnetwork uuid 
+  SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+  SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;
+  
+  -- begin end 
+  IF in_num_begin > in_num_end THEN 
+      result.ret  := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+        
+  SELECT count(*) INTO result.total_num FROM logic_network_ip_pool WHERE logic_network_id = lgnetworkid 
+                AND (ip_num >= in_num_begin AND ip_num <= in_num_end );
+    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_logicnetwork_iprange_alloc(in_uuid character varying,
+                            in_num_begin numeric(19), in_num_end numeric(19)) OWNER TO tecs;
+                           
+                           
+
+-- 查询logicnetwork_iprange(通过logic network uuid, type)
+
+CREATE OR REPLACE FUNCTION pf_net_query_logicnetwork_iprange(in_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    lgnetworkid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    -- logicnetwork uuid 
+    SELECT count(*) INTO is_exist FROM logic_network WHERE uuid = in_uuid;
+    SELECT id INTO lgnetworkid FROM logic_network WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF;  
+    
+    SELECT count(*) INTO is_exist FROM logic_network_ip_range  
+      WHERE logic_network_id = lgnetworkid ;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF; 
+  
+    OPEN ref FOR SELECT in_uuid, ip_begin_num,ip_end_num, mask_num, ip_begin, ip_end, mask 
+      FROM logic_network_ip_range  
+      WHERE logic_network_id = lgnetworkid ;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_logicnetwork_iprange(in_uuid character varying) OWNER TO tecs;
+
+
+
+
+
+
+
+                                 

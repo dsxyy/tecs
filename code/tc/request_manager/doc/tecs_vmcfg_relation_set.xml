@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_relation_set.xml">
+	<interface>tecs.vmcfg.relation.set</interface>
+	<shortdesc lang_cn="配置虚拟机互斥关系。" lang_en="congfig vm exclusive relation."/>
+	<description lang_cn="配置虚拟机互斥关系。" lang_en="congfig vm exclusive relatione."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<struct name="ApiVmCfgRelationData">
+			<parameter name="type" type="int" lang_cn="操作类型。" lang_en="Operation type.">
+				<enum name="0" lang_cn="增加" lang_en="add"/>
+				<enum name="1" lang_cn="删除" lang_en="delete"/>
+			</parameter>
+			<array repeat="yes" name="vec_vm">
+				<struct name="ApiVmCfgMap">
+					<parameter name="src" type="int64" lang_cn="第一个虚拟机ID。" lang_en="The first VM ID."/>
+					<parameter name="des" type="int64" lang_cn="第二个虚拟机ID。" lang_en="The second VM ID."/>
+				</struct>
+			</array>
+		</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="7009" lang_cn="虚拟机已部署，禁止设置互斥关系。" lang_en="VM has deploy,forbidden to  config exclusive relationes."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.allocate_by_vt" href="tecs_vmcfg_allocate_by_vt.xml"/>
+		<xref name="tecs.vmcfg.set" href="tecs_vmcfg_set.xml"/>
+		<xref name="tecs.vmcfg.query" href="tecs_vmcfg_query.xml"/>
+		<xref name="tecs.vmcfg.action" href="tecs_vmcfg_action.xml"/>
+	</reference>
+</method>

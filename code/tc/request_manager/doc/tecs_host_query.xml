@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_host_query.xml">
+	<interface>tecs.host.query</interface>
+	<shortdesc lang_cn="查询物理机信息" lang_en="Query host information."/>
+	<description lang_cn="查询物理机信息。如果查询所有主机信息，即使返回成功情况下，第三个array字段数量也可能为0，表示该集群中暂无物理机。" lang_en="Query host information. If query all hosts, size of the 3rd array may be 0 even though return success, it's means that there be not any host in the cluster."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询的起始主机ID，起始值为0，指定主机名情况下，此字段无效。" lang_en="The start host ID of this query(start value is 0), which is invalid when the host_name is specified."/>
+		<parameter name="query_count" type="int64" lang_cn="本次查询的数量，最大支持200，指定主机名情况下，此字段无效。" lang_en="The count limit of this query, which is not greater than 200, and is invalid when the host_name is specified."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="host_name" type="string" lang_cn="物理机名称，0至64个为数字或字母或下划线的字符。如果为空字符串，则表示查询该集群的所有物理机信息，否则为查询指定名称的物理机信息。" lang_en="Host name, string length is not greater than 64, and every character must be a numeric or letter or underline. If host name is empty string, query all hosts information, otherwise query the specified host with the name."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="推荐的下一次查询起始主机ID。" lang_en="Suggested start host ID of next queyr."/>
+			<parameter name="max_count" type="int64" lang_cn="总的主机数量。" lang_en="Total count of all hosts."/>
+			<array repeat="yes">
+				<struct>
+					<parameter name="oid" type="int64" lang_cn="物理机对象的ID。" lang_en="ID of the host object."/>
+					<parameter name="host_name" type="string" lang_cn="物理机名称，1至64个为数字或字母或下划线的字符。" lang_en="Host name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+					<parameter name="ip_address" type="string" lang_cn="物理机的IP地址。" lang_en="IP address of the host."/>
+					<parameter name="run_state" type="int" lang_cn="物理机的运行状态。" lang_en="Run state.">
+						<enum name="0" lang_cn="初始状态" lang_en="INIT, initialized state"/>
+						<enum name="1" lang_cn="离线" lang_en="OFF_LINE, the host is off line with the Cluster Controller"/>
+						<enum name="2" lang_cn="在线" lang_en="ON_LINE, the host is on line"/>
+					</parameter>
+					<parameter name="is_disabled" type="boolean" lang_cn="物理机是否进入维护模式。" lang_en="Have enter maintain mode or not."/>
+					<parameter name="create_time" type="datetime" lang_cn="物理机对象的创建时间。" lang_en="Create time of the host object."/>
+					<parameter name="cpu_info_id" type="int64" lang_cn="物理机的CPU物理信息。" lang_en="Cpu information ID of the host."/>
+					<parameter name="vmm_info" type="string" lang_cn="物理机的Hypervisor信息。" lang_en="Hypervisor version information of the host."/>
+					<parameter name="os_info" type="string" lang_cn="物理机的操作系统信息。" lang_en="Operation System version information of the host."/>
+					<parameter name="running_vms" type="int" lang_cn="物理机上运行的虚拟机数量。" lang_en="Count of VMs while running on the host."/>
+					<parameter name="tcu_max" type="int" lang_cn="物理机的tcu最大数量。" lang_en="The max tcu count  of the host."/>
+					<parameter name="tcu_free" type="int" lang_cn="物理机的tcu剩余数量。" lang_en="The free tcu count of the host."/>
+					<parameter name="mem_total" type="int64" lang_cn="物理机的内存总个空间，单位字节。" lang_en="The total bytes of memory space. "/>
+					<parameter name="mem_max" type="int64" lang_cn="物理机的内存最大可用空闲空间，单位字节。" lang_en="The max available bytes of memory."/>
+					<parameter name="mem_free" type="int64" lang_cn="物理机的内存当前可用空闲空间，单位字节。" lang_en="The current free bytes of memory."/>
+					<parameter name="disk_total" type="int64" lang_cn="物理机本地存储总空间，单位字节。" lang_en="The total bytes of local storage."/>
+					<parameter name="disk_max" type="int64" lang_cn="物理机本地存储最大可用空间，单位字节。" lang_en="The max available bytes of local storage."/>
+					<parameter name="disk_free" type="int64" lang_cn="物理机本地存储当前可用空间，单位字节。" lang_en="The current free bytes of local storage."/>
+					<parameter name="cpu_usage_1m" type="int" lang_cn="最近一次统计的1分钟粒度CPU使用率，单位1/1000。" lang_en="The cpu usage by  1/1000 in latest 1 minute."/>
+					<parameter name="cpu_usage_5m" type="int" lang_cn="最近一次统计的5分钟粒度CPU使用率，单位1/1000。" lang_en="The cpu usage by  1/1000 in latest 5 minute."/>
+					<parameter name="cpu_usage_30m" type="int" lang_cn="最近一次统计的30分钟粒度CPU使用率，单位1/1000。" lang_en="The cpu usage by  1/1000 in latest 30 minute."/>
+					<parameter name="hardware_state" type="int64" lang_cn="物理机硬件是否故障，0表示无故障。" lang_en="Hardware state.">
+						<enum name="0" lang_cn="无故障" lang_en="NORMAL, there be no hardware error"/>
+						<enum name="1" lang_cn="内存故障" lang_en="ERR_MEMORY, memory is hard error"/>
+						<enum name="2" lang_cn="晶振故障" lang_en="ERR_OSCILLATOR, oscillator is hard error"/>
+						<enum name="3" lang_cn="内存和晶振都故障" lang_en="ERR_MEM_OSC, memory and oscillator are both hard error"/>
+					</parameter>
+					<parameter name="description" type="string" lang_cn="物理机的描述信息。" lang_en="Description of the host."/>
+					<parameter name="location" type="string" lang_cn="位置信息。" lang_en="The position infomation."/>
+					<parameter name="is_support_hvm" type="boolean" lang_cn="物理机是否支持虚拟化。" lang_en="Support Hardware-assisted virtualization(HVM) or not."/>
+					<parameter name="rate_power" type="int" lang_cn="物理机实时功率，单位W。" lang_en="The realtime power of host."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered"/>
+				<enum name="1004" lang_cn="失败，物理机不存在" lang_en="Failed, host is not exist"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.host.forget" href="tecs_host_forget.xml"/>
+		<xref name="tecs.host.disable" href="tecs_host_disable.xml"/>
+		<xref name="tecs.host.enable" href="tecs_host_enable.xml"/>
+	</reference>
+</method>

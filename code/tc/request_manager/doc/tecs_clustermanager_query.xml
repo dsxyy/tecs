@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_clustermanager_query.xml">
+	<interface>tecs.cluster.query</interface>
+	<shortdesc lang_cn="查询集群" lang_en="cluster info show"/>
+	<description lang_cn="查询集群信息。" lang_en="cluster info show."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询起始位置，起始值为0。" lang_en="query start index, start value is 0."/>
+		<parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-200。" lang_en="num once query,range 1-200."/>
+		<parameter name="mode" type="int" lang_cn="查询模式:" lang_en="query mode:">
+			<enum name="0" lang_cn="异步模式" lang_en="asyn mode"/>
+			<enum name="1" lang_cn="同步模式" lang_en="syn mode"/>
+		</parameter>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+			<parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+				<struct name="ClusterManger">
+					<parameter name="cluster_name" type="string" lang_cn="集群名称。" lang_en="cluster name."/>
+					<parameter name="ip" type="string" lang_cn="集群IP。" lang_en="cluster ip."/>
+					<parameter name="cluster_append" type="string" lang_cn="集群描述信息。" lang_en="cluster description."/>
+					<parameter name="is_online" type="int" lang_cn="在线状态:" lang_en="register state:">
+						<enum name="0" lang_cn="离线 " lang_en="offline"/>
+						<enum name="1" lang_cn="在线" lang_en="online "/>
+					</parameter>
+					<parameter name="enabled" type="int" lang_cn="使能状态:" lang_en="enable state:">
+						<enum name="0" lang_cn="非使能，即维护态" lang_en="disable"/>
+						<enum name="1" lang_cn="使能" lang_en="enable"/>
+					</parameter>
+					<parameter name="core_free_max" type="int" lang_cn="该集群中单主机最大空闲核数。" lang_en="max core num in system host."/>
+					<parameter name="tcu_unit_free_max" type="int" lang_cn="单个核最大的TCU空闲数。" lang_en="max tcu num in system host."/>
+					<parameter name="tcu_max_total" type="int" lang_cn="TCU的总能力数。" lang_en="virtual cpu max total."/>
+					<parameter name="tcu_free_total" type="int" lang_cn="TCU的空闲总数。" lang_en="virtual cpu free total."/>
+					<parameter name="tcu_free_max" type="int" lang_cn="单个物理机上最大的TCU总数。" lang_en="virtual cpu free max."/>
+					<parameter name="disk_max_total" type="int64" lang_cn="磁盘空间总和。" lang_en="disk max total."/>
+					<parameter name="disk_free_total" type="int64" lang_cn="空闲磁盘大小。" lang_en="disk free total."/>
+					<parameter name="disk_free_max" type="int64" lang_cn="最大空闲磁盘大小。" lang_en="disk free max."/>
+					<parameter name="share_disk_max_total" type="int64" lang_cn="共享磁盘大小。" lang_en="share disk max total."/>
+					<parameter name="share_disk_free_total" type="int64" lang_cn="空闲共享磁盘大小。" lang_en="share disk free total."/>
+					<parameter name="mem_max_total" type="int64" lang_cn="内存总大小。" lang_en="memery max total."/>
+					<parameter name="mem_free_total" type="int64" lang_cn="剩余内存总和。" lang_en="memery free total."/>
+					<parameter name="mem_free_max" type="int64" lang_cn="最大空闲内存。" lang_en="memery free max."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.cluster.disable" href="tecs_clustermanager_disable.xml"/>
+		<xref name="tecs.cluster.enable" href="tecs_clustermanager_enable.xml"/>
+        <xref name="tecs.cluster.query_core_tcu" href="tecs_clustermanager_query_core_tcu.xml"/>
+        <xref name="tecs.cluster.query_netplane" href="tecs_clustermanager_query_netplane.xml"/>
+	</reference>
+</method>

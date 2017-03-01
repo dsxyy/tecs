@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# qpid:      start and stop qpidc-broker.
+# chkconfig: 2345 98 05
+# description: start and stop qpidc-broker.
+# processname: qpidd
+# config: /usr/local/etc/qpidd.conf
+# pidfile: /var/run/qpidd.5672.pid 
+
+# Sanity checks.
+QPIDD=/usr/local/sbin/qpidd
+if [ ! -e $QPIDD ] ; then
+  echo "$QPIDD not exist .."
+  exit 1
+fi
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+pid_file=/var/run/qpidd.5672.pid
+qpid_cmd="$QPIDD --pid-dir /var/run"
+qpid_option="-d --config /usr/local/etc/qpidd.conf --module-dir /usr/local/lib/qpid/daemon  --no-data-dir --sasl-config /usr/local/etc/sasl2"
+SERVICE=qpid
+PROCESS=qpidd
+
+RETVAL=0
+
+start() 
+{
+    $qpid_cmd -c >/dev/null 2>&1
+    [ $? == 0 ] && return
+    $qpid_cmd $qpid_option
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SERVICE
+}
+
+stop() 
+{
+    $qpid_cmd -q
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$SERVICE
+}
+
+restart() 
+{
+    stop
+    start
+}
+
+reload() 
+{
+    restart
+}
+
+# See how we were called.
+case "$1" in
+    start|stop|restart|reload)
+        $1
+        ;;
+    status)
+        $qpid_cmd -c
+        ;;
+    force-reload)
+        reload
+	;;
+    condrestart|try-restart)
+        [ -f /var/lock/subsys/$SERVICE ] && restart || :
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
+	exit 1
+        ;;
+esac
+exit $RETVAL

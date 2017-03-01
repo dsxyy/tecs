@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vnet_vnic_map_query.xml">
+	<interface>tecs.vnic.map.query</interface>
+	<shortdesc lang_cn="查询虚拟机网口的物理网口相关信息" lang_en="Show the physical network information of the vm"/>
+	<description lang_cn="查询虚拟机网口的物理网口相关信息。" lang_en="Show the physical network information of the vm."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称。" lang_en="Cluster name."/>
+		<parameter name="vm_id" type="int64" lang_cn="虚拟机ID。" lang_en="VM ID."/>
+		<parameter name="nic_id" type="int" lang_cn="网口编号。" lang_en="nic number."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+					<parameter name="c_vlan" type="int" lang_cn="虚拟网卡所属的真实VLAN。" lang_en="vlan id."/>
+					<parameter name="bridge_name" type="string" lang_cn="网桥名称。" lang_en="the name of bridge."/>
+					<parameter name="physic_port_name" type="string" lang_cn="物理网口名称。" lang_en="the name of physical network adapter name."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2035" lang_cn="错误，参数非法" lang_en="Error, the parameter is invalid"/>
+				<enum name="2036" lang_cn="错误，消息来自非法的TC" lang_en="Error, message from invalid tc"/>
+				<enum name="2037" lang_cn="错误，对应虚拟机网口不存在" lang_en="Error, the port of the vm is not exist"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference/>
+</method>

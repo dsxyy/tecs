@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_version_cancel.xml">
+	<interface>tecs.version.cancel</interface>
+	<shortdesc lang_cn="取消升级版本" lang_en="Cancel the upgraded operation"/>
+	<description lang_cn="取消正在进行的版本升级操作" lang_en="cancel the upgraded operation that is running"/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<struct name="ApiVersionCancelReq">
+		    <parameter name="node_type" type="string" lang_cn="节点类型：hc" lang_en="Type of the node: hc"/>
+		    <parameter name="cluster_name" type="string" lang_cn="集群名" lang_en="The cluster name requested"/>
+		    <parameter name="cluster_ip" type="string" lang_cn="集群ip" lang_en="The cluster ip requested"/>
+		    <parameter name="host_name" type="string" lang_cn="主机名" lang_en="The host name requested"/>
+		    <parameter name="host_ip" type="string" lang_cn="主机名ip" lang_en="The host ip requested"/>
+		    <parameter name="package" type="string" lang_cn="包名称" lang_en="The package name requested"/>	
+		</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。"  lang_en="Wether the operation successfully sent to to requested hosts, 0 represents all right, -1 represents error"/>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息,成功为空" lang_en="Appending error information，is null"/>			
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2" lang_cn="失败，未知错误" lang_en="Failed, unknown error "/>
+				<enum name="3" lang_cn="失败，应答超时" lang_en="Failed, acked timeout"/>
+				<enum name="6" lang_cn="授权失败" lang_en="Failed to authorize usr's operation"/>
+				<enum name="18" lang_cn="失败，无效的参数" lang_en="Failed, invalid argument"/>
+				<enum name="19" lang_cn="取消的操作不存在" lang_en="Failed，the operation can't be finded"/>
+				
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息" lang_en="Appending error information"/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS"/>
+	</privilege>
+	<reference>
+		<xref name="tecs.version.get_repo_addr" href="tecs_version_get_repository_address.xml"/>
+		<xref name="tecs.version.set_repo_addr" href="tecs_version_set_repository_address.xml"/>
+		<xref name="tecs.version.query" href="tecs_version_query.xml"/>
+		<xref name="tecs.version.update" href="tecs_version_update.xml"/>
+	</reference>
+</method>

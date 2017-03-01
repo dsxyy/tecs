@@ -1,0 +1,19 @@
+
+CREATE OR REPLACE VIEW v_net_uplinkpg_trunk_vlanrange AS 
+SELECT 
+  port_group."name" AS uplinkpg_name, 
+  port_group.uuid AS uplinkpg_uuid, 
+  port_group.pg_type, 
+  pg_switchport_trunk.native_vlan_num, 
+  pg_switchport_trunk_vlan_range.vlan_begin, 
+  pg_switchport_trunk_vlan_range.vlan_end, 
+  port_group.id AS uplinkpg_id
+FROM 
+  public.uplink_pg, 
+  public.port_group, 
+  public.pg_switchport_trunk, 
+  public.pg_switchport_trunk_vlan_range
+WHERE 
+  uplink_pg.pg_id = port_group.id AND
+  port_group.id = pg_switchport_trunk.pg_id AND
+  pg_switchport_trunk.pg_id = pg_switchport_trunk_vlan_range.pg_switchport_trunk_id;

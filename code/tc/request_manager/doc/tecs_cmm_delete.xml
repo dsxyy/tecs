@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_cmm_delete.xml">
+	<interface>tecs.cmm.delete</interface>
+	<shortdesc lang_cn="删除cmm配置" lang_en="delete cmm config."/>
+	<description lang_cn="删除cmm配置" lang_en="delete cmm config."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="bureau" type="int" lang_cn="局号。" lang_en="Bureau number."/>
+		<parameter name="rack"   type="int" lang_cn="架号。" lang_en="Rack number."/>
+		<parameter name="shelf"   type="int" lang_cn="框号。" lang_en="Shelf number."/>	
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.cmm.set"     href="tecs_cmm_set.xml"/>
+		<xref name="tecs.cmm.add" href="tecs_cmm_add.xml"/>
+		<xref name="tecs.cmm.query" href="tecs_cmm_qyery.xml"/>
+	</reference>
+</method>

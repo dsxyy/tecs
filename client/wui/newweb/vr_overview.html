@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TECS</title>
+</head>
+
+<body> 
+    <div style="display:none;">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#" data-value="vr_overview.html"><OamStaticUI bindattr="text" maptype="display" bindvalue="vr_app"/></a> <span class="divider">/</span>
+            </li>
+            <li class="active">
+                <a href="#" data-value="vr_overview.html"><OamStaticUI bindattr="text" maptype="display" bindvalue="overview"/></a>
+            </li>
+        </ul>
+    </div> 
+    <div class="box-content">
+        <ul class="nav nav-tabs" id="tabsVrOverview">
+            <li class="active"><a href="#tabVrOverview"><OamStaticUI bindattr="text" maptype="display" bindvalue="overview"/></a></li>
+        </ul> 
+        <div class="tab-content">
+            <div class="tab-pane active" id="tabVrOverview">
+                <div class="row-fluid vr_overview_count">
+                    <a data-rel="tooltip" title="" class="well span2 top-block" data-value="vr_project.php" href="#">
+                        <span><img src="img/project32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="project_cnt"/></div>
+                        <div></div>
+                        <span></span>
+                    </a>
+                    <div class="span3"> <div class="row-fluid"> <div class="span2"></div>
+                    <a data-rel="tooltip" title="" class="well span8 top-block" data-value="vr_vm.php" href="#">
+                        <span><img src="img/computer32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="vm_cnt"/></div>
+                        <div></div>
+                        <span></span>
+                    </a>
+                    <div class="span2"></div> </div></div>
+                    <a data-rel="tooltip" title="" class="well span2 top-block" data-value="vr_portabledisk.php" href="#">
+                        <span><img src="img/portable_disk32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="portabledisk_cnt"/></div>
+                        <div></div>
+                        <span></span>
+                    </a>   
+                    <div class="span3"> <div class="row-fluid"> <div class="span2"></div>     
+                    <a data-rel="tooltip" title="" class="well span8 top-block" data-value="vr_vt.php" href="#">
+                        <span><img src="img/template32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="vt_cnt"/></div>
+                        <div></div>
+                        <span></span>
+                    </a>
+                    <div class="span2"></div> </div></div>
+                    <a data-rel="tooltip" title="" class="well span2 top-block" data-value="vr_image.php" href="#">
+                        <span><img src="img/image32.png"></img></span>
+                        <div><OamStaticUI bindattr="text" maptype="display" bindvalue="image_cnt"/></div>
+                        <div></div>
+                        <span></span>
+                    </a>
+                </div><!--/row-->
+                <div class="row-fluid">
+                    <div class="box span6" style="height:400px;">
+                        <div class="box-header well" data-original-title>
+                            <h2><i class="icon-list-alt"></i> <span><OamStaticUI bindattr="text" maptype="display" bindvalue="vm_deploy_status"/></span></h2>
+                        </div>
+                        <div class="box-content">
+                            <div id="vmdeploy_piechart" style="height:200px;"></div>
+                            <div class="row-fluid">
+                                <div class="span5"></div>
+                                <div id="vrvm_deploy_info" class="span5"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box span6" style="height:400px;">
+                        <div class="box-header well" data-original-title>
+                            <h2><i class="icon-list-alt"></i> <span><OamStaticUI bindattr="text" maptype="display" bindvalue="vm_running_status"/></span></h2>
+                        </div>
+                        <div class="box-content">
+                            <div id="vmrunning_piechart" style="height:200px;"></div>
+                            <div class="row-fluid">
+                                <div class="span5"></div>
+                                <div id="vrvm_running_info" class="span5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+    
+	<!-- external javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/tecs/vr_overview.js"></script>
+    <script src="js/tecs/vm_common.js"></script>
+</body>
+</html>

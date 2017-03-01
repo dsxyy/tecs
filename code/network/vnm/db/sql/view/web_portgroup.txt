@@ -1,0 +1,50 @@
+
+CREATE OR REPLACE VIEW web_view_portgroup AS 
+SELECT a.id, a.name, a.pg_type, a.uuid, a.acl, a.qos, a.allowed_priorities, a.receive_bandwidth_limit, 
+        a.receive_bandwidth_reserve, a.default_vlan_id, a.promiscuous, a.macvlan_filter_enable, a.allowed_transmit_macs,
+        a.allowed_transmit_macvlans, a.policy_block_override, a.policy_vlan_override, a.version, a.mgr_id, a.type_id,
+        a.allow_mac_change, a.switchport_mode, a.netplane_id, a.mtu, 
+        ( SELECT count(*) FROM v_net_uplinkpg_trunk_vlanrange b WHERE a.id = b.uplinkpg_id ) AS vlan_count,
+        ( SELECT name FROM netplane n WHERE a.netplane_id = n.id ) AS netplane_name,
+		
+	  CASE 
+         WHEN ( switchport_mode = 0) 
+	    THEN ( SELECT native_vlan_num FROM pg_switchport_trunk c WHERE a.id = c.pg_id )
+	  ELSE (null)	  
+      END AS native_vlan_num, 
+	  
+	  CASE 
+         WHEN ( (switchport_mode = 1) AND (pg_type != 21) )
+	    THEN ( SELECT vlan_num FROM pg_switchport_access_vlan d WHERE a.id = d.pg_id )
+	  ELSE (null) 
+      END AS access_vlan_num, 
+	  
+	  CASE 
+         WHEN ( (switchport_mode = 1) AND (pg_type = 21) )
+	    THEN ( SELECT isolate_no FROM pg_switchport_access_isolate e WHERE a.id = e.pg_id )
+	  ELSE (null) 
+      END AS isolate_no,
+     a.description	  
+    FROM port_group a;
+	
+CREATE OR REPLACE VIEW web_view_portgroup_vlanrange AS 
+SELECT 
+  a.id AS pg_id,
+  a.uuid AS pg_uuid,
+  a.pg_type,
+  a.switchport_mode,
+  b.native_vlan_num,
+  c.vlan_begin,
+  c.vlan_end
+FROM 
+   port_group a,
+   pg_switchport_trunk b,
+   pg_switchport_trunk_vlan_range c
+WHERE
+   a.id = b.pg_id AND 
+   b.pg_id = c.pg_switchport_trunk_id
+ORDER BY 
+   a.id, c.vlan_begin ;
+   
+
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_get_id_by_name.xml">
+	<interface>tecs.vmcfg.get_id_by_name</interface>
+	<shortdesc lang_cn="根据虚拟机名称查询id" lang_en="get vm id by name"/>
+	<description lang_cn="根据虚拟机名称查询id" lang_en="get vm id by name"/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="query_type" type="int64" lang_cn="查询范围" lang_en="query type">
+			<enum name="-5" lang_cn="在当前用户创建的所有虚拟机中查找" lang_en="search in vm list owned by current user"/>
+            <enum name="-4" lang_cn="在指定用户创建的虚拟机中查找，此时query_user参数不能为空，只有管理员有权限这样查" lang_en="search in vm list owned by appointed user"/>
+			<enum name="-3" lang_cn="在所有用户创建的虚拟机中查找，只有管理员有权限这样查" lang_en="search in all vms."/>
+		</parameter>
+        <parameter name="query_name" type="string" lang_cn="待查找的虚拟机名称" lang_en="vm name to find"/>
+        <parameter name="query_user" type="string" lang_cn="待查找的用户名称，仅当query_type=-4时，本字段才有效" lang_en="appointed user name to find vms"/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<array name="vids" repeat="yes">
+            <parameter name="vid" type="int64" lang_cn="查询结果是一个int64列表，表示所有名称符合要求的虚拟机id" lang_en="vid list which name is equal to appointed"/>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="7007" lang_cn="失败,无效查询类型" lang_en="Failed, invalid query type"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.query" href="tecs_vmcfg_query.xml"/>
+	</reference>
+</method>

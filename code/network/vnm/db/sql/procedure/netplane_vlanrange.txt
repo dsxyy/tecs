@@ -1,0 +1,406 @@
+
+
+
+-- 判断netplane MAC RANGE 能否添加
+CREATE OR REPLACE FUNCTION pf_net_check_add_netplane_vlanrange(in_uuid character varying, 
+                           in_num_begin integer, in_num_end integer)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  is_same integer; 
+  netplaneid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_PARAM_INVALID integer := 7;
+  RTN_SWITCH_MTU_LESS_PG integer := 8;
+  RTN_SWITCH_UPLINKPORT_INVALID integer := 9;
+  RTN_PORT_HAS_JOIN_OTHER_SWITCH integer := 10;
+  RTN_PG_MUST_CFG_NETPLANE   integer := 13;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+      
+  -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- begin end 
+  IF in_num_begin > in_num_end THEN 
+      result := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+  
+  -- VLAN RANGE (2,4094)
+  IF in_num_begin < 2 THEN 
+      result := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+  IF in_num_end > 4094 THEN 
+      result := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+  
+  -- ip begin end 互相不能重叠  
+/*  
+  SELECT count(*) INTO is_exist FROM vlan_range WHERE  (( in_num_begin >= vlan_begin AND in_num_begin <= vlan_end ) OR 
+           ( in_num_end >= vlan_begin AND in_num_end <= vlan_end ) OR 
+           ( in_num_begin <= vlan_begin AND in_num_end >= vlan_end ) ) AND netplane_id = netplaneid;  
+  IF is_exist > 0 THEN 
+     result := RTN_ITEM_CONFLICT; 
+     return result;
+  END IF;  
+*/
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_add_netplane_vlanrange(in_uuid character varying, 
+                           in_num_begin integer, integer) OWNER TO tecs;
+
+
+-- NETPLANE MAC RANGE添加 
+-- Function: pf_net_add_netplane_vlanrange(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_netplane_vlanrange(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_netplane_vlanrange(in_uuid character varying, 
+                           in_num_begin integer, in_num_end integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_exist integer;
+  is_conflict integer;
+  netplaneid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做  
+  result.ret := pf_net_check_add_netplane_vlanrange(in_uuid,in_num_begin,in_num_end);
+  IF result.ret > 0 THEN 
+     return result;
+  END IF;
+  
+  -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- 不支持重复添加 
+
+  -- insert item 
+  result.id := nextval('serial_vlan_range');
+  --result.uuid := in_uuid;
+  BEGIN 
+    INSERT INTO vlan_range(id,netplane_id,vlan_begin,vlan_end) 
+            values(result.id,netplaneid,in_num_begin,in_num_end);
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_netplane_vlanrange(in_uuid character varying, 
+                           in_num_begin integer, in_num_end integer) OWNER TO tecs;
+
+                 
+     
+
+-- 删除 netplane mac range
+CREATE OR REPLACE FUNCTION pf_net_del_netplane_vlanrange(in_uuid character varying,
+                            in_num_begin integer, in_num_end integer)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  netplaneid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result.ret  := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- begin end 
+  IF in_num_begin > in_num_end THEN 
+      result.ret  := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+  
+  -- del 不作检查，由应用保准
+      
+  SELECT count(*) INTO is_exist FROM vlan_range WHERE netplane_id = netplaneid 
+                AND vlan_begin = in_num_begin AND vlan_end = in_num_end ;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;                
+    
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM vlan_range WHERE netplane_id = netplaneid 
+                AND vlan_begin = in_num_begin AND vlan_end = in_num_end ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_netplane_vlanrange(in_uuid character varying,
+                            in_num_begin integer, in_num_end integer) OWNER TO tecs;
+
+
+                            
+/*  -- 已有定义
+CREATE TYPE t_query_total  AS(
+    ret integer, -- proc ret
+    total_num integer  --- 
+);
+
+*/                            
+
+-- 检查 check netplane vlan range 是否已有资源被分配 (查询)
+CREATE OR REPLACE FUNCTION pf_net_query_netplane_vlanrange_alloc(in_uuid character varying,
+                            in_num_begin integer, in_num_end integer)
+  RETURNS t_query_total AS
+$BODY$
+DECLARE
+  result  t_query_total;
+  is_same integer;
+  is_exist integer;
+  netplaneid numeric(19,0);
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  -- netplane uuid 
+  SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+  SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     result.ret  := RTN_ITEM_NO_EXIST; 
+     return result;
+  END IF;  
+    
+  -- begin end 
+  IF in_num_begin > in_num_end THEN 
+      result.ret  := RTN_PARAM_INVALID; 
+      return result;
+  END IF;
+        
+  SELECT count(*) INTO result.total_num FROM vlan_pool WHERE netplane_id = netplaneid 
+                AND (vlan_num >= in_num_begin AND vlan_num <= in_num_end );
+    
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_netplane_vlanrange_alloc(in_uuid character varying,
+                            in_num_begin integer, in_num_end integer) OWNER TO tecs;
+                            
+
+-- 查询vlanrange(通过netplane uuid)
+
+CREATE OR REPLACE FUNCTION pf_net_query_netplane_vlanrange(in_uuid character varying)
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+    ref refcursor;
+    is_exist integer; 
+    netplaneid numeric(19,0);
+    RTN_ITEM_NO_EXIST integer := 4;
+BEGIN
+    -- logicnetwork uuid 
+    SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid;
+    SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF;  
+    
+    SELECT count(*) INTO is_exist FROM vlan_range  
+      WHERE netplane_id = netplaneid;
+    IF is_exist <= 0 THEN 
+         --result := RTN_ITEM_NO_EXIST; 
+         return ref;
+    END IF; 
+  
+    OPEN ref FOR SELECT in_uuid, vlan_begin,vlan_end 
+      FROM vlan_range  
+      WHERE netplane_id = netplaneid;
+    
+    return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_netplane_vlanrange(in_uuid character varying) OWNER TO tecs;
+
+
+/* integer ---> char */
+CREATE OR REPLACE FUNCTION pf_net_integer_to_char(in_int integer) 
+RETURNS character varying AS  
+$BODY$ 
+DECLARE is_exist integer; 
+    retchar character varying;    
+    tmpchar character varying(8);
+BEGIN 
+    retchar := '';
+
+    /*int32 最大值为65535 */
+    IF in_int > 9999 THEN 
+       retchar := to_char(in_int,'99999');
+       return retchar;
+    END IF;
+
+    IF in_int > 999 THEN 
+       retchar := to_char(in_int,'9999');
+       return retchar;
+    END IF;
+
+    IF in_int > 99 THEN 
+       retchar := to_char(in_int,'999');
+       return retchar;
+    END IF;
+
+    IF in_int > 9 THEN 
+       retchar := to_char(in_int,'99');
+       return retchar;
+    END IF;
+
+    IF in_int > 0 THEN 
+       retchar := to_char(in_int,'9');
+       return retchar;
+    END IF;
+    
+    return retchar;
+END; 
+$BODY$ LANGUAGE plpgsql VOLATILE
+  COST 100; ALTER FUNCTION pf_net_integer_to_char(integer) OWNER TO tecs;
+
+
+
+CREATE OR REPLACE FUNCTION pf_net_query_netplane_vmshare_vlans(in_uuid 
+character varying) 
+RETURNS character varying AS 
+$BODY$ 
+DECLARE is_exist integer; 
+    retchar character varying;    
+    tmpchar character varying(8);
+    tmpcharB character varying(8);
+    tmpcharE character varying(8);
+    netplaneid numeric(19,0);
+    mvlanrangelists RECORD;
+    i integer := 0;
+    aindex integer := 0; 
+    index integer := 1;
+    vlanpre integer := 1;
+    vlanbegin integer := 1;
+BEGIN retchar := '';
+    /* netplane id*/
+    SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_uuid; 
+   SELECT id INTO netplaneid FROM netplane WHERE uuid = in_uuid; 
+   IF is_exist <= 0 THEN 
+       return retchar; 
+   END IF; 
+   i := 1;        
+
+   FOR mvlanrangelists IN SELECT vlan_begin,vlan_end  FROM vlan_range 
+        WHERE netplane_id = netplaneid ORDER BY vlan_begin LOOP
+        
+       vlanbegin = mvlanrangelists.vlan_begin;
+       
+       /* 第一条记录 */
+       IF vlanpre <= 1 THEN 
+           IF vlanpre < vlanbegin THEN 
+              IF vlanpre < (vlanbegin-1) THEN 
+                  tmpcharB := pf_net_integer_to_char(1);
+                  tmpcharE := pf_net_integer_to_char(vlanbegin-1);
+                  retchar = retchar || tmpcharB || ' ~' || tmpcharE || ',' ;
+              END IF;
+              IF vlanpre = (vlanbegin-1) THEN 
+                  tmpcharB := pf_net_integer_to_char(1);
+                  retchar = retchar || tmpcharB || ',' ;
+              END IF;
+           END IF;
+       END IF;
+       IF vlanpre > 1 THEN 
+           IF vlanpre < vlanbegin THEN 
+              IF vlanpre < (vlanbegin-2) THEN 
+                  tmpcharB := pf_net_integer_to_char(vlanpre+1);
+                  tmpcharE := pf_net_integer_to_char(vlanbegin-1);
+                  retchar = retchar || tmpcharB || ' ~' || tmpcharE || ',' ;
+              END IF;
+              IF vlanpre = (vlanbegin-2) THEN 
+                  tmpcharB := pf_net_integer_to_char(vlanpre+1);
+                  retchar = retchar || tmpcharB || ',' ;
+              END IF;
+           END IF; 
+       END IF;
+
+       vlanpre = mvlanrangelists.vlan_end;
+   END LOOP;
+
+   /*判断vlan range end 是否是4094*/
+   IF vlanpre < 4094 THEN 
+       IF vlanpre < (4094-1) THEN 
+           tmpcharB := pf_net_integer_to_char(vlanpre+1);
+           tmpcharE := to_char((4094),'9999');
+           retchar = retchar || tmpcharB || ' ~' || tmpcharE || ',' ;
+       END IF;
+       IF vlanpre = (4094-1) THEN 
+           tmpcharB := pf_net_integer_to_char(vlanpre+1);
+           retchar = retchar || tmpcharB || ',' ;
+       END IF;
+   END IF;
+        
+   RAISE WARNING  ' retchar --> %', retchar;
+   return retchar;
+END; 
+$BODY$ LANGUAGE plpgsql VOLATILE
+  COST 100; ALTER FUNCTION pf_net_query_netplane_vmshare_vlans(character 
+varying) OWNER TO tecs;
+
+
+
+
+                                 

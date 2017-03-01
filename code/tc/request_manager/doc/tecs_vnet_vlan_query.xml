@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vnet_vlan_query.xml">
+	<interface>tecs.vlan.query</interface>
+	<shortdesc lang_cn="查询系统VLAN映射关系" lang_en="Show Vlan table"/>
+	<description lang_cn="查询各个集群中VLAN资源的映射关系。" lang_en="Show Vlan table."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="记录集起始值，起始值为0。" lang_en="First index value, start value is 0."/>
+		<parameter name="query_count" type="int64" lang_cn="查询的记录集个数。" lang_en="Query index count."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称。" lang_en="Cluster name."/>
+		<parameter name="netplane_name" type="string" lang_cn="网络平面名称。" lang_en="Netplane name."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="下次查询记录集起始值。" lang_en="Next index value."/>
+			<parameter name="max_count" type="int64" lang_cn="记录集总数。" lang_en="Max index count."/>
+			<parameter name="netplane_name" type="string" lang_cn="网络平面名称。" lang_en="Netplane name."/>
+			<array repeat="yes" name="vlan_map_list">
+				<struct name="VnetVlanMap">
+					<parameter name="project_id" type="int64" lang_cn="项目ID。" lang_en="project id."/>
+					<parameter name="user_vlan" type="int" lang_cn="用户配置VLAN。" lang_en="user configured vlan id."/>
+					<parameter name="c_vlan" type="int" lang_cn="系统分配的客户VLAN。" lang_en="system c_vid."/>
+					<parameter name="s_vlan" type="int" lang_cn="系统分配的系统VLAN。" lang_en="system s_vid."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="2001" lang_cn="错误，虚拟网络模块启动失败" lang_en="Error, vnet unit start failed."/>
+				<enum name="2002" lang_cn="错误，网络平面不存在" lang_en="Error, netplane name is not exist."/>
+				<enum name="2005" lang_cn="错误，操作数据库失败" lang_en="Error, operate DB Failed."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.netplane.query" href="tecs_vnet_netplane_query.xml"/>
+		<xref name="tecs.netplane_map.query" href="tecs_vnet_netplane_map_query.xml"/>
+	</reference>
+</method>

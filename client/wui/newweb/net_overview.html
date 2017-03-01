@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TECS</title>
+</head>
+
+<body>
+    <div style="display:none;"><ul class="breadcrumb"></ul></div> 
+    <ul class="nav nav-tabs" id="netBasicTab">
+        <li class="active"><a href="#netInfo" id="netInfoNav"></a></li>
+        <li><a href="#netRes" id="netResNav"></a></li>
+    </ul> 
+    <div class="tab-content">
+        <div class="tab-pane active" id="netInfo"> 
+            <div class="row-fluid"> 
+                <div class="span6"> 
+                    <div>
+                        <h3 id="net_intro1" style="color:#555555;"></h3>
+                        <br />
+                        <h3 id="net_intro2" style="color:#555555;"></h3>
+                    </div>
+                    <hr />
+                    <div>
+                        <h3 id="netWinzard" style="color:#555555;"></h3>
+                        <h4><a href="net_netplane.html" id="create_netplane_link"></a></h4>
+                    </div>
+                </div>
+                <div class="span6" align="center"> 
+                    <img src="img/vnet.png"></img>
+                </div>  
+            </div>
+        </div>
+        <div class="tab-pane" id="netRes">
+            <div class="row-fluid netRes">
+                <div class="box span3">
+                    <div class="box-header well"><h3 id="ipUsage"></h3></div>  
+                    <div class="box-content">
+                        <div id="ipPie" style="height:150px;"></div>
+                        <div style="margin-left:50px;"></div>                        
+                    </div>
+                    <hr />
+                    <h4 style="margin-left:50px;"><a id="ipUseDetail" href="#"></a></h4>
+                </div>
+                <div class="box span3">
+                    <div class="box-header well"><h3 id="macUsage"></h3></div>                     
+                    <div class="box-content">
+                        <div id="macPie" style="height:150px;"></div>
+                        <div style="margin-left:50px;"></div>                         
+                    </div>
+                    <hr />
+                    <h4 style="margin-left:50px;"><a id="macUseDetail" href="#"></a></h4>                   
+                </div>
+                <div class="box span3">
+                    <div class="box-header well"><h3 id="vlanUsage"></h3></div>                     
+                    <div class="box-content">
+                        <div id="vlanPie" style="height:150px;"></div>
+                        <div style="margin-left:50px;"></div>                         
+                    </div>
+                    <hr />
+                    <h4 style="margin-left:50px;"><a id="vlanUseDetail" href="#"></a></h4>                    
+                </div>
+                <div class="text-left box span3">
+                    <div class="box-header well"><h3 id="segmentUsage"></h3></div>                     
+                    <div class="box-content">
+                        <div id="segmentPie" style="height:150px;"></div>
+                        <div style="margin-left:50px;"></div>                         
+                    </div>
+                    <hr />
+                    <h4 style="margin-left:40px;"><a id="segmentUseDetail" href="#"></a></h4>                    
+                </div>
+                <div class="box span6" style="display:none;"> 
+                    <div class="box-header well"><h3 id="netSummary"></h3></div> 
+                    <div class="box-content">
+                        <table style="width: 100%; word-break: break-all;" class="table">   
+                            <tbody>       
+                                <tr style="display: table-row;" >          
+                                    <td width="40%">网络平面</td>           
+                                    <td><a href="net_netplane.html" id="netplane_count">1</a></td>      
+                                </tr>       
+                                <tr style="display: table-row;" >         
+                                    <td width="40%">端口组</td>           
+                                    <td><a href="net_portgroup.html" id="portgroup_count">1</a></td>       
+                                </tr>       
+                                <tr style="display: table-row;">           
+                                    <td width="40%">虚拟网络</td>           
+                                    <td><a href="net_logicnet.html" id="logicnet_count">1</a></td>       
+                                </tr>       
+                                <tr style="display: table-row;">          
+                                    <td width="40%">交换</td>           
+                                    <td><a href="net_switch.html" id="switch_count">1</a></td>       
+                                </tr>       
+                            </tbody>
+                        </table>                        
+                    </div> 
+                </div>                 
+            </div>
+        </div>
+    </div>
+
+	<!-- external javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/tecs/net_overview.js"></script>    
+</body>
+</html>

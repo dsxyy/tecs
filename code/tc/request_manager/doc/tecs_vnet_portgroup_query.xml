@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_vnet_portgroup_query.xml">
+	<interface>tecs.vnet.portgroup.query</interface>
+	<shortdesc lang_cn="查询端口组信息" lang_en="Query portgroup information."/>
+	<description lang_cn="查询端口组信息" lang_en="Query portgroup information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int" lang_cn="查询起始位置，起始值为1。" lang_en="Query start index, start value is 1."/>
+		<parameter name="count" type="int" lang_cn="一次查询数量,范围1-200。" lang_en="Num once query,range 1-200."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next query index, if value equal -1,query end."/>
+			<parameter name="max_count" type="int" lang_cn="表记录总数量。" lang_en="Max num queride."/>
+			<array repeat="yes">
+				<struct name="CVnetPortGroupInfo">
+					<parameter name="is_cfg_netplane" type="int" lang_cn="是否配置网络平面标识。" lang_en="The flag of netplane configuration."/>
+					<parameter name="m_nVxlanIsolateNo" type="int" lang_cn="Vxlan隔离号" lang_en="Vxlan isolate number."/>
+					<parameter name="trunk_native_vlan" type="int" lang_cn="Trunk类型本征vlan" lang_en="Trunk native vlan."/>
+					<parameter name="segment_id" type="int" lang_cn="段号" lang_en="Segment ID."/>
+					<parameter name="netplane_uuid" type="string" lang_cn="网络平面UUID" lang_en="The UUID of the netplane."/>
+					<parameter name="access_isolate_num" type="int" lang_cn="Access隔离VLAN号。" lang_en="Access VLAN ID."/>
+					<parameter name="pg_uuid" type="string" lang_cn="端口组的UUID。" lang_en="The UUID of the portgroup."/>
+					<parameter name="mtu" type="int" lang_cn="MTU值。" lang_en="MTU value."/>
+					<parameter name="pg_name" type="string" lang_cn="端口组名称。" lang_en="Portgroup name."/>
+					<parameter name="isolate_type" type="int" lang_cn="隔离类型。" lang_en="Isolate type.">
+						<enum name="0" lang_cn="VLAN" lang_en="VLAN"/>
+						<enum name="1" lang_cn="VXLAN" lang_en="VXLAN"/>
+					</parameter>
+					<parameter name="access_vlan_num" type="int" lang_cn="Access VLAN号。" lang_en="Access VLAN ID."/>
+					<parameter name="m_nIsSdn" type="int" lang_cn="SDN标识。" lang_en="The flag of SDN."/>
+					<parameter name="switch_port_mode" type="int" lang_cn="交换端口模式。" lang_en="The switch port mode.">
+						<enum name="0" lang_cn="Trunk模式" lang_en="Trunk mode."/>
+						<enum name="1" lang_cn="Access模式" lang_en="Access mode."/>
+					</parameter>
+					<parameter name="pg_type" type="int" lang_cn="端口组类型。" lang_en="The portgroup type.">
+						<enum name="0" lang_cn="上行类型" lang_en="Uplink type."/>
+						<enum name="10" lang_cn="Kernel管理类型" lang_en="Kernel manage type."/>
+						<enum name="11" lang_cn="Kernel存储类型" lang_en="Kernel storage type."/>
+						<enum name="20" lang_cn="共享类型" lang_en="Share type."/>
+						<enum name="21" lang_cn="私有类型" lang_en="Private type."/>
+					</parameter>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vnet.portgroup.cfg" href="tecs_vnet_portgroup_cfg.xml"/>
+	</reference>
+</method>

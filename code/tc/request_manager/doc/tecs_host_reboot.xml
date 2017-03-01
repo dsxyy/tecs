@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_host_reboot.xml">
+	<interface>tecs.host.reboot</interface>
+	<shortdesc lang_cn="将物理机重启" lang_en="Reboot the host."/>
+	<description lang_cn="将物理机重启。" lang_en="Reboot the host."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="cluster_name" type="string" lang_cn="集群名称，1至64个为数字或字母或下划线的字符。" lang_en="Cluster name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="host_name" type="string" lang_cn="物理机名称，1至64个为数字或字母或下划线的字符。" lang_en="Host name, string length is between 1 and 64, and every character must be a numeric or letter or underline."/>
+		<parameter name="is_forced" type="boolean" lang_cn="是否强制复位。" lang_en="Is forced reboot or not."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1002" lang_cn="失败，CC未应答" lang_en="Failed, Cluster Controller is not answered"/>
+				<enum name="1003" lang_cn="错误，集群未注册到TC中" lang_en="Error, cluster have not registered into the Tecs Center"/>
+				<enum name="1004" lang_cn="失败，物理机不存在" lang_en="Failed, host is not exist"/>
+				<enum name="1008" lang_cn="失败，物理机上运行有虚拟机" lang_en="Failed, there are some VMs running on the host"/>
+				<enum name="1010" lang_cn="错误，命令为空" lang_en="Error, command is empty"/>
+				<enum name="1011" lang_cn="失败，命令执行失败" lang_en="Failed, command execute failed"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.host.shutdown" href="tecs_host_shutdown.xml"/>
+	</reference>
+</method>

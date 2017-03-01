@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_snmpuser_set.xml">
+	<interface>tecs.snmpuser.set</interface>
+	<shortdesc lang_cn="设置SNMP XML-RPC接口用户名和密码" lang_en="Set the user and the password for SNMP XML-RPC interface."/>
+	<description lang_cn="设置SNMP XML-RPC接口用户名和密码。如果设置结果返回失败，则返回失败原因。" lang_en="Set the user and the password for SNMP XML-RPC interface. If the set fail, it will return the fault reason. "/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+	    <parameter name="snmpuser" type="string" lang_cn="用户名" lang_en="User name."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码:" lang_en="Error code:">
+				<enum name="11000" lang_cn="当前SNMP配置表不存在" lang_en="The SNMP configuration database do not exist"/>
+				<enum name="11001" lang_cn="查询数据库失败" lang_en="Failed to query database"/>
+				<enum name="11002" lang_cn="SNMP配置表新增失败" lang_en="Failed to add a record to the SNMP configuration database"/>
+				<enum name="11003" lang_cn="SNMP配置表更新失败" lang_en="Failed to modify the SNMP configuration database"/>
+				<enum name="11004" lang_cn="配置数据错误" lang_en="Configuration value is wrong"/>
+				<enum name="11010" lang_cn="获取session字符串失败" lang_en="Get the session string failed"/>
+				<enum name="11011" lang_cn="密码长度超过限制" lang_en="The length of the password exceed the limitation"/>
+			</parameter>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.snmpuser.query" href="tecs_snmpuser_query.xml"/>
+	</reference>
+</method>

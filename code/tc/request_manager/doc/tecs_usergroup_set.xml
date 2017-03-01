@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<method id="tecs_usergroup_set.xml">
+	<interface>tecs.usergroup.set</interface>
+	<shortdesc lang_cn="更新用户组信息" lang_en="Update a usergroup info"/>
+	<description lang_cn="更新用户组信息，返回0表示成功，非0表示失败，返回的第二个字段中带有附加信息。" lang_en="Update a usergroup info. 0 means success, other means failed, the second return parameter has appending information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="groupname" type="string" lang_cn="用户组名，必须由数字、字母或下划线组成，范围1-64个字符。" lang_en="Usergroup name, only consist of numbers,letters or underscores, range 1-64 characters."/>
+		<parameter name="enabled" type="int" lang_cn="用户组是否启用。" lang_en="Usergroup is enable or not.">
+			<enum name="1" lang_cn="启用" lang_en="enable"/>
+			<enum name="2" lang_cn="禁用" lang_en="disable"/>
+		</parameter>
+		<parameter name="description" type="string" lang_cn="用户组描述信息。" lang_en="Usergroup description info."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码，非0表示失败。" lang_en="Error code, not 0 means failed.">
+        	    <enum name="8003" lang_cn="错误，用户组不存在" lang_en="Error, usergroup does not exist."/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="错误信息。" lang_en="Error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrator" lang_cn="云管理员。" lang_en="Cloud Administrator."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.usergroup.allocate" href="tecs_usergroup_allocate.xml"/>
+		<xref name="tecs.usergroup.delete" href="tecs_usergroup_delete.xml"/>
+	</reference>
+</method>

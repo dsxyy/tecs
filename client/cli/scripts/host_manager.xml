@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Script func_type="0" verno="66">
+	<Modes>
+		<Mode ID="2" Class="30" HasNo="0" Prompt="#" Name="特权模式" mode-help-chs="可执行的命令：&#xA;" mode-help-en="Executing command:&#xA;" mode-Comment-chs="特权模式" mode-Comment-en="Super user mode" IsPublic="NO" NeedPublish="YES" ShowPublicCmd="YES">
+			<TreeNode Name="cluster_config" treenode-comment-chs="进入集群属性配置模式" treenode-comment-en="Enter cluster_config mode">
+				<Command IdInGroup="1" OprMode="PROCESS" CmdGroup="集群属性配置" ExecMode="其他" NextMode="cluster_config" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0xAC040001" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="host_manager" treenode-comment-chs="进入物理机管理模式" treenode-comment-en="Enter host_manager mode">
+				<Command IdInGroup="1" OprMode="PROCESS" CmdGroup="物理机管理" ExecMode="其他" NextMode="host_manager" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x82040001" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" NeedPublish="NO" formatstring-chs="" formatstring-en="">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+		</Mode><Mode ID="31" Class="28" HasNo="YES" Prompt="(host_manager)#" mode-help-chs="" mode-help-en="" Name="host_manager" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="host" treenode-comment-chs="物理机管理" treenode-comment-en="Host manager">
+				<TreeNode Name="disable" treenode-comment-chs="设置物理机进入维护模式" treenode-comment-en="set the host enter into maintain mode"><Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="104" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB040068">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+							<Param Name="is_forced" paracomment-chs="是否强制" paracomment-en="is forced" DataType="DATA_TYPE_BYTE" Min="0" Max="1" Length="" _Type="Param" _Index="2"/>
+						</ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="enable" treenode-comment-chs="设置物理机退出维护模式" treenode-comment-en="set the host exit from maintain mode"><Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="105" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB040069">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+						</ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="forget" treenode-comment-chs="将已注销的物理机遗忘掉" treenode-comment-en="forget the unregistered host"><Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="103" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB040067">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+						</ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="reboot" treenode-comment-chs="将物理机重启" treenode-comment-en="reboot the host"><Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="106" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB04006A">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+						</ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="register" treenode-comment-chs="物理机注册到集群中" treenode-comment-en="register host into cluster">
+					<Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="101" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB040065">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+							<Param Name="is_forced" paracomment-chs="是否强制" paracomment-en="is forced" DataType="DATA_TYPE_BYTE" Min="0" Max="1" Length="" _Type="Param" _Index="2"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+								<Param Name="description" paracomment-chs="物理机描述信息" paracomment-en="description of host" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="3"/>
+							</Param>
+						</ParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="shutdown" treenode-comment-chs="将物理机关机" treenode-comment-en="shutdown the host"><Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="107" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB04006B">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+						</ParamNode>
+					</Command></TreeNode>
+				<TreeNode Name="unregister" treenode-comment-chs="物理机从集群中注销" treenode-comment-en="unregister host from cluster"><Command CanStop="YesAndNotNeedAck" CmdGroup="物理机管理" ExecMode="协议" ExecutePos="XMLRPC" HasNoCommand="NO" IdInGroup="102" NeedPublish="YES" NextInputMode="INMODE_NORMAL" NextMode="相同模式" OprMode="PROCESS" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB040066">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode>
+							<Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+								<Param Name="description" paracomment-chs="物理机描述信息" paracomment-en="description of host" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="2"/>
+							</Param></ParamNode>
+					</Command></TreeNode>
+			</TreeNode>
+			<TreeNode Name="port" treenode-comment-chs="物理网口配置" treenode-comment-en="Ethernet port configure">
+				<Command CmdGroup="物理机管理" IdInGroup="201" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB0100C9">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+						<Param Name="port_name" paracomment-chs="物理网口名称" paracomment-en="port name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/>
+						<Param Name="{}MORE_ANGLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" MoreFlags="YES">
+							<Param Name="[]SQUARE" prammarcomment-chs="是否启用" prammarcomment-en="port is used" _Type="Prammar" _Index="0" Flag="used">
+								<Param Name="used" paracomment-chs="是否启用" paracomment-en="port is used" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="605" _Type="Param" _Index="3"/>
+							</Param>
+							<Param Name="[]SQUARE" prammarcomment-chs="协商模式" prammarcomment-en="negotiate mode" _Type="Prammar" _Index="0" Flag="negotiate">
+								<Param Name="negotiate" paracomment-chs="协商模式" paracomment-en="negotiate mode" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="606" _Type="Param" _Index="4"/>
+							</Param><Param Name="[]SQUARE" prammarcomment-chs="速率模式" prammarcomment-en="speed mode" _Type="Prammar" _Index="0" Flag="speed">
+								<Param Name="speed" paracomment-chs="速率模式" paracomment-en="speed mode" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="607" _Type="Param" _Index="5"/>
+							</Param><Param Name="[]SQUARE" prammarcomment-chs="双工模式" prammarcomment-en="duplex mode" _Type="Prammar" _Index="0" Flag="duplex">
+								<Param Name="duplex" paracomment-chs="双工模式" paracomment-en="duplex mode" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="608" _Type="Param" _Index="6"/>
+							</Param><Param Name="[]SQUARE" prammarcomment-chs="主从模式" prammarcomment-en="master slave mode" _Type="Prammar" _Index="0" Flag="master">
+								<Param Name="master" paracomment-chs="主从模式" paracomment-en="master slave mode" DataType="DATA_TYPE_MAP" Min="0" Max="65535" Length="609" _Type="Param" _Index="7"/>
+							</Param><Param Name="[]SQUARE" prammarcomment-chs="端口延时UP的秒数" prammarcomment-en="seconds of port delay up" _Type="Prammar" _Index="0" Flag="delay_up">
+								<Param Name="delay_up_time" paracomment-chs="端口延时UP的秒数" paracomment-en="seconds of port delay up" DataType="DATA_TYPE_INT" Min="0" Max="4294967295" Length="605" _Type="Param" _Index="8"/>
+							</Param></Param>
+					</ParamNode>
+					<NoParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/><Param Name="port_name" paracomment-chs="物理网口名称" paracomment-en="port name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/></NoParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="物理机相关查询" treenode-comment-en="Show information of the host">
+				<TreeNode Name="host" treenode-comment-chs="查看物理机信息" treenode-comment-en="show information of the host">
+					<Command CmdGroup="物理机管理" IdInGroup="401" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;oid            = %v%w&#xA;host_name      = %v%s&#xA;ip_address     = %v%s&#xA;register_state = %v%b&#xA;run_state      = %v%b&#xA;is_disabled    = %v%b&#xA;create_time    = %v%Y&#xA;cpu_info_id    = %v%w&#xA;vmm_info       = %v%s&#xA;os_info        = %v%s&#xA;running_vms    = %v%d&#xA;tcu_max      = %v%d&#xA;tcu_free     = %v%d&#xA;mem_total      = %v%.0f MB&#xA;mem_max        = %v%.0f MB&#xA;mem_free       = %v%.0f MB&#xA;disk_total     = %v%.2f GB&#xA;disk_max       = %v%.2f GB&#xA;disk_free      = %v%.2f GB&#xA;cpu_usage_1m   = %v%d&#xA;cpu_usage_5m   = %v%d&#xA;cpu_usage_30m  = %v%d&#xA;hardware_state = %v%b&#xA;description    = %v%s&#xA;location         = %v%s&#xA;is_support_hvm    = %v%b&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;oid            = %v%w&#xA;host_name      = %v%s&#xA;ip_address     = %v%s&#xA;register_state = %v%b&#xA;run_state      = %v%b&#xA;is_disabled    = %v%b&#xA;create_time    = %v%Y&#xA;cpu_info_id    = %v%w&#xA;vmm_info       = %v%s&#xA;os_info        = %v%s&#xA;running_vms    = %v%d&#xA;tcu_max      = %v%d&#xA;tcu_free     = %v%d&#xA;mem_total      = %v%.0f MB&#xA;mem_max        = %v%.0f MB&#xA;mem_free       = %v%.0f MB&#xA;disk_total     = %v%.2f GB&#xA;disk_max       = %v%.2f GB&#xA;disk_free      = %v%.2f GB&#xA;cpu_usage_1m   = %v%d&#xA;cpu_usage_5m   = %v%d&#xA;cpu_usage_30m  = %v%d&#xA;hardware_state = %v%b&#xA;description    = %v%s&#xA;location         = %v%s&#xA;is_support_hvm    = %v%b&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;oid            = %v%w&#xA;host_name      = %v%s&#xA;ip_address     = %v%s&#xA;register_state = %v%b&#xA;run_state      = %v%b&#xA;is_disabled    = %v%b&#xA;create_time    = %v%Y&#xA;cpu_info_id    = %v%w&#xA;vmm_info       = %v%s&#xA;os_info        = %v%s&#xA;running_vms    = %v%d&#xA;tcu_max      = %v%d&#xA;tcu_free     = %v%d&#xA;mem_total      = %v%.0f MB&#xA;mem_max        = %v%.0f MB&#xA;mem_free       = %v%.0f MB&#xA;disk_total     = %v%.2f GB&#xA;disk_max       = %v%.2f GB&#xA;disk_free      = %v%.2f GB&#xA;cpu_usage_1m   = %v%d&#xA;cpu_usage_5m   = %v%d&#xA;cpu_usage_30m  = %v%d&#xA;hardware_state = %v%b&#xA;description    = %v%s&#xA;location         = %v%s&#xA;is_support_hvm    = %v%b&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;oid            = %v%w&#xA;host_name      = %v%s&#xA;ip_address     = %v%s&#xA;register_state = %v%b&#xA;run_state      = %v%b&#xA;is_disabled    = %v%b&#xA;create_time    = %v%Y&#xA;cpu_info_id    = %v%w&#xA;vmm_info       = %v%s&#xA;os_info        = %v%s&#xA;running_vms    = %v%d&#xA;tcu_max      = %v%d&#xA;tcu_free     = %v%d&#xA;mem_total      = %v%.0f MB&#xA;mem_max        = %v%.0f MB&#xA;mem_free       = %v%.0f MB&#xA;disk_total     = %v%.2f GB&#xA;disk_max       = %v%.2f GB&#xA;disk_free      = %v%.2f GB&#xA;cpu_usage_1m   = %v%d&#xA;cpu_usage_5m   = %v%d&#xA;cpu_usage_30m  = %v%d&#xA;hardware_state = %v%b&#xA;description    = %v%s&#xA;location         = %v%s&#xA;is_support_hvm    = %v%b&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xAB000191">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+								<Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/></Param>
+						</ParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="port" treenode-comment-chs="查看物理网口信息" treenode-comment-en="show information of the ethernet port">
+					<Command CmdGroup="物理机管理" IdInGroup="402" OprMode="PROCESS" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;%rs2:&#xA;name           = %v%s&#xA;used           = %v%b&#xA;negotiate      = %v%b&#xA;speed          = %v%b&#xA;duplex         = %v%b&#xA;master         = %v%b&#xA;delay_up_time  = %v%d&#xA;state          = %v%b&#xA;linked         = %v%b&#xA;work_speed     = %v%b&#xA;work_duplex    = %v%b&#xA;%re" formatstring-en="%v%b&#xA;%rs2:&#xA;name           = %v%s&#xA;used           = %v%b&#xA;negotiate      = %v%b&#xA;speed          = %v%b&#xA;duplex         = %v%b&#xA;master         = %v%b&#xA;delay_up_time  = %v%d&#xA;state          = %v%b&#xA;linked         = %v%b&#xA;work_speed     = %v%b&#xA;work_duplex    = %v%b&#xA;%re" _ID="0xAB040192">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag=""><Param Name="port_name" paracomment-chs="物理网口名称" paracomment-en="port name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/></Param>
+						</ParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="trunk" treenode-comment-chs="查看trunk口信息" treenode-comment-en="show information of the trunk port">
+					<Command CmdGroup="物理机管理" IdInGroup="403" OprMode="PROCESS" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;%rs2:&#xA;trunk_name     = %v%s&#xA;trunk_type     = %v%b&#xA;trunk_state    = %v%b&#xA;trunk_ports    = %v%s&#xA;%re" formatstring-en="%v%b&#xA;%rs2:&#xA;trunk_name     = %v%s&#xA;trunk_type     = %v%b&#xA;trunk_state    = %v%b&#xA;trunk_ports    = %v%s&#xA;%re" _ID="0xAB040193">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag=""><Param Name="trunk_name" paracomment-chs="trunk口名称" paracomment-en="trunk name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/></Param>
+						</ParamNode>
+					</Command>
+				</TreeNode>
+			</TreeNode>
+			<TreeNode Name="trunk" treenode-comment-chs="trunk口配置" treenode-comment-en="Trunk port config">
+				<Command CmdGroup="物理机管理" IdInGroup="301" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAB01012D">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/><Param Name="trunk_name" paracomment-chs="trunk口名称" paracomment-en="trunk name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/><Param Name="trunk_type" paracomment-chs="trunk口类型" paracomment-en="trunk type" DataType="DATA_TYPE_MAP" Min="0" Max="255" Length="611" _Type="Param" _Index="3"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag=""><Param Name="RECYCLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0"><Param Name="trunk_port" paracomment-chs="trunk口的成员口名称" paracomment-en="ethernet port name of trunk" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="4"/></Param></Param>
+					</ParamNode>
+					<NoParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="host_name" paracomment-chs="物理机名称" paracomment-en="host name" DataType="DATA_TYPE_STRING" Min="1" Max="64" Length="" _Type="Param" _Index="1"/><Param Name="trunk_name" paracomment-chs="trunk口名称" paracomment-en="trunk name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/><Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag=""><Param Name="RECYCLE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0"><Param Name="trunk_port" paracomment-chs="trunk口的成员口名称" paracomment-en="ethernet port name of trunk" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="3"/></Param></Param></NoParamNode>
+				</Command>
+			</TreeNode>
+		</Mode>
+		<Mode ID="32" Class="28" HasNo="YES" Prompt="(cluster_confg)#" mode-help-chs="" mode-help-en="" Name="cluster_config" mode-Comment-chs="" mode-Comment-en="" IsPublic="NO" ShowPublicCmd="YES" NeedPublish="YES">
+			<TreeNode Name="clustercfg" treenode-comment-chs="集群属性配置" treenode-comment-en="Cluster attribute configure">
+				<Command CmdGroup="集群属性配置" IdInGroup="101" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAC010065">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="config_name" paracomment-chs="配置属性的名称" paracomment-en="config name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/>
+						<Param Name="config_value" paracomment-chs="配置属性的值" paracomment-en="config value" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="2"/>
+					</ParamNode>
+					<NoParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="config_name" paracomment-chs="配置属性的名称" paracomment-en="config name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/></NoParamNode>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="exit" treenode-comment-chs="退出当前模式" treenode-comment-en="Exit from current mode">
+				<Command IdInGroup="5" OprMode="PROCESS" CmdGroup="解释" ExecMode="其他" NextMode="前模式" NextInputMode="INMODE_NORMAL" ExecutePos="INTERPRETER" _ID="0x80040005" HasNoCommand="NO" CanStop="YesAndNotNeedAck" NeedRetrun="NO" CanBeMenuItem="NO" formatstring-chs="" formatstring-en="" NeedPublish="NO">
+					<cmd-postscript>无</cmd-postscript>
+				</Command>
+			</TreeNode>
+			<TreeNode Name="show" treenode-comment-chs="集群属性相关配置" treenode-comment-en="Show information of the cluster config">
+				<TreeNode Name="clustercfg" treenode-comment-chs="查询集群属性配置" treenode-comment-en="Show cluster attribute config">
+					<Command CmdGroup="集群属性配置" IdInGroup="301" OprMode="PROCESS" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%v%b&#xA;%rs2:&#xA;config_name    = %v%s&#xA;config_value   = %v%s&#xA;%re" formatstring-en="%v%b&#xA;%rs2:&#xA;config_name    = %v%s&#xA;config_value   = %v%s&#xA;%re" _ID="0xAC04012D">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+								<Param Name="config_name" paracomment-chs="配置属性的名称" paracomment-en="config name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="1"/></Param>
+						</ParamNode>
+					</Command>
+				</TreeNode>
+				<TreeNode Name="tcu" treenode-comment-chs="查询tcu配置信息" treenode-comment-en="Show tcu config">
+					<Command CmdGroup="集群属性配置" IdInGroup="302" OprMode="GET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="NO" NeedPublish="YES" formatstring-chs="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;cpu_info_id    = %v%w&#xA;tcu_num      = %v%d&#xA;commend_tcu_num = %v%d&#xA;cpu_info       = &#xA;%v%sdescription    = %v%s&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;cpu_info_id    = %v%w&#xA;tcu_num      = %v%d&#xA;commend_tcu_num = %v%d&#xA;cpu_info       = &#xA;%v%sdescription    = %v%s&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" formatstring-en="%hs2&#xA;%hc0:&#xA;%v1%b&#xA;%rs3:&#xA;cpu_info_id    = %v%w&#xA;tcu_num      = %v%d&#xA;commend_tcu_num = %v%d&#xA;cpu_info       = &#xA;%v%sdescription    = %v%s&#xA;%re&#xA;%hc1:&#xA;%rs3:&#xA;cpu_info_id    = %v%w&#xA;tcu_num      = %v%d&#xA;commend_tcu_num = %v%d&#xA;cpu_info       = &#xA;%v%sdescription    = %v%s&#xA;%re&#xA;%hc2:&#xA;%v1%b&#xA;%he" _ID="0xAC00012E">
+						<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+						<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+							<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag=""><Param Name="cpu_info_id" paracomment-chs="CPU信息ID" paracomment-en="cpu information id" DataType="DATA_TYPE_WORD64" Min="0" Max="18446744073709551615" Length="" _Type="Param" _Index="1"/></Param>
+						</ParamNode>
+					</Command>
+				</TreeNode>
+			</TreeNode>
+			<TreeNode Name="tcu" treenode-comment-chs="tcu配置" treenode-comment-en="tcu configure">
+				<Command CmdGroup="集群属性配置" IdInGroup="201" OprMode="SET" ExecMode="协议" NextMode="相同模式" NextInputMode="INMODE_NORMAL" ExecutePos="XMLRPC" CanStop="YesAndNotNeedAck" HasNoCommand="YES" NeedPublish="YES" formatstring-chs="%v%b&#xA;" formatstring-en="%v%b&#xA;" _ID="0xAC0100C9">
+					<cmd-postscript>在此添加命令配置限制描述</cmd-postscript>
+					<ParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/>
+						<Param Name="cpu_info_id" paracomment-chs="CPU信息ID" paracomment-en="cpu information id" DataType="DATA_TYPE_WORD64" Min="0" Max="18446744073709551615" Length="" _Type="Param" _Index="1"/><Param Name="svcpu_num" paracomment-chs="svcpu数量" paracomment-en="svcpu count" DataType="DATA_TYPE_INT" Min="0" Max="2147483647" Length="" _Type="Param" _Index="2"/>
+						<Param Name="[]SQUARE" prammarcomment-chs="" prammarcomment-en="" _Type="Prammar" _Index="0" Flag="">
+							<Param Name="description" paracomment-chs="CPU信息的描述" paracomment-en="description of cpu information" DataType="DATA_TYPE_STRING" Min="0" Max="255" Length="" _Type="Param" _Index="3"/>
+						</Param></ParamNode>
+					<NoParamNode><Param Name="cluster_name" paracomment-chs="集群名称" paracomment-en="cluster name" DataType="DATA_TYPE_STRING" Min="1" Max="32" Length="" _Type="Param" _Index="0"/><Param Name="cpu_info_id" paracomment-chs="CPU信息ID" paracomment-en="cpu information id" DataType="DATA_TYPE_WORD64" Min="0" Max="18446744073709551615" Length="" _Type="Param" _Index="1"/></NoParamNode>
+				</Command>
+			</TreeNode>
+		</Mode>
+	</Modes>
+	<Maps>
+		<Map Type="1">
+			<MapItem Value="0" Name-chs="FALSE" Name-en=""/>
+			<MapItem Value="1" Name-chs="TRUE" Name-en=""/>
+		</Map>
+		<Map Type="601">
+			<MapItem Value="0" Name-chs="非维护模式" Name-en="FALSE"/>
+			<MapItem Value="1" Name-chs="已进入维护模式" Name-en="TRUE"/>
+		</Map>
+		<Map Type="602">
+			<MapItem Value="0" Name-chs="临时" Name-en="TEMP"/>
+			<MapItem Value="1" Name-chs="未归属" Name-en="ISOLATED"/>
+			<MapItem Value="2" Name-chs="已注册" Name-en="REGISTERED"/>
+			<MapItem Value="3" Name-chs="已注销" Name-en="UNREGISTERED"/>
+		</Map>
+		<Map Type="603">
+			<MapItem Value="0" Name-chs="初始态" Name-en="INIT"/>
+			<MapItem Value="1" Name-chs="冲突" Name-en="CONFLICT"/>
+			<MapItem Value="2" Name-chs="离线" Name-en="OFF_LINE"/>
+			<MapItem Value="3" Name-chs="在线" Name-en="ON_LINE"/>
+		</Map>
+		<Map Type="604">
+			<MapItem Value="0" Name-chs="正常" Name-en="normal"/>
+			<MapItem Value="1" Name-chs="内存故障" Name-en="memory error"/>
+			<MapItem Value="2" Name-chs="晶振故障" Name-en="oscillator error"/>
+			<MapItem Value="3" Name-chs="内存故障、晶振故障" Name-en="memory and oscillator error"/>
+		</Map>
+		<Map Type="605">
+			<MapItem Value="0" Name-chs="未知" Name-en="UNKNOWN"/>
+			<MapItem Value="1" Name-chs="启用" Name-en="YES"/>
+			<MapItem Value="2" Name-chs="停用" Name-en="NO"/>
+		</Map>
+		<Map Type="606">
+			<MapItem Value="0" Name-chs="自协商" Name-en="AUTO"/>
+			<MapItem Value="1" Name-chs="强制" Name-en="FORCE"/>
+		</Map>
+		<Map Type="607">
+			<MapItem Value="0" Name-chs="未知" Name-en="UNKNOWN"/>
+			<MapItem Value="1" Name-chs="十兆" Name-en="10M"/>
+			<MapItem Value="2" Name-chs="百兆" Name-en="100M"/>
+			<MapItem Value="3" Name-chs="千兆" Name-en="1000M"/>
+			<MapItem Value="4" Name-chs="万兆" Name-en="10G"/>
+		</Map>
+		<Map Type="608">
+			<MapItem Value="0" Name-chs="未知" Name-en="UNKNOWN"/>
+			<MapItem Value="1" Name-chs="全双工" Name-en="FULL"/>
+			<MapItem Value="2" Name-chs="半双工" Name-en="HALF"/>
+		</Map>
+		<Map Type="609">
+			<MapItem Value="0" Name-chs="未知" Name-en="UNKNOWN"/>
+			<MapItem Value="1" Name-chs="自适应" Name-en="AUTO"/>
+			<MapItem Value="2" Name-chs="主模式" Name-en="MASTER"/>
+			<MapItem Value="3" Name-chs="从模式" Name-en="SLAVE"/>
+		</Map>
+		<Map Type="610">
+			<MapItem Value="0" Name-chs="DOWN" Name-en="DOWN"/>
+			<MapItem Value="1" Name-chs="UP" Name-en="UP"/>
+		</Map>
+		<Map Type="611">
+			<MapItem Value="1" Name-chs="分担" Name-en="SHARE"/>
+			<MapItem Value="2" Name-chs="主备" Name-en="MS"/>
+		</Map>
+		<Map Type="612">
+			<MapItem Value="0" Name-en="not support" Name-chs="不支持"/>
+			<MapItem Value="1" Name-en="support" Name-chs="支持"/>
+		</Map>
+		<Map Type="613">
+			<MapItem Value="0" Name-chs="UNKNOWN" Name-en="UNKNOWN"/>
+			<MapItem Value="1" Name-chs="YES" Name-en="YES"/>
+			<MapItem Value="2" Name-chs="NO" Name-en="NO"/>
+		</Map>
+	</Maps>
+	<CmdGroups>
+		<CmdGroup groupid="128" groupname="解释"/>
+		<CmdGroup groupid="129" groupname="数据库"/>
+		<CmdGroup groupid="130" groupname="维护"/>
+		<CmdGroup groupid="171" groupname="物理机管理"/>
+		<CmdGroup groupid="172" groupname="集群属性配置"/>
+	</CmdGroups>
+</Script>

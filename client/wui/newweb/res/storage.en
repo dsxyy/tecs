@@ -1,0 +1,80 @@
+﻿({
+  xid:{
+    html:{
+            saRefresh:"Refresh",
+            saDisable:"Begin Maintain",
+            saEnable:"End Maintain",
+            saForget:"Forget",
+            salistSummaryNav:"Storage Arrays",
+
+            saSummaryNav:"Summary",
+            saVgNav:"VG",
+            vg_t1:"Name",
+            vg_t2:"Free",
+            vg_t3:"Total",
+            vg_t4:"Volume Number",
+            vgRefresh:"Refresh",
+
+            saVolumeNav:"Volume",
+            volume_t1:"VG Name",
+            volume_t2:"Volume Name",
+            volume_t3:"Size",
+            volume_t4:"Request ID",
+            volume_t5:"Image",
+            volume_t6:"VM",
+            volumeRefresh:"Drive",
+
+            saUseage:"Usage",
+            saInfo:"Information",
+            saDesc:"Description"
+    },
+        title:{},
+        val:{
+            forget_sa_confirm:"Do you confirm to forget the sa?",
+            disable_sa_confirm:"Do you confirm to maintance the sa?"
+        },
+        dialog:{
+            add_cluster_to_sa_dlg:"Set Cluster",
+            forget_sa_dlg:"Forget SA",
+            disable_sa_dlg:"Begin Maintance"
+        }
+    },
+    type:{
+        SaRunState:{
+            0: "offline",
+            1: "online",
+            2: "maintance"},    
+        SaState:{
+            0: "maintance",
+            1: "running"},
+        SaStateOpr:{
+            0: "begin maintain",
+            1: "end maintain"},
+        SaOnline:{
+            0: "offline",
+            1: "online"},    
+        usage:{
+            used:"Used",
+            max:"One Host Max Available",
+            free:"Available",
+            total:"Total"}, 
+        field_name:{
+            "sa.sid":"ID",
+            "sa.name":"Name",
+            "sa.sa_name":"SA Name",
+            "sa.state":"Maintain",
+            "sa.online":"Network",            
+            "sa.type":"Type",
+            "sa.ctrl_addr":"Ctrl Address",
+            "sa.register_time":"Register Time",               
+            "sa.cluster":"Clusters",
+            "sa.desc":"Description",
+            "sa.maped":"Clusters Use the SA ",
+            "sa.unmaped":"Clusters Not Use the SA",
+            "select_vg":"PLease Select VG"
+        },
+        opr:{
+            setting:"Setting"        
+        }
+    }
+})

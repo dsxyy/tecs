@@ -1,0 +1,602 @@
+
+
+
+-- physical port 添加 
+-- Function: pf_net_add_portgroup(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_add_portgroup(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_add_portgroup(in_name character varying, in_pg_type integer,
+        in_uuid character varying, in_acl character varying, in_qos character varying,in_allowed_priorities character varying,
+        in_receive_bandwidth_limit character varying, in_receive_bandwidth_reserve character varying, 
+        in_default_vlan_id integer, in_promiscuous integer, in_macvlan_filter_enable integer, 
+        in_allowed_transmit_macs character varying, in_allowed_transmit_macvlans character varying, 
+        in_policy_block_override character varying, in_policy_vlan_override character varying, 
+        in_version integer,in_mgr_id character varying, in_type_id character varying,
+        in_allow_mac_change integer, in_switchport_mode integer,
+        in_is_cfg_netplane integer, in_netplane_uuid character varying,
+        in_mtu integer,
+        in_trunk_native_vlan_num integer,in_access_vlan_num integer,in_access_isolate integer , in_desc character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_same_pg integer;
+  is_conflict integer;
+  npmtu integer;
+  pgid numeric(19,0);
+  netplaneid numeric(19,0);
+  is_exist integer; 
+  db_pg_uuid character varying;
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG integer := 5;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  
+  IF in_is_cfg_netplane > 0 THEN 
+     SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_netplane_uuid;
+     SELECT id INTO netplaneid FROM netplane WHERE uuid = in_netplane_uuid;
+	 SELECT mtu INTO npmtu FROM netplane WHERE uuid = in_netplane_uuid;
+     IF is_exist <= 0 THEN 
+        result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+        return result;
+     END IF;  
+	 IF npmtu < in_mtu THEN 
+	    result.ret := RTN_NETPLANE_MTU_LESS_PG;   -- PG MTU 不能大于 netplane mtu 
+        return result;
+	 END IF;
+  END IF;
+    
+  -- 不支持重复添加 
+  -- 判断name是否冲突
+  SELECT count(*) INTO is_exist FROM port_group WHERE name = in_name;
+  IF is_exist > 0 THEN 
+     result.ret := RTN_ITEM_CONFLICT; -- conflict 
+     return result;
+  END IF;
+  
+  -- 检查switch_mode
+  IF in_switchport_mode < 0 THEN 
+    result.ret := RTN_PARAM_INVALID; -- param invalid 
+    return result;   
+  END IF;
+  
+  IF in_switchport_mode > 1  THEN 
+    result.ret := RTN_PARAM_INVALID; -- param invalid  
+    return result;   
+  END IF;
+  
+  -- 检查pg_type 
+  
+  -- insert item
+  result.id := nextval('serial_port_group');
+  result.uuid := in_uuid;
+    
+  BEGIN 
+    IF in_is_cfg_netplane > 0 THEN     
+        INSERT INTO port_group(id,name,pg_type,uuid,acl,qos,allowed_priorities,
+            receive_bandwidth_limit,receive_bandwidth_reserve,default_vlan_id,
+            promiscuous,macvlan_filter_enable,allowed_transmit_macs,allowed_transmit_macvlans,
+            policy_block_override,policy_vlan_override,version,mgr_id,type_id,
+            allow_mac_change,switchport_mode,netplane_id, mtu, description) 
+        values(result.id,in_name,in_pg_type,in_uuid,in_acl,in_qos,in_allowed_priorities,
+            in_receive_bandwidth_limit,in_receive_bandwidth_reserve,in_default_vlan_id,
+            in_promiscuous,in_macvlan_filter_enable,in_allowed_transmit_macs,in_allowed_transmit_macvlans,
+            in_policy_block_override,in_policy_vlan_override,in_version,in_mgr_id,in_type_id,
+            in_allow_mac_change,in_switchport_mode,netplaneid, in_mtu,in_desc);     
+    ELSE 
+       INSERT INTO port_group(id,name,pg_type,uuid,acl,qos,allowed_priorities,
+            receive_bandwidth_limit,receive_bandwidth_reserve,default_vlan_id,
+            promiscuous,macvlan_filter_enable,allowed_transmit_macs,allowed_transmit_macvlans,
+            policy_block_override,policy_vlan_override,version,mgr_id,type_id,
+            allow_mac_change,switchport_mode, mtu,description) 
+        values(result.id,in_name,in_pg_type,in_uuid,in_acl,in_qos,in_allowed_priorities,
+            in_receive_bandwidth_limit,in_receive_bandwidth_reserve,in_default_vlan_id,
+            in_promiscuous,in_macvlan_filter_enable,in_allowed_transmit_macs,in_allowed_transmit_macvlans,
+            in_policy_block_override,in_policy_vlan_override,in_version,in_mgr_id,in_type_id,
+            in_allow_mac_change,in_switchport_mode, in_mtu,in_desc);    
+    END IF;
+    
+    -- uplink pg
+    IF in_pg_type = 0 THEN 
+      INSERT INTO uplink_pg values(result.id, in_pg_type);
+    END IF;
+    
+    -- kernel_pg
+    IF in_pg_type = 10 THEN 
+      INSERT INTO kernel_pg values(result.id, in_pg_type);
+    END IF;
+    IF in_pg_type = 11 THEN 
+      INSERT INTO kernel_pg values(result.id, in_pg_type);
+    END IF;
+    
+    -- vm_pg
+    IF in_pg_type = 20 THEN 
+      INSERT INTO vm_pg values(result.id, in_pg_type);
+    END IF;
+    IF in_pg_type = 21 THEN 
+      INSERT INTO vm_pg values(result.id, in_pg_type);
+    END IF;
+    
+    -- pg_switchport_trunk 
+    IF in_switchport_mode = 0 THEN 
+        INSERT INTO pg_switchport_trunk values(result.id, in_switchport_mode, in_trunk_native_vlan_num );
+    END IF;
+    
+    IF in_switchport_mode = 1 THEN 
+      IF in_pg_type = 21 THEN 
+          INSERT INTO pg_switchport_access_isolate values(result.id, in_pg_type,in_switchport_mode, in_access_isolate );      
+      ELSE
+          INSERT INTO pg_switchport_access_vlan values(result.id, in_pg_type,in_switchport_mode, in_access_vlan_num );      
+      END IF;
+    END IF; 
+    
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_add_portgroup(in_name character varying, in_pg_type integer,
+        in_uuid character varying, in_acl character varying, in_qos character varying,in_allowed_priorities character varying,
+        in_receive_bandwidth_limit character varying, in_receive_bandwidth_reserve character varying, 
+        in_default_vlan_id integer, in_promiscuous integer, in_macvlan_filter_enable integer, 
+        in_allowed_transmit_macs character varying, in_allowed_transmit_macvlans character varying, 
+        in_policy_block_override character varying, in_policy_vlan_override character varying, 
+        in_version integer,in_mgr_id character varying, in_type_id character varying,
+        in_allow_mac_change integer, in_switchport_mode integer,
+        in_is_cfg_netplane integer, in_netplane_uuid character varying,        
+        in_mtu integer,
+        in_trunk_native_vlan_num integer,in_access_vlan_num integer,in_access_isolate integer, in_desc character varying ) OWNER TO tecs;
+
+
+-- port修改
+-- Function: pf_net_modify_portgroup(character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION pf_net_modify_portgroup(character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION pf_net_modify_portgroup(in_name character varying, in_pg_type integer,
+        in_uuid character varying, in_acl character varying, in_qos character varying,in_allowed_priorities character varying,
+        in_receive_bandwidth_limit character varying, in_receive_bandwidth_reserve character varying, 
+        in_default_vlan_id integer, in_promiscuous integer, in_macvlan_filter_enable integer, 
+        in_allowed_transmit_macs character varying, in_allowed_transmit_macvlans character varying, 
+        in_policy_block_override character varying, in_policy_vlan_override character varying, 
+        in_version integer,in_mgr_id character varying, in_type_id character varying,
+        in_allow_mac_change integer, in_switchport_mode integer,
+        in_is_cfg_netplane integer, in_netplane_uuid character varying,        
+        in_mtu integer,
+        in_trunk_native_vlan_num integer,in_access_vlan_num integer,in_access_isolate integer, in_desc character varying  )
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  is_modify_netplane integer;
+  npmtu integer;
+  netplaneid numeric(19,0);
+  oldnetplaneid numeric(19,0);
+  pgid numeric(19,0);
+  db_pg_type integer;
+  ismodifyswitchportmode integer;
+  oldswitchportmode integer;
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_NETPLANE_MTU_LESS_PG integer := 5;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result.ret := 0;
+  
+  -- 入参检查 后面做  
+  -- netplane check
+  IF in_is_cfg_netplane > 0 THEN 
+     SELECT count(*) INTO is_exist FROM netplane WHERE uuid = in_netplane_uuid;
+     SELECT id INTO netplaneid FROM netplane WHERE uuid = in_netplane_uuid;
+     IF is_exist <= 0 THEN 
+        result.ret := RTN_ITEM_NO_EXIST;   -- item has not exist.
+        return result;
+     END IF;  
+  END IF;
+    
+  -- uuid check
+  SELECT count(*) INTO is_exist FROM port_group WHERE uuid = in_uuid;
+  SELECT pg_type INTO db_pg_type FROM port_group WHERE uuid = in_uuid;  
+  SELECT id INTO pgid FROM port_group WHERE uuid = in_uuid;  
+  SELECT switchport_mode INTO oldswitchportmode FROM port_group WHERE uuid = in_uuid;   
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_ITEM_NO_EXIST; -- conflict 
+     return result;
+  END IF;
+  
+  -- pg_type check 
+  SELECT count(*) INTO is_exist FROM port_group WHERE uuid = in_uuid AND db_pg_type = in_pg_type;
+  IF is_exist <= 0 THEN 
+     result.ret := RTN_PARAM_INVALID; -- param invalid 
+     return result;
+  END IF;
+    
+  -- 判断name是否冲突
+  SELECT count(*) INTO is_exist FROM port_group WHERE name = in_name AND  uuid = in_uuid;
+  IF is_exist <= 0 THEN 
+     SELECT count(*) INTO is_exist FROM port_group WHERE name = in_name;
+     IF is_exist > 0 THEN 
+        result.ret := RTN_ITEM_CONFLICT; -- conflict 
+        return result;
+     END IF;
+  END IF;
+  
+  -- 检查switch_mode
+  IF in_switchport_mode < 0 THEN 
+    result.ret := RTN_PARAM_INVALID; -- param invalid 
+    return result;   
+  END IF;
+  
+  IF in_switchport_mode > 1  THEN 
+    result.ret := RTN_PARAM_INVALID; -- param invalid  
+    return result;   
+  END IF;
+  
+  -- 检查 switch_mode 是否变化
+  IF in_switchport_mode = oldswitchportmode THEN 
+      ismodifyswitchportmode := 0;
+  ELSE
+      ismodifyswitchportmode := 1;
+  END IF;
+  
+  -- 检查pg_type 
+  
+  -- 检查netplane modify，之前已经配置了netplane，能将之修改，但必须mtu >= pg_mtu
+  is_modify_netplane := 0;
+  SELECT count(*) INTO is_exist FROM port_group WHERE uuid = in_uuid AND netplane_id is not null;
+  SELECT netplane_id INTO oldnetplaneid FROM port_group WHERE uuid = in_uuid AND netplane_id is not null; 
+  IF is_exist > 0 THEN 
+     IF in_is_cfg_netplane <= 0 THEN 
+        result.ret := RTN_PARAM_INVALID; -- param invalid  原先配置netplane，不能将之修改为NULL
+        return result; 
+     ELSE        
+		SELECT mtu INTO npmtu FROM netplane WHERE id = netplaneid;
+        IF npmtu < in_mtu THEN 
+            result.ret := RTN_NETPLANE_MTU_LESS_PG; -- param invalid  netplane mtu 小于pg_mtu，不能将之修改
+            return result;
+        END IF;    
+     END IF;
+  END IF; 
+          
+  -- modify item
+  result.id  := pgid;
+  result.uuid := in_uuid;
+  BEGIN 
+    
+    -- 将老的switch mode 数据删除
+    IF ismodifyswitchportmode > 0 THEN 
+       -- 修改switchport mode需要删除以前记录
+       IF oldswitchportmode = 0 THEN 
+            DELETE FROM pg_switchport_trunk WHERE pg_id = pgid;            
+       ELSE 
+          IF in_pg_type = 21 THEN 
+              DELETE FROM pg_switchport_access_isolate WHERE pg_id = pgid;
+          ELSE 
+              DELETE FROM pg_switchport_access_vlan WHERE pg_id = pgid;
+          END IF;
+       END IF;    
+    END IF;
+    
+    IF in_is_cfg_netplane > 0 THEN     
+       UPDATE port_group SET name = in_name, pg_type = in_pg_type,acl = in_acl,qos = in_qos,allowed_priorities = in_allowed_priorities,
+            receive_bandwidth_limit = in_receive_bandwidth_limit,receive_bandwidth_reserve = in_receive_bandwidth_reserve ,default_vlan_id = in_default_vlan_id,
+            promiscuous = in_promiscuous,macvlan_filter_enable = in_macvlan_filter_enable,allowed_transmit_macs = in_allowed_transmit_macs,
+            allowed_transmit_macvlans = in_allowed_transmit_macvlans,
+            policy_block_override = in_policy_block_override,policy_vlan_override = in_policy_vlan_override,version = in_version,mgr_id = in_mgr_id,type_id = in_type_id,
+            allow_mac_change = in_allow_mac_change ,switchport_mode = in_switchport_mode, netplane_id = netplaneid, mtu = in_mtu, description = in_desc    
+          WHERE uuid = in_uuid ;    
+    ELSE 
+       UPDATE port_group SET name = in_name, pg_type = in_pg_type,acl = in_acl,qos = in_qos,allowed_priorities = in_allowed_priorities,
+            receive_bandwidth_limit = in_receive_bandwidth_limit,receive_bandwidth_reserve = in_receive_bandwidth_reserve ,default_vlan_id = in_default_vlan_id,
+            promiscuous = in_promiscuous,macvlan_filter_enable = in_macvlan_filter_enable,allowed_transmit_macs = in_allowed_transmit_macs,
+            allowed_transmit_macvlans = in_allowed_transmit_macvlans,
+            policy_block_override = in_policy_block_override,policy_vlan_override = in_policy_vlan_override,version = in_version,mgr_id = in_mgr_id,type_id = in_type_id,
+            allow_mac_change = in_allow_mac_change ,switchport_mode = in_switchport_mode, mtu = in_mtu, description = in_desc 
+          WHERE uuid = in_uuid ;  
+    END IF;
+    
+    
+    -- 
+    -- pg_switchport_trunk 
+    IF in_switchport_mode = 0 THEN 
+        IF ismodifyswitchportmode > 0 THEN 
+            INSERT INTO pg_switchport_trunk values(pgid, in_switchport_mode, in_trunk_native_vlan_num );
+        ELSE 
+            UPDATE pg_switchport_trunk SET native_vlan_num = in_trunk_native_vlan_num WHERE pg_id = pgid;
+        END IF;
+    END IF;
+    
+    -- PG access
+    IF in_switchport_mode = 1 THEN 
+      IF in_pg_type = 21 THEN 
+          IF ismodifyswitchportmode > 0 THEN 
+              INSERT INTO pg_switchport_access_isolate values(pgid, in_pg_type,in_switchport_mode, in_access_isolate );      
+          ELSE
+              UPDATE pg_switchport_access_isolate SET isolate_no = in_access_isolate  WHERE pg_id = pgid;  
+          END IF;
+      ELSE
+          IF ismodifyswitchportmode > 0 THEN 
+              INSERT INTO pg_switchport_access_vlan values(pgid, in_pg_type,in_switchport_mode, in_access_vlan_num );    
+          ELSE
+              UPDATE pg_switchport_access_vlan SET vlan_num = in_access_vlan_num  WHERE pg_id = pgid; 
+          END IF;          
+      END IF;
+    END IF; 
+            
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_modify_portgroup(in_name character varying, in_pg_type integer,
+        in_uuid character varying, in_acl character varying, in_qos character varying,in_allowed_priorities character varying,
+        in_receive_bandwidth_limit character varying, in_receive_bandwidth_reserve character varying, 
+        in_default_vlan_id integer, in_promiscuous integer, in_macvlan_filter_enable integer, 
+        in_allowed_transmit_macs character varying, in_allowed_transmit_macvlans character varying, 
+        in_policy_block_override character varying, in_policy_vlan_override character varying, 
+        in_version integer,in_mgr_id character varying, in_type_id character varying,
+        in_allow_mac_change integer, in_switchport_mode integer,
+        in_is_cfg_netplane integer, in_netplane_uuid character varying,        
+        in_mtu integer,
+        in_trunk_native_vlan_num integer,in_access_vlan_num integer,in_access_isolate integer, in_desc character varying  ) OWNER TO tecs;
+
+		
+
+CREATE OR REPLACE FUNCTION pf_net_check_del_portgroup(in_uuid character varying)
+ RETURNS integer AS
+$BODY$
+DECLARE
+  result  integer;
+  is_conflict integer;
+  is_exist integer; 
+  pgtype integer; 
+  vnaid numeric(19,0);
+  -- 错误返回码定义
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_HAS_SAME_ITEM integer := 2;
+  RTN_ITEM_CONFLICT integer := 3;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+  RTN_PARAM_INVALID integer := 7;
+BEGIN
+  result := 0;
+  -- 入参检查 后面做
+          
+  --查询是否存在
+  SELECT count(*) INTO is_exist FROM port_group WHERE uuid = in_uuid ;  
+  SELECT pg_type INTO pgtype FROM port_group WHERE uuid = in_uuid ;  
+  IF is_exist <= 0 THEN
+     result := RTN_ITEM_NO_EXIST;-- does not exist item
+     return result;
+  END IF;
+  
+  -- 资源是否被使用
+  --uplink 
+  IF pgtype = 0 THEN 
+     SELECT count(*) INTO is_exist FROM port_group a, virtual_switch b WHERE a.id = b.uplink_pg_id AND  a.uuid = in_uuid ;  
+     IF is_exist > 0 THEN 
+         result := RTN_RESOURCE_USING;-- using 
+         return result;
+     END IF;
+     
+     SELECT count(*) INTO is_exist FROM port_group a, wildcast_cfg_switch b WHERE a.id = b.upg_id AND  a.uuid = in_uuid ;  
+     IF is_exist > 0 THEN 
+         result := RTN_RESOURCE_USING;-- using 
+         return result;
+     END IF;
+  END IF;
+  
+  -- kernel 
+  IF pgtype >= 10 THEN 
+      IF pgtype <= 11 THEN 
+           SELECT count(*) INTO is_exist FROM port_group a, kernel_port b WHERE a.id = b.kernel_pg_id AND  a.uuid = in_uuid ;  
+           IF is_exist > 0 THEN 
+              result := RTN_RESOURCE_USING;-- using 
+              return result;
+           END IF;
+      END IF;
+  END IF;
+  
+  -- vm 
+  IF pgtype >= 20 THEN 
+      IF pgtype <= 21 THEN 
+           SELECT count(*) INTO is_exist FROM port_group a, vsi_profile b WHERE a.id = b.vm_pg_id AND  a.uuid = in_uuid ;  
+           IF is_exist > 0 THEN 
+              result := RTN_RESOURCE_USING;-- using 
+              return result;
+           END IF;
+           SELECT count(*) INTO is_exist FROM port_group a, logic_network b WHERE a.id = b.vm_pg_id AND  a.uuid = in_uuid ;  
+           IF is_exist > 0 THEN 
+              result := RTN_RESOURCE_USING;-- using 
+              return result;
+           END IF;
+           SELECT count(*) INTO is_exist FROM port_group a, vlan_map b WHERE a.id = b.vm_pg_id AND  a.uuid = in_uuid ;  
+           IF is_exist > 0 THEN 
+              result := RTN_RESOURCE_USING;-- using 
+              return result;
+           END IF;           
+      END IF;
+  END IF;
+
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_check_del_portgroup(in_uuid character varying ) OWNER TO tecs;		
+
+-- 删除port
+
+CREATE OR REPLACE FUNCTION pf_net_del_portgroup(in_uuid character varying)
+  RETURNS t_operate_result AS
+$BODY$
+DECLARE
+  result  t_operate_result;
+  is_same integer;
+  is_exist integer;
+  pgtype integer; 
+  RTN_OPERATOR_FAILED integer := 1;
+  RTN_ITEM_NO_EXIST integer := 4;
+  RTN_RESOURCE_USING integer := 6;
+BEGIN
+  result.ret := 0;
+  -- 入参检查 后面做
+  -- 是否存在记录
+  result.ret = pf_net_check_del_portgroup(in_uuid);
+  IF result.ret > 0 THEN
+     return result;
+  END IF;
+  
+  -- del item
+  result.ret := 0;
+  BEGIN 
+    DELETE FROM port_group WHERE uuid = in_uuid ;
+  EXCEPTION 
+    WHEN others
+    THEN
+    result.ret := RTN_OPERATOR_FAILED;
+  END;
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_del_portgroup(character varying) OWNER TO tecs;
+
+
+--- 查询phy port summary
+--- 输出 name,uuid
+-- Function: pf_net_query_portgroup_summary()
+
+-- DROP FUNCTION pf_net_query_portgroup_summary();
+
+CREATE OR REPLACE FUNCTION pf_net_query_portgroup_summary()
+  RETURNS refcursor AS
+$BODY$
+DECLARE
+      ref refcursor;
+BEGIN
+      OPEN ref FOR SELECT uuid, name, pg_type,switchport_mode FROM port_group;
+      return ref;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_portgroup_summary() OWNER TO tecs;
+
+
+-- 查询port group
+-- 输出 uuid,name,description,mtu
+-- Function: pf_net_query_portgroup(character varying)
+
+-- DROP FUNCTION pf_net_query_portgroup(character varying);
+
+CREATE OR REPLACE FUNCTION pf_net_query_portgroup(in_uuid character varying)
+  RETURNS t_portgroup_query AS
+$BODY$
+DECLARE
+  result  t_portgroup_query;
+  is_exist integer;
+  pgid numeric(19,0);
+  iscfgnetplane integer;
+  pgtype integer;
+  swithmode integer;
+  RTN_ITEM_NO_EXIST integer :=4;
+BEGIN
+
+  result.ret := 0;
+  SELECT count(*) INTO is_exist FROM port_group WHERE uuid = in_uuid;
+  SELECT id INTO pgid FROM port_group WHERE uuid = in_uuid;
+  SELECT pg_type INTO pgtype FROM port_group WHERE uuid = in_uuid;
+  SELECT switchport_mode INTO swithmode FROM port_group WHERE uuid = in_uuid; 
+  IF is_exist > 0 THEN
+     result.ret := 0;
+  ELSE
+     result.ret := RTN_ITEM_NO_EXIST; -- no exist item
+     return result;     
+  END IF;
+   
+   result.uuid := in_uuid;
+       
+   -- port_group 
+   SELECT pg_type into result.pg_type  FROM port_group WHERE uuid = in_uuid;
+   SELECT name into result.name  FROM port_group WHERE uuid = in_uuid;
+   SELECT acl into result.acl FROM port_group WHERE uuid = in_uuid;
+   SELECT qos into result.qos  FROM port_group WHERE uuid = in_uuid;
+   SELECT allowed_priorities into result.allowed_priorities  FROM port_group WHERE uuid = in_uuid;
+   SELECT receive_bandwidth_limit into result.receive_bandwidth_limit  FROM port_group WHERE uuid = in_uuid;
+   SELECT receive_bandwidth_reserve into result.receive_bandwidth_reserve  FROM port_group WHERE uuid = in_uuid;
+      
+   SELECT default_vlan_id into result.default_vlan_id  FROM port_group WHERE uuid = in_uuid;
+   SELECT promiscuous into result.promiscuous  FROM port_group WHERE uuid = in_uuid;
+   SELECT macvlan_filter_enable into result.macvlan_filter_enable  FROM port_group WHERE uuid = in_uuid;
+   SELECT allowed_transmit_macs into result.allowed_transmit_macs  FROM port_group WHERE uuid = in_uuid;
+   SELECT allowed_transmit_macvlans into result.allowed_transmit_macvlans  FROM port_group WHERE uuid = in_uuid;
+   SELECT policy_block_override into result.policy_block_override  FROM port_group WHERE uuid = in_uuid;
+   SELECT policy_vlan_override into result.policy_vlan_override  FROM port_group WHERE uuid = in_uuid;
+   SELECT version into result.version  FROM port_group WHERE uuid = in_uuid;
+   SELECT mgr_id into result.mgr_id  FROM port_group WHERE uuid = in_uuid;
+   SELECT type_id into result.type_id  FROM port_group WHERE uuid = in_uuid;
+   SELECT allow_mac_change into result.allow_mac_change  FROM port_group WHERE uuid = in_uuid;
+   SELECT switchport_mode into result.switchport_mode  FROM port_group WHERE uuid = in_uuid;
+   
+   SELECT count(*) INTO is_exist FROM port_group WHERE  uuid = in_uuid AND netplane_id is not null;
+   SELECT count(*) INTO is_exist FROM port_group WHERE  uuid = in_uuid AND netplane_id is not null;
+   IF is_exist > 0 THEN 
+       result.is_cfg_netplane := 1;
+       SELECT a.uuid INTO result.netplane_uuid FROM netplane a, port_group b WHERE a.id = b.netplane_id AND b.uuid = in_uuid;
+   ELSE 
+       result.is_cfg_netplane := 0;
+   END IF;
+   
+   SELECT mtu into result.mtu FROM port_group WHERE uuid = in_uuid;
+   SELECT description into result.description FROM port_group WHERE uuid = in_uuid;
+    
+   -- trunk 
+   IF swithmode = 0 THEN 
+      SELECT native_vlan_num INTO result.trunk_native_vlan_num FROM pg_switchport_trunk WHERE pg_id = pgid;   
+   END IF;
+   
+   -- access 
+   IF swithmode = 1 THEN 
+      IF pgtype = 21 THEN 
+          SELECT isolate_no INTO result.access_isolate_no FROM pg_switchport_access_isolate WHERE pg_id = pgid;   
+      ELSE 
+          SELECT vlan_num INTO result.access_vlan_num FROM pg_switchport_access_vlan WHERE pg_id = pgid;   
+      END IF;
+   END IF;
+   
+  return result;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION pf_net_query_portgroup(character varying) OWNER TO tecs;
+
+
+
+
+
+

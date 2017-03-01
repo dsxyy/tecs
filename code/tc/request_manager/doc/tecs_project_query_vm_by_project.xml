@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_project_query_vm_by_project.xml">
+	<interface>tecs.project.query_vm_by_project</interface>
+	<shortdesc lang_cn="查询该工程下拥有的虚拟机" lang_en="show all vm which belong to this project"/>
+	<description lang_cn="查询该工程下拥有的虚拟机。" lang_en="show all vm which belong to this project."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<parameter name="start_index" type="int64" lang_cn="查询起始位置，起始值为0。" lang_en="query start index, start value is 0."/>
+		<parameter name="query_count" type="int64" lang_cn="一次查询数量,范围1-50。" lang_en="num once query,range 1-50."/>
+		<parameter name="name" type="string" lang_cn="工程名称,长度范围1-32。" lang_en="Project name,length range 1-32."/>
+        <parameter name="user_name" type="string" lang_cn="需要查询的归属用户，长度范围0-32,0长度表示查询自己。" lang_en="user name which need query,length range 0-32, query self if string length is zero."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+			<parameter name="next_index" type="int64" lang_cn="查询的下条起始位置，-1表示查询结束。" lang_en="Next Query Index, if value equal -1,query end."/>
+			<parameter name="max_count" type="int64" lang_cn="表记录总数量。" lang_en="Max Num Queride."/>
+			<array repeat="yes">
+				<struct name="ApiProShVmInfo">
+					<parameter name="vm_name" type="string" lang_cn="虚拟机名称。" lang_en="vm name."/>
+                    <parameter name="id" type="int64" lang_cn="虚拟机id。" lang_en="vm id."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="5002" lang_cn="失败, 无效查询类型" lang_en="Failed, invalid query type"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.project.allocate" href="tecs_project_allocate.xml"/>
+		<xref name="tecs.project.delete" href="tecs_project_delete.xml"/>
+		<xref name="tecs.project.set" href="tecs_project_set.xml"/>
+		<xref name="tecs.project.query" href="tecs_project_query.xml"/>
+	</reference>
+</method>

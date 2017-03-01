@@ -1,0 +1,9 @@
+/var/log/tecs/qpid/qpidd.log
+{
+    missingok
+    size 100M
+    rotate 1
+    create
+    compress
+	copytruncate 
+}

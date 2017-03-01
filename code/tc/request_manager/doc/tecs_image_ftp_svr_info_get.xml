@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by lxc (zte) -->
+<method id="tecs_image_ftp_svr_info_get.xml">
+	<interface>tecs.image.ftp_svr_info_get</interface>
+	<shortdesc lang_cn="镜像文件ftp服务端信息获取" lang_en="get the ftp server information"/>
+	<description lang_cn="镜像文件ftp服务端信息获取" lang_en="get the ftp server information."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功" lang_en="Error code, 0 means success."/>
+			<array repeat="yes">
+				<struct name="ImageFtpSvrInfo">
+					<parameter name="ftp_svr_port" type="int" lang_cn="镜像ftp服务器端口" lang_en="image ftp server port."/>
+					<parameter name="ftp_svr_ip" type="string" lang_cn="镜像ftp服务器ip" lang_en="image ftp server ip."/>
+				</struct>
+			</array>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="4005" lang_cn="失败, 获取ftp服务单信息失败" lang_en="Failed, get ftp svr info failed"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.image.publish" href="tecs_image_publish.xml"/>
+		<xref name="tecs.image.set" href="tecs_image_set.xml"/>
+		<xref name="tecs.image.query" href="tecs_image_query.xml"/>
+	</reference>
+</method>

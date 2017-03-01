@@ -1,0 +1,255 @@
+
+CREATE OR REPLACE VIEW web_view_port_physical AS    
+SELECT 
+  v_net_vna_hc_cluster.vna_uuid, 
+  v_net_vna_hc_cluster.vna_is_online, 
+  port."name", 
+  port.uuid, 
+  port.state, 
+  port.is_online, 
+  port.is_cfg, 
+  port.is_consistency, 
+  port.is_broadcast, 
+  port.is_running, 
+  port.is_multicast, 
+  port.promiscuous, 
+  port.mtu, 
+  port.is_master, 
+  port.port_type, 
+  physical_port.supported_ports, 
+  physical_port.supported_link_modes, 
+  physical_port.is_support_auto_negotiation, 
+  physical_port.advertised_link_modes, 
+  physical_port.advertised_pause_frame_use, 
+  physical_port.is_advertised_auto_negotiation, 
+  physical_port.speed, 
+  physical_port.duplex, 
+  physical_port.port, 
+  physical_port.phyad, 
+  physical_port.transceiver, 
+  physical_port.auto_negotiate, 
+  physical_port.supports_wake_on, 
+  physical_port.wake_on, 
+  physical_port.current_msg_level, 
+  physical_port.is_linked, 
+  physical_port_extend.is_rx_checksumming, 
+  physical_port_extend.is_tx_checksumming, 
+  physical_port_extend.is_scatter_gather, 
+  physical_port_extend.is_tcp_segmentation_offload, 
+  physical_port_extend.is_udp_fragmentation_offload, 
+  physical_port_extend.is_generic_segmentation_offload, 
+  physical_port_extend.is_generic_receive_offload, 
+  physical_port_extend.is_large_receive_offload,
+  
+  CASE 
+      WHEN (SELECT physical_port_id is not null FROM sriov_port WHERE port.id = sriov_port.physical_port_id )
+	    THEN (1)
+	  ELSE (0)	  
+  END AS is_sriov_port, 
+  
+  CASE 
+      WHEN (SELECT physical_port_id is not null FROM sriov_port WHERE port.id = sriov_port.physical_port_id )
+	    THEN (SELECT is_loop_report FROM sriov_port WHERE port.id = sriov_port.physical_port_id)
+	  ELSE (NULL)	  
+  END AS sriov_port_is_loop_report, 
+  
+  CASE 
+      WHEN (SELECT physical_port_id is not null FROM sriov_port WHERE port.id = sriov_port.physical_port_id )
+	    THEN (SELECT is_loop_cfg FROM sriov_port WHERE port.id = sriov_port.physical_port_id)
+	  ELSE (NULL)	  
+  END AS sriov_port_is_loop_cfg
+  
+FROM 
+  public.port, 
+  public.physical_port, 
+  public.physical_port_extend, 
+  public.v_net_vna_hc_cluster
+WHERE 
+  port.vna_id = v_net_vna_hc_cluster.vna_id AND
+  physical_port.port_id = port.id AND
+  physical_port.vna_id = port.vna_id AND
+  physical_port_extend.physical_port_id = physical_port.port_id;
+  
+  
+CREATE OR REPLACE VIEW web_view_port_bond AS   
+SELECT 
+ v_net_bond_vna.bond_name, 
+ v_net_bond_vna.bond_uuid, 
+ v_net_bond_vna.bond_mode, 
+ v_net_bond_vna.bond_is_online, 
+ v_net_bond_vna.bond_is_cfg, 
+ v_net_bond_vna.bond_is_consistency, 
+ v_net_bond_vna.bond_state, 
+ v_net_bond_vna.vna_uuid, 
+ v_net_bond_vna.vna_is_online, 
+ v_net_physical_port_vna.phy_name, 
+ v_net_physical_port_vna.phy_uuid, 
+ bond_map.is_cfg AS bond_map_is_cfg, 
+ bond_map.is_selected AS bond_map_is_selected, 
+ bond_map.lacp_is_success, 
+ bond_map.backup_is_active, 
+ v_net_physical_port_vna.is_linked
+FROM 
+  bond_map, v_net_bond_vna, v_net_physical_port_vna
+WHERE 
+  bond_map.physical_port_id = v_net_physical_port_vna.phy_id 
+  AND bond_map.vna_id = v_net_physical_port_vna.vna_id 
+  AND v_net_bond_vna.bond_id = bond_map.bond_id 
+  AND v_net_bond_vna.vna_id = bond_map.vna_id;
+  
+  
+CREATE OR REPLACE VIEW web_view_port_kernel AS   
+SELECT 
+  vna.vna_uuid, 
+  vna.is_online AS vna_is_online, 
+  port.uuid AS port_uuid, 
+  port."name" as port_name, 
+  port.state AS port_state, 
+  port.is_online AS port_is_online, 
+  port.is_cfg AS port_is_cfg, 
+  port.is_consistency AS port_is_consistency, 
+  kernel_port."type" AS kernel_type,
+  CASE 
+     WHEN (kernel_port.kernel_pg_id is not null )
+	     THEN (1)
+	 ELSE (0)
+  END is_has_pg ,
+  CASE 
+     WHEN (kernel_port.kernel_pg_id is not null )
+	     THEN (SELECT port_group.uuid FROM port_group WHERE port_group.id = kernel_port.kernel_pg_id)
+	 ELSE (NULL)
+  END pg_uuid ,
+  
+  CASE 
+     WHEN (kernel_port.virtual_switch_id is not null )
+	     THEN (1)
+	 ELSE (0)
+  END is_has_vswitch ,  
+  CASE 
+     WHEN (kernel_port.virtual_switch_id is not null )
+	     THEN (SELECT uuid FROM switch WHERE switch.id = kernel_port.virtual_switch_id)
+	 ELSE (NULL)
+  END vswitch_uuid 
+  
+FROM 
+  kernel_port, 
+  port, 
+  vna
+WHERE 
+  port.vna_id = vna.id AND
+  port.id = kernel_port.port_id;
+
+CREATE OR REPLACE VIEW web_view_port_uplinkloop AS     
+SELECT 
+  vna.vna_uuid, 
+  vna.is_online AS vna_is_online, 
+  port.uuid AS port_uuid, 
+  port."name" as port_name, 
+  port.state AS port_state, 
+  port.is_online AS port_is_online, 
+  port.is_cfg AS port_is_cfg, 
+  port.is_consistency AS port_is_consistency 
+FROM 
+  port, 
+  vna, 
+  uplink_loop_port
+WHERE 
+  port.vna_id = vna.id AND
+  port.id = uplink_loop_port.port_id;
+  
+CREATE OR REPLACE VIEW web_view_port_vswitchport AS     
+SELECT 
+  vna.vna_uuid, 
+  vna.is_online, 
+  vna.is_online AS vna_is_online, 
+  port.uuid AS port_uuid, 
+  port."name" as port_name, 
+  port.state AS port_state, 
+  port.is_online AS port_is_online, 
+  port.is_cfg AS port_is_cfg, 
+  port.is_consistency AS port_is_consistency
+FROM 
+  port, 
+  vna, 
+  vswitch_port
+WHERE 
+  port.vna_id = vna.id AND
+  port.id = vswitch_port.port_id;
+  
+  
+CREATE OR REPLACE VIEW web_view_port_sriov_vf AS   
+SELECT 
+  v_net_sriov_vf_port_vna.vna_uuid, 
+  v_net_sriov_vf_port_vna.vna_is_online, 
+  v_net_sriov_vf_port_vna."name" AS sriov_vf_port_name, 
+  v_net_sriov_vf_port_vna.id AS sriov_vf_port_id,
+  v_net_sriov_vf_port_vna.uuid AS sriov_vf_port_uuid, 
+  v_net_sriov_vf_port_vna.pci, 
+  v_net_sriov_vf_port_vna.vlan_num, 
+  v_net_sriov_vf_port_vna.port_is_consistency AS sriov_vf_port_is_consistency, 
+  v_net_sriov_vf_port_vna.port_is_cfg AS sriov_vf_port_is_cfg, 
+  v_net_sriov_vf_port_vna.port_is_online AS sriov_vf_port_is_online, 
+  v_net_sriov_vf_port_vna.port_admin_state AS sriov_vf_port_is_admin_state, 
+  v_net_sriov_vf_port_vna.port_state AS sriov_vf_port_is_state, 
+  v_net_sriov_port_vna."name" AS phy_port_name, 
+  v_net_sriov_port_vna.uuid AS phy_port_uuid,
+  CASE 
+     WHEN (SELECT sriov_vf_port_id is not null FROM vsi_sriov WHERE v_net_sriov_vf_port_vna.id = vsi_sriov.sriov_vf_port_id )
+     THEN (0)
+     ELSE (1) 
+  END AS sriov_vf_is_free,
+
+  CASE 
+     WHEN (SELECT sriov_vf_port_id is not null FROM vsi_sriov WHERE v_net_sriov_vf_port_vna.id = vsi_sriov.sriov_vf_port_id )
+     THEN (SELECT vnic.vm_id FROM vsi_sriov, vsi_profile, vnic WHERE v_net_sriov_vf_port_vna.id = vsi_sriov.sriov_vf_port_id AND 
+            vsi_sriov.vsi_profile_id = vsi_profile.id AND vnic.vsi_profile_id  = vsi_profile.id )
+     ELSE (NULL) 
+  END AS vm_id
+  
+FROM 
+  public.v_net_sriov_vf_port_vna, 
+  public.v_net_sriov_port_vna
+WHERE 
+  v_net_sriov_vf_port_vna.sriov_port_id = v_net_sriov_port_vna.id;
+  
+  
+  
+CREATE OR REPLACE VIEW web_view_port_ip AS     
+SELECT 
+  port."name" AS port_name, 
+  port.uuid AS port_uuid, 
+  port.port_type AS port_type, 
+  vna.vna_uuid, 
+  port_ip.port_name AS port_ip_name, 
+  port_ip.ip, 
+  port_ip.mask, 
+  port_ip.is_cfg AS port_ip_is_cfg, 
+  port_ip.is_online AS port_ip_is_online
+FROM 
+  public.port, 
+  public.port_ip, 
+  public.vna
+WHERE 
+  port.vna_id = vna.id AND
+  port_ip.port_id = port.id;
+  
+  
+/*
+CREATE OR REPLACE VIEW web_view_vna AS   
+SELECT 
+  vna.id AS vna_id, 
+  vna.vna_uuid, 
+  vna.vna_application, 
+  vna.is_online AS vna_is_online, 
+  regist_module.is_online AS hc_is_online , 
+  regist_module.module_name AS hc_application, 
+  (SELECT count(*) FROM port WHERE port.vna_id = vna.id ) AS port_total_num
+FROM 
+  vna, 
+  regist_module
+WHERE 
+  regist_module.vna_id = vna.id AND 
+  regist_module.role = 1;  
+*/    
+  
+  

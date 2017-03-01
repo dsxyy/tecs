@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<method id="tecs_vmcfg_affinity_region_member_add.xml">
+	<interface>tecs.vmcfg.affinity_region.member.add</interface>
+	<shortdesc lang_cn="虚拟机加入亲和域" lang_en="add vm into affinity region."/>
+	<description lang_cn="虚拟机加入亲和域" lang_en="add vm into affinity region."/>
+	<parameters>
+		<parameter name="session" type="string" lang_cn="登录时由会话管理模块分配的随机字符串。" lang_en="Random string assigned by session manager at login."/>
+		<struct name="ApiAffinityRegionMemberAction">
+			<parameter name="affinity_region_id" type="int64" lang_cn="亲和域 id。" lang_en="affinity region id."/>
+			<array repeat="yes" name="vids">
+				<parameter name="id" type="int64" lang_cn="虚拟机 id。" lang_en="vm id."/>
+			</array>
+		</struct>
+	</parameters>
+	<return>
+		<success>
+			<parameter name="error_code" type="int" lang_cn="错误码，0表示成功。" lang_en="Error code, 0 means success."/>
+		</success>
+		<fail>
+			<parameter name="error_code" type="int" lang_cn="错误码：" lang_en="Error code:">
+				<enum name="1" lang_cn="失败 " lang_en="Error unknown"/>
+				<enum name="6" lang_cn="授权失败 " lang_en="Error, failed to authorize usr's operation"/>
+				<enum name="8" lang_cn="虚拟机加入亲和域失败 " lang_en="Error, falied to insert database"/>
+				<enum name="11" lang_cn="查询虚拟机或亲和域失败 " lang_en="Error, falied to query vm or affinity region"/>
+				<enum name="17" lang_cn="虚拟机或亲和域不存在" lang_en="Error, vm or affinity region not exist"/>
+				<enum name="18" lang_cn="参数无效" lang_en="Error, invalide parameter"/>
+				<enum name="27" lang_cn="当前虚拟机状态或有互斥关系不允许加入亲和域" lang_en="Error, current vms state and repel relation can not add into affinity region"/>
+			</parameter>
+			<parameter name="error_info" type="string" lang_cn="附加的错误信息。" lang_en="Appending error information."/>
+		</fail>
+	</return>
+	<privilege>
+		<user name="Cloud Administrators" lang_cn="TECS云管理员。" lang_en="Cloud administrators of TECS."/>
+		<user name="Account Administrators" lang_cn="帐户管理员。" lang_en="Administrators of account."/>
+		<user name="User" lang_cn="普通用户。" lang_en="User."/>
+	</privilege>
+	<reference>
+		<xref name="tecs.vmcfg.affinity_region.member.add" href="tecs_vmcfg_affinity_region_member_delete.xml"/>
+	</reference>
+</method>
